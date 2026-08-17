@@ -22,4 +22,10 @@ public class TreatmentType {
     public int getTreatmentTypeId() {
         return treatmentTypeId;
     }
+
+    public String getTreatmentName() {
+
+        //  treatment name has not yet been implemented.
+        return null;
+    }
 }

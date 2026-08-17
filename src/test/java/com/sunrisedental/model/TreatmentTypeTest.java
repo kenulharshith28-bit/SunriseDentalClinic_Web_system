@@ -32,4 +32,26 @@ class TreatmentTypeTest {
                 result
         );
     }
+
+    @Test
+    void shouldReturnCorrectTreatmentName() {
+
+        // ARRANGE
+        final TreatmentType treatmentType =
+                new TreatmentType(
+                        1,
+                        "Cleaning",
+                        new BigDecimal("3500.00")
+                );
+
+        // ACT
+        final String result =
+                treatmentType.getTreatmentName();
+
+        // ASSERT
+        assertEquals(
+                "Cleaning",
+                result
+        );
+    }
 }
