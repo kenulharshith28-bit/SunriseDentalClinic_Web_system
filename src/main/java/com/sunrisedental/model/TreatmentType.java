@@ -27,4 +27,10 @@ public class TreatmentType {
     public String getTreatmentName() {
         return treatmentName;
     }
+
+    public BigDecimal getTreatmentFee() {
+
+        // treatment fee has not yet been implemented.
+        return BigDecimal.ZERO;
+    }
 }

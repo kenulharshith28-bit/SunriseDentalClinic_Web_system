@@ -54,4 +54,26 @@ class TreatmentTypeTest {
                 result
         );
     }
+
+    @Test
+    void shouldReturnCorrectTreatmentFee() {
+
+        // ARRANGE
+        final TreatmentType treatmentType =
+                new TreatmentType(
+                        1,
+                        "Cleaning",
+                        new BigDecimal("3500.00")
+                );
+
+        // ACT
+        final BigDecimal result =
+                treatmentType.getTreatmentFee();
+
+        // ASSERT
+        assertEquals(
+                new BigDecimal("3500.00"),
+                result
+        );
+    }
 }
