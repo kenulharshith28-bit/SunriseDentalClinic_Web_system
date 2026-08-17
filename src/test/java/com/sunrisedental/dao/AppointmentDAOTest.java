@@ -69,4 +69,27 @@ class AppointmentDAOTest {
                 IllegalArgumentException.class,
                 () -> appointmentDAO.saveAppointment(null));
     }
+
+    @Test
+    void shouldProvideMeaningfulSQLExceptionWhenSaveFails()
+            throws SQLException {
+
+        when(appointment.getAppointmentNumber())
+                .thenReturn("A-001");
+
+        when(connection.prepareStatement(anyString()))
+                .thenThrow(
+                        new SQLException("Database connection failed"));
+
+        final SQLException exception =
+                assertThrows(
+                        SQLException.class,
+                        () -> appointmentDAO
+                                .saveAppointment(appointment));
+
+        assertTrue(
+                exception.getMessage()
+                        .contains("Failed to save appointment"),
+                "SQLException should describe the failed DAO operation");
+    }
 }
