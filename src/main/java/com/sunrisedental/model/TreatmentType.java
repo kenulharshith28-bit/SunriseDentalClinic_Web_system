@@ -18,6 +18,7 @@ public class TreatmentType {
 
         this.treatmentTypeId = treatmentTypeId;
         this.treatmentName = treatmentName;
+        this.treatmentFee = treatmentFee;
     }
 
     public int getTreatmentTypeId() {
@@ -29,8 +30,6 @@ public class TreatmentType {
     }
 
     public BigDecimal getTreatmentFee() {
-
-        // treatment fee has not yet been implemented.
-        return BigDecimal.ZERO;
+        return treatmentFee;
     }
 }
