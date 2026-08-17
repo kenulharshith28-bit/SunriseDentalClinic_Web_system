@@ -21,6 +21,11 @@ public class AppointmentDAOImpl implements AppointmentDAO {
     public boolean saveAppointment(final Appointment appointment)
             throws SQLException {
 
+        if (appointment == null) {
+            throw new IllegalArgumentException(
+                    "Appointment must not be null");
+        }
+
         final String sql =
                 "INSERT INTO appointments (appointment_number) VALUES (?)";
 
