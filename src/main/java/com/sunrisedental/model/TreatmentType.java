@@ -17,6 +17,7 @@ public class TreatmentType {
             final BigDecimal treatmentFee) {
 
         this.treatmentTypeId = treatmentTypeId;
+        this.treatmentName = treatmentName;
     }
 
     public int getTreatmentTypeId() {
@@ -24,8 +25,6 @@ public class TreatmentType {
     }
 
     public String getTreatmentName() {
-
-        //  treatment name has not yet been implemented.
-        return null;
+        return treatmentName;
     }
 }
