@@ -4,6 +4,7 @@ import com.sunrisedental.model.Appointment;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.PreparedStatement;
 
 /**
  * JDBC implementation of appointment persistence operations.
@@ -20,7 +21,20 @@ public class AppointmentDAOImpl implements AppointmentDAO {
     public boolean saveAppointment(final Appointment appointment)
             throws SQLException {
 
-        // RED stage: persistence logic has not yet been implemented.
-        return false;
+        final String sql =
+                "INSERT INTO appointments (appointment_number) VALUES (?)";
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setString(
+                    1,
+                    appointment.getAppointmentNumber());
+
+            final int affectedRows =
+                    statement.executeUpdate();
+
+            return affectedRows == 1;
+        }
     }
 }
