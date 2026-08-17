@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -59,5 +60,13 @@ class AppointmentDAOTest {
 
         verify(preparedStatement)
                 .executeUpdate();
+    }
+
+    @Test
+    void shouldRejectNullAppointment() {
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> appointmentDAO.saveAppointment(null));
     }
 }
