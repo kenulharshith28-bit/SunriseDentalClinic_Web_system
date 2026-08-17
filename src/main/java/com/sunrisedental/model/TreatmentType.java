@@ -16,13 +16,10 @@ public class TreatmentType {
             final String treatmentName,
             final BigDecimal treatmentFee) {
 
-        // RED stage: treatment type values
-        // have not yet been implemented.
+        this.treatmentTypeId = treatmentTypeId;
     }
 
     public int getTreatmentTypeId() {
-
-        // RED stage: intentionally incomplete.
-        return 0;
+        return treatmentTypeId;
     }
 }
