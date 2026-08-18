@@ -92,6 +92,7 @@ public class BillDAOImpl implements BillDAO {
 
                 return Optional.of(foundBill);
             }
+            // not implemented sql exception
         }
     }
 }

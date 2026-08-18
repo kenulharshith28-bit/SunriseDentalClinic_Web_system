@@ -195,4 +195,25 @@ class BillDAOTest {
         verify(preparedStatement)
                 .executeQuery();
     }
+
+    @Test
+    void shouldProvideMeaningfulSQLExceptionWhenBillLookupFails()
+            throws SQLException {
+
+        when(connection.prepareStatement(anyString()))
+                .thenThrow(
+                        new SQLException(
+                                "Database connection failed"));
+
+        final SQLException exception =
+                assertThrows(
+                        SQLException.class,
+                        () -> billDAO.findByBillId(10));
+
+        assertTrue(
+                exception.getMessage()
+                        .contains(
+                                "Failed to find bill"),
+                "SQLException should describe the failed bill lookup operation");
+    }
 }
