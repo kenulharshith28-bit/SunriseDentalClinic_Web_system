@@ -57,7 +57,12 @@ public class UserDAOImpl implements UserDAO {
 
                 return Optional.empty();
             }
-            // not implemented user lookup sql error handling
+
+        } catch (SQLException exception) {
+
+            throw new SQLException(
+                    "Failed to find user",
+                    exception);
         }
     }
 }
