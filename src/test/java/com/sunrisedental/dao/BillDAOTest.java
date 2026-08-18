@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.util.Optional;
 
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -142,6 +142,55 @@ class BillDAOTest {
 
         verify(preparedStatement)
                 .setInt(1, 999);
+
+        verify(preparedStatement)
+                .executeQuery();
+    }
+
+    @Test
+    void shouldFindBillByBillId()
+            throws SQLException {
+
+        when(connection.prepareStatement(anyString()))
+                .thenReturn(preparedStatement);
+
+        when(preparedStatement.executeQuery())
+                .thenReturn(resultSet);
+
+        when(resultSet.next())
+                .thenReturn(true);
+
+        when(resultSet.getInt("bill_id"))
+                .thenReturn(10);
+
+        when(resultSet.getInt("appointment_id"))
+                .thenReturn(1);
+
+        when(resultSet.getBigDecimal("total_amount"))
+                .thenReturn(
+                        new BigDecimal("4500.00"));
+
+        final Optional<Bill> result =
+                billDAO.findByBillId(10);
+
+        assertTrue(
+                result.isPresent(),
+                "Bill should be returned when it exists");
+
+        assertEquals(
+                10,
+                result.get().getBillId());
+
+        assertEquals(
+                1,
+                result.get().getAppointmentId());
+
+        assertEquals(
+                new BigDecimal("4500.00"),
+                result.get().getTotalAmount());
+
+        verify(preparedStatement)
+                .setInt(1, 10);
 
         verify(preparedStatement)
                 .executeQuery();
