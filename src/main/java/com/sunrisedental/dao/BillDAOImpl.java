@@ -20,6 +20,7 @@ public class BillDAOImpl implements BillDAO {
     @Override
     public boolean saveBill(final Bill bill)
             throws SQLException {
+        // not implemented validate bill before persistence
 
         final String sql =
                 "INSERT INTO bills "
