@@ -57,6 +57,7 @@ public class UserDAOImpl implements UserDAO {
 
                 return Optional.empty();
             }
+            // not implemented user lookup sql error handling
         }
     }
 }

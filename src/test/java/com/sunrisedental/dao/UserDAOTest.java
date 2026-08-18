@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -116,5 +117,27 @@ class UserDAOTest {
 
         verify(preparedStatement)
                 .executeQuery();
+    }
+
+    @Test
+    void shouldProvideMeaningfulSQLExceptionWhenUserLookupFails()
+            throws SQLException {
+
+        when(connection.prepareStatement(anyString()))
+                .thenThrow(
+                        new SQLException(
+                                "Database connection failed"));
+
+        final SQLException exception =
+                assertThrows(
+                        SQLException.class,
+                        () -> userDAO.findByUsername(
+                                "admin"));
+
+        assertTrue(
+                exception.getMessage()
+                        .contains(
+                                "Failed to find user"),
+                "SQLException should describe the failed user lookup");
     }
 }
