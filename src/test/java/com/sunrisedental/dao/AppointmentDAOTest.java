@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -126,6 +127,48 @@ class AppointmentDAOTest {
 
         verify(preparedStatement)
                 .setString(1, "A-999");
+
+        verify(preparedStatement)
+                .executeQuery();
+    }
+
+    @Test
+    void shouldFindAppointmentByAppointmentNumber()
+            throws SQLException {
+
+        when(connection.prepareStatement(anyString()))
+                .thenReturn(preparedStatement);
+
+        when(preparedStatement.executeQuery())
+                .thenReturn(resultSet);
+
+        when(resultSet.next())
+                .thenReturn(true);
+
+        when(resultSet.getInt("appointment_id"))
+                .thenReturn(1);
+
+        when(resultSet.getString("appointment_number"))
+                .thenReturn("A-001");
+
+        final Optional<Appointment> result =
+                appointmentDAO.findByAppointmentNumber(
+                        "A-001");
+
+        assertTrue(
+                result.isPresent(),
+                "Appointment should be returned when it exists");
+
+        assertEquals(
+                1,
+                result.get().getAppointmentId());
+
+        assertEquals(
+                "A-001",
+                result.get().getAppointmentNumber());
+
+        verify(preparedStatement)
+                .setString(1, "A-001");
 
         verify(preparedStatement)
                 .executeQuery();
