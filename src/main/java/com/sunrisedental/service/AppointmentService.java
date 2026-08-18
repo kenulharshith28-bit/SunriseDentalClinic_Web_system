@@ -30,6 +30,13 @@ public class AppointmentService {
             final String appointmentNumber)
             throws SQLException {
 
+        if (appointmentNumber == null
+                || appointmentNumber.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Appointment number must not be blank");
+        }
+
         return appointmentDAO
                 .findByAppointmentNumber(
                         appointmentNumber);
