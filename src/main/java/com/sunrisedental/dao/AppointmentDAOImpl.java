@@ -75,10 +75,14 @@ public class AppointmentDAOImpl implements AppointmentDAO {
                     return Optional.empty();
                 }
 
-                /*
-                 * Successful implemented mapping part half of it.
-                 */
-                return Optional.empty();
+                final Appointment foundAppointment =
+                        new Appointment(
+                                resultSet.getInt(
+                                        "appointment_id"),
+                                resultSet.getString(
+                                        "appointment_number"));
+
+                return Optional.of(foundAppointment);
             }
         }
     }
