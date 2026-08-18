@@ -5,6 +5,7 @@ import com.sunrisedental.model.Appointment;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
+import java.util.Optional;
 
 /**
  * JDBC implementation of appointment persistence operations.
@@ -47,5 +48,15 @@ public class AppointmentDAOImpl implements AppointmentDAO {
                     "Failed to save appointment",
                     exception);
         }
+    }
+
+    @Override
+    public Optional<Appointment> findByAppointmentNumber(
+            final String appointmentNumber)
+            throws SQLException {
+
+        //  appointment lookup
+        // has not yet been implemented.
+        return null;
     }
 }
