@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- Handles business operations related to appointments.
+ * Handles business operations related to appointments.
  */
 public class AppointmentService {
 
@@ -20,18 +20,18 @@ public class AppointmentService {
     }
 
     /**
-     *Searches for an appointment using its appointment number.
-
-      @param appointmentNumber appointment number to search for
-      @return matching appointment when found
-      @throws SQLException if persistence access fails
+     * Searches for an appointment using its appointment number.
+     *
+     * @param appointmentNumber appointment number to search for
+     * @return matching appointment when found
+     * @throws SQLException if persistence access fails
      */
     public Optional<Appointment> searchAppointment(
             final String appointmentNumber)
             throws SQLException {
 
-        // appointment search
-        // has not yet been implemented.
-        return Optional.empty();
+        return appointmentDAO
+                .findByAppointmentNumber(
+                        appointmentNumber);
     }
 }

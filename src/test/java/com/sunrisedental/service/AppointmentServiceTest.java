@@ -58,12 +58,12 @@ class AppointmentServiceTest {
                 "Appointment should be returned when it exists");
 
         assertEquals(
-                "APT-001",
+                "A-001",
                 result.get()
                         .getAppointmentNumber());
 
         verify(appointmentDAO)
                 .findByAppointmentNumber(
-                        "APT-001");
+                        "A-001");
     }
 }
