@@ -55,8 +55,7 @@ public class UserDAOImpl implements UserDAO {
                     return Optional.of(user);
                 }
 
-                // Not-found behaviour has nnt implemented yet
-                return null;
+                return Optional.empty();
             }
         }
     }
