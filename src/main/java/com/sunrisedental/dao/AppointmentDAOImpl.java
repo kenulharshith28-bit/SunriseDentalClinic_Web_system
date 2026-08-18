@@ -6,6 +6,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.util.Optional;
+import java.sql.ResultSet;
+
 
 /**
  * JDBC implementation of appointment persistence operations.
@@ -55,8 +57,29 @@ public class AppointmentDAOImpl implements AppointmentDAO {
             final String appointmentNumber)
             throws SQLException {
 
-        //  appointment lookup
-        // has not yet been implemented.
-        return null;
+        final String sql =
+                "SELECT * FROM appointments "
+                        + "WHERE appointment_number = ?";
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setString(
+                    1,
+                    appointmentNumber);
+
+            try (ResultSet resultSet =
+                         statement.executeQuery()) {
+
+                if (!resultSet.next()) {
+                    return Optional.empty();
+                }
+
+                /*
+                 * Successful implemented mapping part half of it.
+                 */
+                return Optional.empty();
+            }
+        }
     }
 }
