@@ -40,6 +40,12 @@ public class AppointmentDAOImpl implements AppointmentDAO {
                     statement.executeUpdate();
 
             return affectedRows == 1;
+
+        } catch (SQLException exception) {
+
+            throw new SQLException(
+                    "Failed to save appointment",
+                    exception);
         }
     }
 }
