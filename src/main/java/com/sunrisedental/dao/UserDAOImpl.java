@@ -22,7 +22,7 @@ public class UserDAOImpl implements UserDAO {
             final String username)
             throws SQLException {
 
-        // RED stage: user lookup has not yet been implemented.
+        // user lookup has not yet been implemented.
         return Optional.empty();
     }
 }
