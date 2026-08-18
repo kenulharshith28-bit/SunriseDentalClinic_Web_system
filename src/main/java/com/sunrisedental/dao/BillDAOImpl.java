@@ -81,13 +81,17 @@ public class BillDAOImpl implements BillDAO {
                     return Optional.empty();
                 }
 
-                /*
-                  Successful bill mapping have not implemented yet.
-                 */
-                return Optional.empty();
+                final Bill foundBill =
+                        new Bill(
+                                resultSet.getInt(
+                                        "bill_id"),
+                                resultSet.getInt(
+                                        "appointment_id"),
+                                resultSet.getBigDecimal(
+                                        "total_amount"));
+
+                return Optional.of(foundBill);
             }
         }
     }
-
-
 }
