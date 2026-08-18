@@ -173,4 +173,27 @@ class AppointmentDAOTest {
         verify(preparedStatement)
                 .executeQuery();
     }
+
+    @Test
+    void shouldProvideMeaningfulSQLExceptionWhenLookupFails()
+            throws SQLException {
+
+        when(connection.prepareStatement(anyString()))
+                .thenThrow(
+                        new SQLException(
+                                "Database connection failed"));
+
+        final SQLException exception =
+                assertThrows(
+                        SQLException.class,
+                        () -> appointmentDAO
+                                .findByAppointmentNumber(
+                                        "A-001"));
+
+        assertTrue(
+                exception.getMessage()
+                        .contains(
+                                "Failed to find appointment"),
+                "SQLException should describe the failed lookup operation");
+    }
 }
