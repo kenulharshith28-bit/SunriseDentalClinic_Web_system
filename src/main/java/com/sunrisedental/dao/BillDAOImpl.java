@@ -46,7 +46,12 @@ public class BillDAOImpl implements BillDAO {
                     statement.executeUpdate();
 
             return affectedRows == 1;
+
+        } catch (SQLException exception) {
+
+            throw new SQLException(
+                    "Failed to save bill",
+                    exception);
         }
-        // not implemented SQLException exception part
     }
 }
