@@ -5,6 +5,7 @@ import com.sunrisedental.model.Bill;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
+import java.util.Optional;
 
 /**
  * JDBC implementation of bill persistence operations.
@@ -53,5 +54,14 @@ public class BillDAOImpl implements BillDAO {
                     "Failed to save bill",
                     exception);
         }
+    }
+
+    @Override
+    public Optional<Bill> findByBillId(
+            final int billId)
+            throws SQLException {
+
+        // bill lookup has not yet been implemented.
+        return null;
     }
 }

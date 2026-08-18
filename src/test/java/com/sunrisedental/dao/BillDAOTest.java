@@ -8,8 +8,11 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.util.Optional;
 
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -24,6 +27,7 @@ class BillDAOTest {
 
     private Connection connection;
     private PreparedStatement preparedStatement;
+    private ResultSet resultSet;
     private Bill bill;
     private BillDAO billDAO;
 
@@ -32,8 +36,8 @@ class BillDAOTest {
 
         connection = mock(Connection.class);
         preparedStatement = mock(PreparedStatement.class);
+        resultSet = mock(ResultSet.class);
         bill = mock(Bill.class);
-
         billDAO = new BillDAOImpl(connection);
     }
 
@@ -110,5 +114,36 @@ class BillDAOTest {
                         .contains(
                                 "Failed to save bill"),
                 "SQLException should describe the failed bill persistence operation");
+    }
+
+    @Test
+    void shouldReturnEmptyWhenBillDoesNotExist()
+            throws SQLException {
+
+        when(connection.prepareStatement(anyString()))
+                .thenReturn(preparedStatement);
+
+        when(preparedStatement.executeQuery())
+                .thenReturn(resultSet);
+
+        when(resultSet.next())
+                .thenReturn(false);
+
+        final Optional<Bill> result =
+                billDAO.findByBillId(999);
+
+        assertNotNull(
+                result,
+                "DAO should return an Optional instead of null");
+
+        assertTrue(
+                result.isEmpty(),
+                "Result should be empty when bill does not exist");
+
+        verify(preparedStatement)
+                .setInt(1, 999);
+
+        verify(preparedStatement)
+                .executeQuery();
     }
 }
