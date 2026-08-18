@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -78,6 +79,40 @@ class UserDAOTest {
 
         verify(preparedStatement)
                 .setString(1, "admin");
+
+        verify(preparedStatement)
+                .executeQuery();
+    }
+
+    @Test
+    void shouldReturnEmptyWhenUserDoesNotExist()
+            throws SQLException {
+
+        when(connection.prepareStatement(anyString()))
+                .thenReturn(preparedStatement);
+
+        when(preparedStatement.executeQuery())
+                .thenReturn(resultSet);
+
+        when(resultSet.next())
+                .thenReturn(false);
+
+        final Optional<User> result =
+                userDAO.findByUsername(
+                        "unknown-user");
+
+        assertNotNull(
+                result,
+                "DAO should return an Optional instead of null");
+
+        assertTrue(
+                result.isEmpty(),
+                "Result should be empty when user does not exist");
+
+        verify(preparedStatement)
+                .setString(
+                        1,
+                        "unknown-user");
 
         verify(preparedStatement)
                 .executeQuery();
