@@ -20,7 +20,11 @@ public class BillDAOImpl implements BillDAO {
     @Override
     public boolean saveBill(final Bill bill)
             throws SQLException {
-        // not implemented validate bill before persistence
+
+        if (bill == null) {
+            throw new IllegalArgumentException(
+                    "Bill must not be null");
+        }
 
         final String sql =
                 "INSERT INTO bills "
