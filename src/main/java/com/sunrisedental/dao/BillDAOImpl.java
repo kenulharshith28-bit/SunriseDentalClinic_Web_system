@@ -6,6 +6,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.util.Optional;
+import java.sql.ResultSet;
+
 
 /**
  * JDBC implementation of bill persistence operations.
@@ -61,7 +63,29 @@ public class BillDAOImpl implements BillDAO {
             final int billId)
             throws SQLException {
 
-        // bill lookup has not yet been implemented.
-        return null;
+        final String sql =
+                "SELECT * FROM bills "
+                        + "WHERE bill_id = ?";
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setInt(
+                    1,
+                    billId);
+
+            try (ResultSet resultSet =
+                         statement.executeQuery()) {
+
+                if (!resultSet.next()) {
+                    return Optional.empty();
+                }
+
+                /*
+                  Successful bill mapping have not implemented yet.
+                 */
+                return Optional.empty();
+            }
+        }
     }
 }
