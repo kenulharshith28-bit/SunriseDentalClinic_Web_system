@@ -84,6 +84,12 @@ public class AppointmentDAOImpl implements AppointmentDAO {
 
                 return Optional.of(foundAppointment);
             }
+
+        } catch (SQLException exception) {
+
+            throw new SQLException(
+                    "Failed to find appointment",
+                    exception);
         }
     }
 }
