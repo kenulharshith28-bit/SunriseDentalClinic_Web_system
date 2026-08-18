@@ -3,6 +3,8 @@ package com.sunrisedental.dao;
 import com.sunrisedental.model.User;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -22,7 +24,40 @@ public class UserDAOImpl implements UserDAO {
             final String username)
             throws SQLException {
 
-        // user lookup has not yet been implemented.
-        return Optional.empty();
+        final String sql =
+                "SELECT * FROM users "
+                        + "WHERE username = ?";
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setString(
+                    1,
+                    username);
+
+            try (ResultSet resultSet =
+                         statement.executeQuery()) {
+
+                if (resultSet.next()) {
+
+                    final User user =
+                            new User(
+                                    resultSet.getInt(
+                                            "user_id"),
+                                    resultSet.getString(
+                                            "username"),
+                                    resultSet.getString(
+                                            "password_hash"),
+                                    resultSet.getString(
+                                            "role")
+                            );
+
+                    return Optional.of(user);
+                }
+
+                // Not-found behaviour has nnt implemented yet
+                return null;
+            }
+        }
     }
 }
