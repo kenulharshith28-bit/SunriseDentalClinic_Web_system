@@ -47,5 +47,6 @@ public class BillDAOImpl implements BillDAO {
 
             return affectedRows == 1;
         }
+        // not implemented SQLException exception part
     }
 }

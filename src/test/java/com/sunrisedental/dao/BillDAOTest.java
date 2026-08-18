@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -81,5 +82,33 @@ class BillDAOTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> billDAO.saveBill(null));
+    }
+
+    @Test
+    void shouldProvideMeaningfulSQLExceptionWhenBillSaveFails()
+            throws SQLException {
+
+        when(bill.getAppointmentId())
+                .thenReturn(1);
+
+        when(bill.getTotalAmount())
+                .thenReturn(
+                        new BigDecimal("4500.00"));
+
+        when(connection.prepareStatement(anyString()))
+                .thenThrow(
+                        new SQLException(
+                                "Database connection failed"));
+
+        final SQLException exception =
+                assertThrows(
+                        SQLException.class,
+                        () -> billDAO.saveBill(bill));
+
+        assertTrue(
+                exception.getMessage()
+                        .contains(
+                                "Failed to save bill"),
+                "SQLException should describe the failed bill persistence operation");
     }
 }
