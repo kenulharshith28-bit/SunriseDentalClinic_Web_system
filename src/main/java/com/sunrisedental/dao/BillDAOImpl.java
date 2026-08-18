@@ -4,6 +4,7 @@ import com.sunrisedental.model.Bill;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.PreparedStatement;
 
 /**
  * JDBC implementation of bill persistence operations.
@@ -20,8 +21,26 @@ public class BillDAOImpl implements BillDAO {
     public boolean saveBill(final Bill bill)
             throws SQLException {
 
-        // bill persistence
-        // has not yet been implemented.
-        return false;
+        final String sql =
+                "INSERT INTO bills "
+                        + "(appointment_id, total_amount) "
+                        + "VALUES (?, ?)";
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setInt(
+                    1,
+                    bill.getAppointmentId());
+
+            statement.setBigDecimal(
+                    2,
+                    bill.getTotalAmount());
+
+            final int affectedRows =
+                    statement.executeUpdate();
+
+            return affectedRows == 1;
+        }
     }
 }
