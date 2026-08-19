@@ -37,9 +37,17 @@ public class AppointmentService {
                     "Appointment number must not be blank");
         }
 
-        return appointmentDAO
-                .findByAppointmentNumber(
-                        appointmentNumber);
+        try {
+            return appointmentDAO
+                    .findByAppointmentNumber(
+                            appointmentNumber);
+
+        } catch (SQLException exception) {
+
+            throw new SQLException(
+                    "Failed to search appointment",
+                    exception);
+        }
     }
 
     /**
@@ -61,5 +69,5 @@ public class AppointmentService {
         return appointmentDAO
                 .saveAppointment(appointment);
     }
-    // not implemented the sql exception part
+
 }
