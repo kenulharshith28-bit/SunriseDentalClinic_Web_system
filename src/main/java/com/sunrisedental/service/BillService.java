@@ -16,6 +16,11 @@ public class BillService {
     public boolean saveBill(final Bill bill)
             throws SQLException {
 
+        if (bill == null) {
+            throw new IllegalArgumentException(
+                    "Bill must not be null");
+        }
+
         return billDAO.saveBill(bill);
     }
 }
