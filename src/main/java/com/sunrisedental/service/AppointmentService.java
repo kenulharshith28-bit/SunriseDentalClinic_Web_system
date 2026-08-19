@@ -53,6 +53,8 @@ public class AppointmentService {
             final Appointment appointment)
             throws SQLException {
 
+        // validate appointment before saving
+
         return appointmentDAO
                 .saveAppointment(appointment);
     }

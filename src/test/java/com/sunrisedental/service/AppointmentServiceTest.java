@@ -111,4 +111,14 @@ class AppointmentServiceTest {
         verify(appointmentDAO)
                 .saveAppointment(appointment);
     }
+
+    @Test
+    void shouldRejectNullAppointmentBeforeSaving() {
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> appointmentService
+                        .saveAppointment(null)
+        );
+    }
 }
