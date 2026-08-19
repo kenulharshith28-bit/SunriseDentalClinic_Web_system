@@ -18,7 +18,6 @@ public class UserService {
             final String username)
             throws SQLException {
 
-        // User lookup will be added in the green stage.
-        return Optional.empty();
+        return userDAO.findByUsername(username);
     }
 }
