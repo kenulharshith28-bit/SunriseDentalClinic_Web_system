@@ -41,6 +41,13 @@ public class BillService {
                     "Bill ID must be greater than zero");
         }
 
-        return billDAO.findByBillId(billId);
+        try {
+            return billDAO.findByBillId(billId);
+
+        } catch (SQLException exception) {
+            throw new SQLException(
+                    "Failed to find bill",
+                    exception);
+        }
     }
 }
