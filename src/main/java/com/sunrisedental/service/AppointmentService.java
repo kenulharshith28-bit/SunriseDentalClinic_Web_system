@@ -20,11 +20,7 @@ public class AppointmentService {
     }
 
     /**
-     * Searches for an appointment using its appointment number.
-     *
-     * @param appointmentNumber appointment number to search for
-     * @return matching appointment when found
-     * @throws SQLException if persistence access fails
+     Searches for an appointment using its appointment number.
      */
     public Optional<Appointment> searchAppointment(
             final String appointmentNumber)
@@ -52,10 +48,6 @@ public class AppointmentService {
 
     /**
      Saves an appointment.
-
-     @param appointment appointment to save
-      @return true when the appointment is saved successfully
-      @throws SQLException if persistence access fails
      */
     public boolean saveAppointment(
             final Appointment appointment)
@@ -66,7 +58,14 @@ public class AppointmentService {
                     "Appointment must not be null");
         }
 
-        return appointmentDAO
-                .saveAppointment(appointment);
+        try {
+            return appointmentDAO
+                    .saveAppointment(appointment);
+
+        } catch (SQLException exception) {
+            throw new SQLException(
+                    "Failed to save appointment",
+                    exception);
+        }
     }
 }
