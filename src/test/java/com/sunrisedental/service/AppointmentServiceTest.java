@@ -121,4 +121,31 @@ class AppointmentServiceTest {
                         .saveAppointment(null)
         );
     }
+
+    @Test
+    void shouldProvideMeaningfulSQLExceptionWhenAppointmentSearchFails()
+            throws SQLException {
+
+        // ARRANGE
+        when(appointmentDAO
+                .findByAppointmentNumber("A-001"))
+                .thenThrow(
+                        new SQLException(
+                                "Database connection failed"));
+
+        // ACT
+        final SQLException exception =
+                assertThrows(
+                        SQLException.class,
+                        () -> appointmentService
+                                .searchAppointment(
+                                        "A-001"));
+
+        // ASSERT
+        assertTrue(
+                exception.getMessage()
+                        .contains(
+                                "Failed to search appointment"),
+                "SQLException should describe the failed appointment search");
+    }
 }

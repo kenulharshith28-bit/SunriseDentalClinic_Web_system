@@ -61,4 +61,5 @@ public class AppointmentService {
         return appointmentDAO
                 .saveAppointment(appointment);
     }
+    // not implemented the sql exception part
 }
