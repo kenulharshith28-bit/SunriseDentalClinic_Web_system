@@ -16,7 +16,6 @@ public class BillService {
     public boolean saveBill(final Bill bill)
             throws SQLException {
 
-        // Saving will be added after the test fails.
-        return false;
+        return billDAO.saveBill(bill);
     }
 }
