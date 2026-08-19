@@ -21,6 +21,13 @@ public class BillService {
                     "Bill must not be null");
         }
 
-        return billDAO.saveBill(bill);
+        try {
+            return billDAO.saveBill(bill);
+
+        } catch (SQLException exception) {
+            throw new SQLException(
+                    "Failed to save bill",
+                    exception);
+        }
     }
 }
