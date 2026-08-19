@@ -2,6 +2,7 @@ package com.sunrisedental.service;
 
 import com.sunrisedental.dao.BillDAO;
 import com.sunrisedental.model.Bill;
+import java.util.Optional;
 
 import java.sql.SQLException;
 
@@ -29,5 +30,13 @@ public class BillService {
                     "Failed to save bill",
                     exception);
         }
+    }
+
+    public Optional<Bill> findBill(
+            final int billId)
+            throws SQLException {
+
+        // Lookup is added after the test fails.
+        return Optional.empty();
     }
 }
