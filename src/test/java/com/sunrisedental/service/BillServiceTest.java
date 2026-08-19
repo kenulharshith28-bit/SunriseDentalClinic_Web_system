@@ -119,4 +119,13 @@ class BillServiceTest {
         verify(billDAO)
                 .findByBillId(10);
     }
+
+    @Test
+    void shouldRejectInvalidBillId() {
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> billService.findBill(0)
+        );
+    }
 }
