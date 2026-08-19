@@ -23,6 +23,13 @@ public class UserService {
                     "Username must not be blank");
         }
 
-        return userDAO.findByUsername(username);
+        try {
+            return userDAO.findByUsername(username);
+
+        } catch (SQLException exception) {
+            throw new SQLException(
+                    "Failed to find user",
+                    exception);
+        }
     }
 }
