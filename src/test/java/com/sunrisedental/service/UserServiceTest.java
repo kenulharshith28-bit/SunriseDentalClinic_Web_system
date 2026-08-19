@@ -65,4 +65,24 @@ class UserServiceTest {
                 () -> userService.findUser("   ")
         );
     }
+
+    @Test
+    void shouldProvideMeaningfulSQLExceptionWhenUserLookupFails()
+            throws SQLException {
+
+        when(userDAO.findByUsername("admin"))
+                .thenThrow(
+                        new SQLException(
+                                "Database connection failed"));
+
+        final SQLException exception =
+                assertThrows(
+                        SQLException.class,
+                        () -> userService.findUser("admin"));
+
+        assertTrue(
+                exception.getMessage()
+                        .contains("Failed to find user"),
+                "SQLException should describe the failed user lookup");
+    }
 }
