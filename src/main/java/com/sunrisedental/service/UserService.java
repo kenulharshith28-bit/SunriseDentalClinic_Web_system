@@ -18,6 +18,11 @@ public class UserService {
             final String username)
             throws SQLException {
 
+        if (username == null || username.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Username must not be blank");
+        }
+
         return userDAO.findByUsername(username);
     }
 }
