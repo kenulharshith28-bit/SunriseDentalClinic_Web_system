@@ -59,4 +59,31 @@ class BillServiceTest {
                 () -> billService.saveBill(null)
         );
     }
+
+    @Test
+    void shouldProvideMeaningfulSQLExceptionWhenBillSaveFails()
+            throws SQLException {
+
+        final Bill bill =
+                new Bill(
+                        1,
+                        1,
+                        new BigDecimal("3500.00")
+                );
+
+        when(billDAO.saveBill(bill))
+                .thenThrow(
+                        new SQLException(
+                                "Database connection failed"));
+
+        final SQLException exception =
+                assertThrows(
+                        SQLException.class,
+                        () -> billService.saveBill(bill));
+
+        assertTrue(
+                exception.getMessage()
+                        .contains("Failed to save bill"),
+                "SQLException should describe the failed bill save");
+    }
 }
