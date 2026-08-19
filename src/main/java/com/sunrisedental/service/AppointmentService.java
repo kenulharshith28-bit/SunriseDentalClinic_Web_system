@@ -53,7 +53,10 @@ public class AppointmentService {
             final Appointment appointment)
             throws SQLException {
 
-        // validate appointment before saving
+        if (appointment == null) {
+            throw new IllegalArgumentException(
+                    "Appointment must not be null");
+        }
 
         return appointmentDAO
                 .saveAppointment(appointment);
