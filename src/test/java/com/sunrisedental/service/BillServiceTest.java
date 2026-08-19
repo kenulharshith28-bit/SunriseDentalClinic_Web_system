@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -48,5 +49,14 @@ class BillServiceTest {
 
         verify(billDAO)
                 .saveBill(bill);
+    }
+
+    @Test
+    void shouldRejectNullBill() {
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> billService.saveBill(null)
+        );
     }
 }
