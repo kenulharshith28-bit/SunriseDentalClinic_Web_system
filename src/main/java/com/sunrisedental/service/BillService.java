@@ -36,7 +36,6 @@ public class BillService {
             final int billId)
             throws SQLException {
 
-        // Lookup is added after the test fails.
-        return Optional.empty();
+        return billDAO.findByBillId(billId);
     }
 }
