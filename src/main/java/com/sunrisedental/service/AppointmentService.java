@@ -53,8 +53,7 @@ public class AppointmentService {
             final Appointment appointment)
             throws SQLException {
 
-        // appointment saving
-        // has not yet been implemented.
-        return false;
+        return appointmentDAO
+                .saveAppointment(appointment);
     }
 }
