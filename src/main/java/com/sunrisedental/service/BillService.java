@@ -36,6 +36,11 @@ public class BillService {
             final int billId)
             throws SQLException {
 
+        if (billId <= 0) {
+            throw new IllegalArgumentException(
+                    "Bill ID must be greater than zero");
+        }
+
         return billDAO.findByBillId(billId);
     }
 }
