@@ -148,4 +148,34 @@ class AppointmentServiceTest {
                                 "Failed to search appointment"),
                 "SQLException should describe the failed appointment search");
     }
+
+    @Test
+    void shouldProvideMeaningfulSQLExceptionWhenAppointmentSaveFails()
+            throws SQLException {
+
+        final Appointment appointment =
+                new Appointment(
+                        1,
+                        "A-001"
+                );
+
+        when(appointmentDAO
+                .saveAppointment(appointment))
+                .thenThrow(
+                        new SQLException(
+                                "Database connection failed"));
+
+        final SQLException exception =
+                assertThrows(
+                        SQLException.class,
+                        () -> appointmentService
+                                .saveAppointment(
+                                        appointment));
+
+        assertTrue(
+                exception.getMessage()
+                        .contains(
+                                "Failed to save appointment"),
+                "SQLException should describe the failed appointment save");
+    }
 }

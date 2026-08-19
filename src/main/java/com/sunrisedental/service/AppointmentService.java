@@ -69,5 +69,4 @@ public class AppointmentService {
         return appointmentDAO
                 .saveAppointment(appointment);
     }
-
 }
