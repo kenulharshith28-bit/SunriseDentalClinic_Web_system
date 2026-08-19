@@ -41,4 +41,20 @@ public class AppointmentService {
                 .findByAppointmentNumber(
                         appointmentNumber);
     }
+
+    /**
+     Saves an appointment.
+
+     @param appointment appointment to save
+      @return true when the appointment is saved successfully
+      @throws SQLException if persistence access fails
+     */
+    public boolean saveAppointment(
+            final Appointment appointment)
+            throws SQLException {
+
+        // appointment saving
+        // has not yet been implemented.
+        return false;
+    }
 }

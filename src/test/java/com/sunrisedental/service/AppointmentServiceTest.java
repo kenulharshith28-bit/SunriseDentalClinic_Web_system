@@ -82,4 +82,33 @@ class AppointmentServiceTest {
                                 appointmentNumber)
         );
     }
+
+    @Test
+    void shouldSaveAppointmentSuccessfully()
+            throws SQLException {
+
+        // ARRANGE
+        final Appointment appointment =
+                new Appointment(
+                        1,
+                        "A-001"
+                );
+
+        when(appointmentDAO
+                .saveAppointment(appointment))
+                .thenReturn(true);
+
+        // ACT
+        final boolean result =
+                appointmentService
+                        .saveAppointment(appointment);
+
+        // ASSERT
+        assertTrue(
+                result,
+                "Appointment should be saved successfully");
+
+        verify(appointmentDAO)
+                .saveAppointment(appointment);
+    }
 }
