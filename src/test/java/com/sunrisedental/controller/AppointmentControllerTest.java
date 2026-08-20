@@ -131,4 +131,33 @@ class AppointmentControllerTest {
                         request,
                         response);
     }
+
+    @Test
+    void shouldShowValidationMessageForBlankAppointmentNumber()
+            throws Exception {
+
+        when(request.getParameter(
+                "appointmentNumber"))
+                .thenReturn("");
+
+        when(appointmentService
+                .searchAppointment(""))
+                .thenThrow(
+                        new IllegalArgumentException(
+                                "Appointment number must not be blank"));
+
+        controller.doGet(
+                request,
+                response);
+
+        verify(request)
+                .setAttribute(
+                        "errorMessage",
+                        "Appointment number must not be blank");
+
+        verify(dispatcher)
+                .forward(
+                        request,
+                        response);
+    }
 }
