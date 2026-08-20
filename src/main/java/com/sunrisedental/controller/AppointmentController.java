@@ -38,20 +38,26 @@ public class AppointmentController extends HttpServlet {
                             .searchAppointment(
                                     appointmentNumber);
 
+            final RequestDispatcher dispatcher =
+                    request.getRequestDispatcher(
+                            "/WEB-INF/views/appointment.jsp");
+
             if (appointment.isPresent()) {
 
                 request.setAttribute(
                         "appointment",
                         appointment.get());
 
-                final RequestDispatcher dispatcher =
-                        request.getRequestDispatcher(
-                                "/WEB-INF/views/appointment.jsp");
+            } else {
 
-                dispatcher.forward(
-                        request,
-                        response);
+                request.setAttribute(
+                        "errorMessage",
+                        "Appointment not found");
             }
+
+            dispatcher.forward(
+                    request,
+                    response);
 
         } catch (SQLException exception) {
             throw new ServletException(

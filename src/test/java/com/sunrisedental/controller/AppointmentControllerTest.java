@@ -40,6 +40,10 @@ class AppointmentControllerTest {
         controller =
                 new AppointmentController(
                         appointmentService);
+
+        when(request.getRequestDispatcher(
+                "/WEB-INF/views/appointment.jsp"))
+                .thenReturn(dispatcher);
     }
 
     @Test
