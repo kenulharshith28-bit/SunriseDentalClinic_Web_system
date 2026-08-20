@@ -6,6 +6,8 @@ import com.sunrisedental.model.Appointment;
 import java.sql.SQLException;
 import java.util.Optional;
 
+
+
 /**
  * Handles business operations related to appointments.
  */
