@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.argThat;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -159,5 +160,26 @@ class AppointmentControllerTest {
                 .forward(
                         request,
                         response);
+    }
+
+    @Test
+    void shouldSaveAppointmentUsingRequestParameter()
+            throws Exception {
+
+        when(request.getParameter(
+                "appointmentNumber"))
+                .thenReturn("A-001");
+
+        controller.doPost(
+                request,
+                response);
+
+        verify(appointmentService)
+                .saveAppointment(
+                        argThat(appointment ->
+                                appointment != null
+                                        && "A-001".equals(
+                                        appointment
+                                                .getAppointmentNumber())));
     }
 }

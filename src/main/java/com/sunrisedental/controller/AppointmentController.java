@@ -80,4 +80,13 @@ public class AppointmentController extends HttpServlet {
                     exception);
         }
     }
+
+    @Override
+    protected void doPost(
+            final HttpServletRequest request,
+            final HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // Save handling will be added after the test fails.
+    }
 }
