@@ -96,4 +96,35 @@ class AppointmentControllerTest {
                         request,
                         response);
     }
+
+    @Test
+    void shouldShowMessageWhenAppointmentDoesNotExist()
+            throws Exception {
+
+        when(request.getParameter(
+                "appointmentNumber"))
+                .thenReturn("A-001");
+
+        when(appointmentService
+                .searchAppointment("A-001"))
+                .thenReturn(Optional.empty());
+
+        when(request.getRequestDispatcher(
+                "/WEB-INF/views/appointment.jsp"))
+                .thenReturn(dispatcher);
+
+        controller.doGet(
+                request,
+                response);
+
+        verify(request)
+                .setAttribute(
+                        "errorMessage",
+                        "Appointment not found");
+
+        verify(dispatcher)
+                .forward(
+                        request,
+                        response);
+    }
 }
