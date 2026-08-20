@@ -59,7 +59,22 @@ public class AppointmentController extends HttpServlet {
                     request,
                     response);
 
+        } catch (IllegalArgumentException exception) {
+
+            request.setAttribute(
+                    "errorMessage",
+                    exception.getMessage());
+
+            final RequestDispatcher dispatcher =
+                    request.getRequestDispatcher(
+                            "/WEB-INF/views/appointment.jsp");
+
+            dispatcher.forward(
+                    request,
+                    response);
+
         } catch (SQLException exception) {
+
             throw new ServletException(
                     "Unable to search appointment",
                     exception);
