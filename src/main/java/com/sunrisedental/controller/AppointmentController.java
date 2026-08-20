@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.sql.SQLException;
+
 import java.io.IOException;
 
 public class AppointmentController extends HttpServlet {
@@ -25,6 +27,17 @@ public class AppointmentController extends HttpServlet {
             final HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Search handling will be added after the test fails.
+        final String appointmentNumber =
+                request.getParameter("appointmentNumber");
+
+        try {
+            appointmentService
+                    .searchAppointment(appointmentNumber);
+
+        } catch (SQLException exception) {
+            throw new ServletException(
+                    "Unable to search appointment",
+                    exception);
+        }
     }
 }
