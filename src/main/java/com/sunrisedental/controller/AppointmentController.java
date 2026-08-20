@@ -87,6 +87,22 @@ public class AppointmentController extends HttpServlet {
             final HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Save handling will be added after the test fails.
+        final String appointmentNumber =
+                request.getParameter("appointmentNumber");
+
+        final Appointment appointment =
+                new Appointment(
+                        0,
+                        appointmentNumber);
+
+        try {
+            appointmentService
+                    .saveAppointment(appointment);
+
+        } catch (SQLException exception) {
+            throw new ServletException(
+                    "Unable to save appointment",
+                    exception);
+        }
     }
 }
