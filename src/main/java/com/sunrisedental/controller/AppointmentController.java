@@ -2,12 +2,14 @@ package com.sunrisedental.controller;
 
 import com.sunrisedental.service.AppointmentService;
 
+import com.sunrisedental.model.Appointment;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import javax.servlet.RequestDispatcher;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import java.io.IOException;
 
@@ -31,8 +33,25 @@ public class AppointmentController extends HttpServlet {
                 request.getParameter("appointmentNumber");
 
         try {
-            appointmentService
-                    .searchAppointment(appointmentNumber);
+            final Optional<Appointment> appointment =
+                    appointmentService
+                            .searchAppointment(
+                                    appointmentNumber);
+
+            if (appointment.isPresent()) {
+
+                request.setAttribute(
+                        "appointment",
+                        appointment.get());
+
+                final RequestDispatcher dispatcher =
+                        request.getRequestDispatcher(
+                                "/WEB-INF/views/appointment.jsp");
+
+                dispatcher.forward(
+                        request,
+                        response);
+            }
 
         } catch (SQLException exception) {
             throw new ServletException(
