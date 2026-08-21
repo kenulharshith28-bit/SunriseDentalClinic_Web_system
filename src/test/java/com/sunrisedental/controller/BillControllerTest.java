@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import com.sunrisedental.model.Bill;
 import java.math.BigDecimal;
+import static org.mockito.ArgumentMatchers.any;
 
 import javax.servlet.RequestDispatcher;
 
@@ -174,5 +175,37 @@ class BillControllerTest {
                                         && new BigDecimal("3500.00")
                                         .compareTo(
                                                 bill.getTotalAmount()) == 0));
+    }
+
+    @Test
+    void shouldShowSuccessMessageWhenBillIsSaved()
+            throws Exception {
+
+        when(request.getParameter(
+                "appointmentId"))
+                .thenReturn("1");
+
+        when(request.getParameter(
+                "totalAmount"))
+                .thenReturn("3500.00");
+
+        when(billService
+                .saveBill(
+                        any(Bill.class)))
+                .thenReturn(true);
+
+        controller.doPost(
+                request,
+                response);
+
+        verify(request)
+                .setAttribute(
+                        "successMessage",
+                        "Bill saved successfully");
+
+        verify(dispatcher)
+                .forward(
+                        request,
+                        response);
     }
 }
