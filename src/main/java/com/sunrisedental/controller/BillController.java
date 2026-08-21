@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.sql.SQLException;
+
 import java.io.IOException;
 
 public class BillController extends HttpServlet {
@@ -25,6 +27,19 @@ public class BillController extends HttpServlet {
             final HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Bill lookup will be added after the test fails.
+        final String billIdValue =
+                request.getParameter("billId");
+
+        final int billId =
+                Integer.parseInt(billIdValue);
+
+        try {
+            billService.findBill(billId);
+
+        } catch (SQLException exception) {
+            throw new ServletException(
+                    "Unable to search bill",
+                    exception);
+        }
     }
 }
