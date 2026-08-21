@@ -7,6 +7,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sunrisedental.model.Bill;
+
+import javax.servlet.RequestDispatcher;
+
+import java.util.Optional;
+
 import java.sql.SQLException;
 
 import java.io.IOException;
@@ -34,7 +40,23 @@ public class BillController extends HttpServlet {
                 Integer.parseInt(billIdValue);
 
         try {
-            billService.findBill(billId);
+            final Optional<Bill> bill =
+                    billService.findBill(billId);
+
+            if (bill.isPresent()) {
+
+                request.setAttribute(
+                        "bill",
+                        bill.get());
+
+                final RequestDispatcher dispatcher =
+                        request.getRequestDispatcher(
+                                "/WEB-INF/views/bill.jsp");
+
+                dispatcher.forward(
+                        request,
+                        response);
+            }
 
         } catch (SQLException exception) {
             throw new ServletException(
