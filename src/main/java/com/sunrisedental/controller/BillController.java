@@ -85,4 +85,13 @@ public class BillController extends HttpServlet {
                     exception);
         }
     }
+
+    @Override
+    protected void doPost(
+            final HttpServletRequest request,
+            final HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // Bill saving will be added after the test fails.
+    }
 }

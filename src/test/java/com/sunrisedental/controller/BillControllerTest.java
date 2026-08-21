@@ -6,15 +6,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.sunrisedental.model.Bill;
+import java.math.BigDecimal;
 
 import javax.servlet.RequestDispatcher;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -148,5 +148,31 @@ class BillControllerTest {
                 .forward(
                         request,
                         response);
+    }
+
+    @Test
+    void shouldSaveBillUsingRequestParameters()
+            throws Exception {
+
+        when(request.getParameter(
+                "appointmentId"))
+                .thenReturn("1");
+
+        when(request.getParameter(
+                "totalAmount"))
+                .thenReturn("3500.00");
+
+        controller.doPost(
+                request,
+                response);
+
+        verify(billService)
+                .saveBill(
+                        argThat(bill ->
+                                bill != null
+                                        && bill.getAppointmentId() == 1
+                                        && new BigDecimal("3500.00")
+                                        .compareTo(
+                                                bill.getTotalAmount()) == 0));
     }
 }
