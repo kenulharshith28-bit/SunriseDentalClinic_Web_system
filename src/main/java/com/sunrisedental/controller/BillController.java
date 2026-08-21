@@ -109,7 +109,22 @@ public class BillController extends HttpServlet {
                         totalAmount);
 
         try {
-            billService.saveBill(bill);
+            final boolean saved =
+                    billService.saveBill(bill);
+
+            if (saved) {
+                request.setAttribute(
+                        "successMessage",
+                        "Bill saved successfully");
+            }
+
+            final RequestDispatcher dispatcher =
+                    request.getRequestDispatcher(
+                            "/WEB-INF/views/bill.jsp");
+
+            dispatcher.forward(
+                    request,
+                    response);
 
         } catch (SQLException exception) {
             throw new ServletException(
