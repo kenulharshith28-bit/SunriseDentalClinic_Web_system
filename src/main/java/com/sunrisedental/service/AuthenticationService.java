@@ -19,7 +19,10 @@ public class AuthenticationService {
             final String credential)
             throws SQLException {
 
-        // Authentication is not implkemented yet.
-        return false;
+        return userDAO.findByUsername(username)
+                .map(user ->
+                        user.getPasswordHash()
+                                .equals(credential))
+                .orElse(false);
     }
 }
