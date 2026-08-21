@@ -100,4 +100,30 @@ class BillControllerTest {
                         request,
                         response);
     }
+
+    @Test
+    void shouldShowMessageWhenBillDoesNotExist()
+            throws Exception {
+
+        when(request.getParameter(
+                "billId"))
+                .thenReturn("10");
+
+        when(billService.findBill(10))
+                .thenReturn(Optional.empty());
+
+        controller.doGet(
+                request,
+                response);
+
+        verify(request)
+                .setAttribute(
+                        "errorMessage",
+                        "Bill not found");
+
+        verify(dispatcher)
+                .forward(
+                        request,
+                        response);
+    }
 }
