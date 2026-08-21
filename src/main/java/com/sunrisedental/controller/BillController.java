@@ -36,10 +36,10 @@ public class BillController extends HttpServlet {
         final String billIdValue =
                 request.getParameter("billId");
 
-        final int billId =
-                Integer.parseInt(billIdValue);
-
         try {
+            final int billId =
+                    Integer.parseInt(billIdValue);
+
             final Optional<Bill> bill =
                     billService.findBill(billId);
 
@@ -64,7 +64,22 @@ public class BillController extends HttpServlet {
                     request,
                     response);
 
+        } catch (NumberFormatException exception) {
+
+            request.setAttribute(
+                    "errorMessage",
+                    "Bill ID must be a valid number");
+
+            final RequestDispatcher dispatcher =
+                    request.getRequestDispatcher(
+                            "/WEB-INF/views/bill.jsp");
+
+            dispatcher.forward(
+                    request,
+                    response);
+
         } catch (SQLException exception) {
+
             throw new ServletException(
                     "Unable to search bill",
                     exception);
