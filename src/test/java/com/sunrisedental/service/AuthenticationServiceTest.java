@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -52,5 +53,16 @@ class AuthenticationServiceTest {
         assertTrue(
                 authenticated,
                 "User should be authenticated when credentials match");
+    }
+
+    @Test
+    void shouldRejectBlankUsername() {
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> authenticationService.authenticate(
+                        "",
+                        "stored-credential")
+        );
     }
 }
