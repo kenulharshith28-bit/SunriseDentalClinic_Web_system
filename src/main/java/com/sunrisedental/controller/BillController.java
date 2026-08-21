@@ -6,7 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import java.math.BigDecimal;
 import com.sunrisedental.model.Bill;
 
 import javax.servlet.RequestDispatcher;
@@ -92,6 +92,29 @@ public class BillController extends HttpServlet {
             final HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Bill saving will be added after the test fails.
+        final int appointmentId =
+                Integer.parseInt(
+                        request.getParameter(
+                                "appointmentId"));
+
+        final BigDecimal totalAmount =
+                new BigDecimal(
+                        request.getParameter(
+                                "totalAmount"));
+
+        final Bill bill =
+                new Bill(
+                        0,
+                        appointmentId,
+                        totalAmount);
+
+        try {
+            billService.saveBill(bill);
+
+        } catch (SQLException exception) {
+            throw new ServletException(
+                    "Unable to save bill",
+                    exception);
+        }
     }
 }
