@@ -126,4 +126,27 @@ class BillControllerTest {
                         request,
                         response);
     }
+
+    @Test
+    void shouldShowValidationMessageForInvalidBillId()
+            throws Exception {
+
+        when(request.getParameter(
+                "billId"))
+                .thenReturn("abc");
+
+        controller.doGet(
+                request,
+                response);
+
+        verify(request)
+                .setAttribute(
+                        "errorMessage",
+                        "Bill ID must be a valid number");
+
+        verify(dispatcher)
+                .forward(
+                        request,
+                        response);
+    }
 }
