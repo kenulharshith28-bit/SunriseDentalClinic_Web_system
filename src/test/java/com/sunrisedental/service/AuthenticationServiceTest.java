@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
+import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -75,5 +76,28 @@ class AuthenticationServiceTest {
                         "receptionist",
                         "")
         );
+    }
+
+    @Test
+    void shouldProvideMeaningfulSQLExceptionWhenAuthenticationFails()
+            throws SQLException {
+
+        when(userDAO.findByUsername(
+                "receptionist"))
+                .thenThrow(
+                        new SQLException(
+                                "Database connection failed"));
+
+        final SQLException exception =
+                assertThrows(
+                        SQLException.class,
+                        () -> authenticationService.authenticate(
+                                "receptionist",
+                                "stored-credential"));
+
+        assertTrue(
+                exception.getMessage()
+                        .contains("Failed to authenticate user"),
+                "SQLException should describe the authentication failure");
     }
 }
