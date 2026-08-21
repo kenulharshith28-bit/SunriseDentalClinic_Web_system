@@ -26,6 +26,13 @@ public class AuthenticationService {
                     "Username must not be blank");
         }
 
+        if (credential == null
+                || credential.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Credential must not be blank");
+        }
+
         return userDAO.findByUsername(username)
                 .map(user ->
                         user.getPasswordHash()
