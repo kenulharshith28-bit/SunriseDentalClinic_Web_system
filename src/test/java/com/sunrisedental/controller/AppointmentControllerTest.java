@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.argThat;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -181,5 +182,33 @@ class AppointmentControllerTest {
                                         && "A-001".equals(
                                         appointment
                                                 .getAppointmentNumber())));
+    }
+
+    @Test
+    void shouldShowSuccessMessageWhenAppointmentIsSaved()
+            throws Exception {
+
+        when(request.getParameter(
+                "appointmentNumber"))
+                .thenReturn("A-001");
+
+        when(appointmentService
+                .saveAppointment(
+                        any(Appointment.class)))
+                .thenReturn(true);
+
+        controller.doPost(
+                request,
+                response);
+
+        verify(request)
+                .setAttribute(
+                        "successMessage",
+                        "Appointment saved successfully");
+
+        verify(dispatcher)
+                .forward(
+                        request,
+                        response);
     }
 }
