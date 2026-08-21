@@ -56,4 +56,34 @@ class LoginControllerTest {
                         "receptionist",
                         "stored-credential");
     }
+
+    @Test
+    void shouldRedirectToDashboardWhenAuthenticationSucceeds()
+            throws Exception {
+
+        when(request.getParameter(
+                "username"))
+                .thenReturn("receptionist");
+
+        when(request.getParameter(
+                "password"))
+                .thenReturn("stored-credential");
+
+        when(authenticationService.authenticate(
+                "receptionist",
+                "stored-credential"))
+                .thenReturn(true);
+
+        when(request.getContextPath())
+                .thenReturn(
+                        "/sunrise-dental-clinic");
+
+        controller.doPost(
+                request,
+                response);
+
+        verify(response)
+                .sendRedirect(
+                        "/sunrise-dental-clinic/dashboard");
+    }
 }
