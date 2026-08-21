@@ -65,4 +65,15 @@ class AuthenticationServiceTest {
                         "stored-credential")
         );
     }
+
+    @Test
+    void shouldRejectBlankCredential() {
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> authenticationService.authenticate(
+                        "receptionist",
+                        "")
+        );
+    }
 }
