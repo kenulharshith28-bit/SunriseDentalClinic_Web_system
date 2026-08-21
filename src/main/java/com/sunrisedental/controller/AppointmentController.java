@@ -96,8 +96,23 @@ public class AppointmentController extends HttpServlet {
                         appointmentNumber);
 
         try {
-            appointmentService
-                    .saveAppointment(appointment);
+            final boolean saved =
+                    appointmentService
+                            .saveAppointment(appointment);
+
+            if (saved) {
+                request.setAttribute(
+                        "successMessage",
+                        "Appointment saved successfully");
+            }
+
+            final RequestDispatcher dispatcher =
+                    request.getRequestDispatcher(
+                            "/WEB-INF/views/appointment.jsp");
+
+            dispatcher.forward(
+                    request,
+                    response);
 
         } catch (SQLException exception) {
             throw new ServletException(
