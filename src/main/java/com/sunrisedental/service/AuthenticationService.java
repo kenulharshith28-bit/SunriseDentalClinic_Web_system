@@ -33,10 +33,18 @@ public class AuthenticationService {
                     "Credential must not be blank");
         }
 
-        return userDAO.findByUsername(username)
-                .map(user ->
-                        user.getPasswordHash()
-                                .equals(credential))
-                .orElse(false);
+        try {
+            return userDAO.findByUsername(username)
+                    .map(user ->
+                            user.getPasswordHash()
+                                    .equals(credential))
+                    .orElse(false);
+
+        } catch (SQLException exception) {
+
+            throw new SQLException(
+                    "Failed to authenticate user",
+                    exception);
+        }
     }
 }
