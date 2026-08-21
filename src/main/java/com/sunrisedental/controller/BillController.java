@@ -43,20 +43,26 @@ public class BillController extends HttpServlet {
             final Optional<Bill> bill =
                     billService.findBill(billId);
 
+            final RequestDispatcher dispatcher =
+                    request.getRequestDispatcher(
+                            "/WEB-INF/views/bill.jsp");
+
             if (bill.isPresent()) {
 
                 request.setAttribute(
                         "bill",
                         bill.get());
 
-                final RequestDispatcher dispatcher =
-                        request.getRequestDispatcher(
-                                "/WEB-INF/views/bill.jsp");
+            } else {
 
-                dispatcher.forward(
-                        request,
-                        response);
+                request.setAttribute(
+                        "errorMessage",
+                        "Bill not found");
             }
+
+            dispatcher.forward(
+                    request,
+                    response);
 
         } catch (SQLException exception) {
             throw new ServletException(
