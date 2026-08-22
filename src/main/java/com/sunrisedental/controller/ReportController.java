@@ -29,13 +29,21 @@ public class ReportController extends HttpServlet {
         final String reportType =
                 request.getParameter("reportType");
 
-        final String report =
-                reportService.generateReport(
-                        reportType);
+        try {
+            final String report =
+                    reportService.generateReport(
+                            reportType);
 
-        request.setAttribute(
-                "report",
-                report);
+            request.setAttribute(
+                    "report",
+                    report);
+
+        } catch (IllegalArgumentException exception) {
+
+            request.setAttribute(
+                    "errorMessage",
+                    exception.getMessage());
+        }
 
         final RequestDispatcher dispatcher =
                 request.getRequestDispatcher(
