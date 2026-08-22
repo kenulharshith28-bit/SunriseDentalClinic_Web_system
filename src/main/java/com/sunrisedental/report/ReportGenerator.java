@@ -1,4 +1,6 @@
 package com.sunrisedental.report;
 
-public class ReportGenerator {
+public interface ReportGenerator {
+
+    String generate();
 }
