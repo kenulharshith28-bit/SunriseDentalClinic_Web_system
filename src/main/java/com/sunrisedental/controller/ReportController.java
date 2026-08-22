@@ -25,6 +25,10 @@ public class ReportController extends HttpServlet {
             final HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Report handling not implemented.
+        final String reportType =
+                request.getParameter("reportType");
+
+        reportService.generateReport(
+                reportType);
     }
 }
