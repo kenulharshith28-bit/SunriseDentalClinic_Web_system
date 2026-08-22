@@ -9,6 +9,10 @@ public class ReportGeneratorFactory {
             return new AppointmentReportGenerator();
         }
 
+        if ("bill".equalsIgnoreCase(reportType)) {
+            return new BillReportGenerator();
+        }
+
         return null;
     }
 }
