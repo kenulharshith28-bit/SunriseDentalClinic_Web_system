@@ -24,4 +24,22 @@ class ReportGeneratorFactoryTest {
                 AppointmentReportGenerator.class,
                 generator);
     }
+
+    @Test
+    void shouldCreateBillReportGenerator() {
+
+        final ReportGeneratorFactory factory =
+                new ReportGeneratorFactory();
+
+        final ReportGenerator generator =
+                factory.create("bill");
+
+        assertNotNull(
+                generator,
+                "Factory should create a bill report generator");
+
+        assertInstanceOf(
+                BillReportGenerator.class,
+                generator);
+    }
 }
