@@ -21,6 +21,11 @@ public class ReportService {
                 reportGeneratorFactory.create(
                         reportType);
 
+        if (generator == null) {
+            throw new IllegalArgumentException(
+                    "Unsupported report type");
+        }
+
         return generator.generate();
     }
 }
