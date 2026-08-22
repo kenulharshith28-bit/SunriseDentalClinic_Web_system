@@ -5,9 +5,11 @@ import com.sunrisedental.report.ReportGeneratorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 
 class ReportServiceTest {
 
@@ -46,5 +48,18 @@ class ReportServiceTest {
         assertEquals(
                 "Appointment Report",
                 result);
+    }
+    @Test
+    void shouldRejectUnsupportedReportType() {
+
+        when(reportGeneratorFactory
+                .create("unknown"))
+                .thenReturn(null);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> reportService.generateReport(
+                        "unknown")
+        );
     }
 }
