@@ -5,7 +5,10 @@ public class ReportGeneratorFactory {
     public ReportGenerator create(
             final String reportType) {
 
-        // Factory selection is added after the test fails.
+        if ("appointment".equalsIgnoreCase(reportType)) {
+            return new AppointmentReportGenerator();
+        }
+
         return null;
     }
 }
