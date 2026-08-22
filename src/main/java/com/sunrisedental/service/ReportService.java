@@ -1,5 +1,6 @@
 package com.sunrisedental.service;
 
+import com.sunrisedental.report.ReportGenerator;
 import com.sunrisedental.report.ReportGeneratorFactory;
 
 public class ReportService {
@@ -16,7 +17,10 @@ public class ReportService {
     public String generateReport(
             final String reportType) {
 
-        // Report generation is not implemented.
-        return null;
+        final ReportGenerator generator =
+                reportGeneratorFactory.create(
+                        reportType);
+
+        return generator.generate();
     }
 }
