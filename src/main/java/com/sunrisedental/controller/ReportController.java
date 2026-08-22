@@ -6,6 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.RequestDispatcher;
 
 import java.io.IOException;
 
@@ -28,7 +29,20 @@ public class ReportController extends HttpServlet {
         final String reportType =
                 request.getParameter("reportType");
 
-        reportService.generateReport(
-                reportType);
+        final String report =
+                reportService.generateReport(
+                        reportType);
+
+        request.setAttribute(
+                "report",
+                report);
+
+        final RequestDispatcher dispatcher =
+                request.getRequestDispatcher(
+                        "/WEB-INF/views/report.jsp");
+
+        dispatcher.forward(
+                request,
+                response);
     }
 }
