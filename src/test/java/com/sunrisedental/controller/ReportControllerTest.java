@@ -89,4 +89,33 @@ class ReportControllerTest {
                         request,
                         response);
     }
+
+    @Test
+    void shouldShowErrorForUnsupportedReportType()
+            throws Exception {
+
+        when(request.getParameter(
+                "reportType"))
+                .thenReturn("unknown");
+
+        when(reportService.generateReport(
+                "unknown"))
+                .thenThrow(
+                        new IllegalArgumentException(
+                                "Unsupported report type"));
+
+        controller.doGet(
+                request,
+                response);
+
+        verify(request)
+                .setAttribute(
+                        "errorMessage",
+                        "Unsupported report type");
+
+        verify(dispatcher)
+                .forward(
+                        request,
+                        response);
+    }
 }
