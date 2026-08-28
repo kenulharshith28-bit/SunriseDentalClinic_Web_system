@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
+import com.sunrisedental.util.DBConnectionFactory;
 
 /**
  * JDBC implementation of user persistence operations.
@@ -64,5 +65,15 @@ public class UserDAOImpl implements UserDAO {
                     "Failed to find user",
                     exception);
         }
+    }
+
+    public UserDAOImpl()
+            throws SQLException {
+
+        this(
+                DBConnectionFactory
+                        .getInstance()
+                        .getConnection()
+        );
     }
 }
