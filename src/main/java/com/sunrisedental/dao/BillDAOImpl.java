@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.util.Optional;
 import java.sql.ResultSet;
+import com.sunrisedental.util.DBConnectionFactory;
 
 
 /**
@@ -99,5 +100,15 @@ public class BillDAOImpl implements BillDAO {
                     "Failed to find bill",
                     exception);
         }
+    }
+
+    public BillDAOImpl()
+            throws SQLException {
+
+        this(
+                DBConnectionFactory
+                        .getInstance()
+                        .getConnection()
+        );
     }
 }

@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.util.Optional;
 import java.sql.ResultSet;
+import com.sunrisedental.util.DBConnectionFactory;
 
 
 /**
@@ -20,6 +21,16 @@ public class AppointmentDAOImpl implements AppointmentDAO {
         this.connection = connection;
     }
 
+    public AppointmentDAOImpl()
+            throws SQLException {
+
+        this(
+                DBConnectionFactory
+                        .getInstance()
+                        .getConnection()
+        );
+    }
+
     @Override
     public boolean saveAppointment(final Appointment appointment)
             throws SQLException {
@@ -30,7 +41,10 @@ public class AppointmentDAOImpl implements AppointmentDAO {
         }
 
         final String sql =
-                "INSERT INTO appointments (appointment_number) VALUES (?)";
+                "INSERT INTO appointments "
+                        + "(appointment_number, patient_id, dentist_id, "
+                        + "appointment_date, appointment_time, status, notes) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement =
                      connection.prepareStatement(sql)) {
@@ -38,6 +52,32 @@ public class AppointmentDAOImpl implements AppointmentDAO {
             statement.setString(
                     1,
                     appointment.getAppointmentNumber());
+
+            statement.setInt(
+                    2,
+                    appointment.getPatientId());
+
+            statement.setInt(
+                    3,
+                    appointment.getDentistId());
+
+            statement.setDate(
+                    4,
+                    java.sql.Date.valueOf(
+                            appointment.getAppointmentDate()));
+
+            statement.setTime(
+                    5,
+                    java.sql.Time.valueOf(
+                            appointment.getAppointmentTime()));
+
+            statement.setString(
+                    6,
+                    appointment.getStatus());
+
+            statement.setString(
+                    7,
+                    appointment.getNotes());
 
             final int affectedRows =
                     statement.executeUpdate();
@@ -82,7 +122,28 @@ public class AppointmentDAOImpl implements AppointmentDAO {
                                 resultSet.getString(
                                         "appointment_number"));
 
-                return Optional.of(foundAppointment);
+                return Optional.of(
+                        new Appointment(
+                                resultSet.getInt(
+                                        "appointment_id"),
+                                resultSet.getString(
+                                        "appointment_number"),
+                                resultSet.getInt(
+                                        "patient_id"),
+                                resultSet.getInt(
+                                        "dentist_id"),
+                                resultSet.getDate(
+                                                "appointment_date")
+                                        .toLocalDate(),
+                                resultSet.getTime(
+                                                "appointment_time")
+                                        .toLocalTime(),
+                                resultSet.getString(
+                                        "status"),
+                                resultSet.getString(
+                                        "notes")
+                        )
+                );
             }
 
         } catch (SQLException exception) {
