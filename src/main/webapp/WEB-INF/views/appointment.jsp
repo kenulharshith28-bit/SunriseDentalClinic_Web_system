@@ -1,11 +1,15 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <html>
 <head>
     <title>Appointment Management</title>
 </head>
+
 <body>
 
 <h2>Appointment Management</h2>
+
+<h3>Search Appointment</h3>
 
 <form method="get"
       action="${pageContext.request.contextPath}/appointments">
@@ -19,6 +23,86 @@
     <button type="submit">
         Search
     </button>
+</form>
+
+<hr>
+
+<h3>Create Appointment</h3>
+
+<form method="post"
+      action="${pageContext.request.contextPath}/appointments">
+
+    <p>
+        <label>Appointment Number:</label><br>
+
+        <input type="text"
+               name="appointmentNumber"
+               placeholder="A-002"
+               required>
+    </p>
+
+    <p>
+        <label>Patient ID:</label><br>
+
+        <input type="number"
+               name="patientId"
+               required>
+    </p>
+
+    <p>
+        <label>Dentist ID:</label><br>
+
+        <input type="number"
+               name="dentistId"
+               required>
+    </p>
+
+    <p>
+        <label>Appointment Date:</label><br>
+
+        <input type="date"
+               name="appointmentDate"
+               required>
+    </p>
+
+    <p>
+        <label>Appointment Time:</label><br>
+
+        <input type="time"
+               name="appointmentTime"
+               required>
+    </p>
+
+    <p>
+        <label>Status:</label><br>
+
+        <select name="status" required>
+            <option value="SCHEDULED">
+                Scheduled
+            </option>
+
+            <option value="COMPLETED">
+                Completed
+            </option>
+
+            <option value="CANCELLED">
+                Cancelled
+            </option>
+        </select>
+    </p>
+
+    <p>
+        <label>Notes:</label><br>
+
+        <textarea name="notes"
+                  rows="4"
+                  cols="40"></textarea>
+    </p>
+
+    <button type="submit">
+        Save Appointment
+    </button>
+
 </form>
 
 <hr>
@@ -57,12 +141,9 @@
     ${appointment.status}
 </p>
 
-<% } %>
-
-<% if (request.getAttribute("errorMessage") != null) { %>
-
 <p>
-    ${errorMessage}
+    Notes:
+    ${appointment.notes}
 </p>
 
 <% } %>
@@ -71,6 +152,14 @@
 
 <p>
     ${successMessage}
+</p>
+
+<% } %>
+
+<% if (request.getAttribute("errorMessage") != null) { %>
+
+<p>
+    ${errorMessage}
 </p>
 
 <% } %>

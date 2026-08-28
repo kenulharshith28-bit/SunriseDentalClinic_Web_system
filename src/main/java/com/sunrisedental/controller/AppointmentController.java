@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 @WebServlet("/appointments")
 public class AppointmentController extends HttpServlet {
@@ -180,6 +181,20 @@ public class AppointmentController extends HttpServlet {
             request.setAttribute(
                     "errorMessage",
                     exception.getMessage());
+
+            final RequestDispatcher dispatcher =
+                    request.getRequestDispatcher(
+                            "/WEB-INF/views/appointment.jsp");
+
+            dispatcher.forward(
+                    request,
+                    response);
+
+        } catch (SQLIntegrityConstraintViolationException exception) {
+
+            request.setAttribute(
+                    "errorMessage",
+                    "Appointment number already exists");
 
             final RequestDispatcher dispatcher =
                     request.getRequestDispatcher(

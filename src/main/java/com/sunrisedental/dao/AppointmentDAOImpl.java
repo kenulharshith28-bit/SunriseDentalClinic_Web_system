@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Optional;
 
 public class AppointmentDAOImpl implements AppointmentDAO {
@@ -82,6 +83,16 @@ public class AppointmentDAOImpl implements AppointmentDAO {
                     statement.executeUpdate();
 
             return affectedRows == 1;
+
+        } catch (SQLIntegrityConstraintViolationException exception) {
+
+            if (exception.getErrorCode() == 1062) {
+                throw exception;
+            }
+
+            throw new SQLException(
+                    "Failed to save appointment",
+                    exception);
 
         } catch (SQLException exception) {
 

@@ -4,6 +4,7 @@ import com.sunrisedental.dao.AppointmentDAO;
 import com.sunrisedental.model.Appointment;
 
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Optional;
 
 
@@ -64,7 +65,18 @@ public class AppointmentService {
             return appointmentDAO
                     .saveAppointment(appointment);
 
+        } catch (SQLIntegrityConstraintViolationException exception) {
+
+            if (exception.getErrorCode() == 1062) {
+                throw exception;
+            }
+
+            throw new SQLException(
+                    "Failed to save appointment",
+                    exception);
+
         } catch (SQLException exception) {
+
             throw new SQLException(
                     "Failed to save appointment",
                     exception);
