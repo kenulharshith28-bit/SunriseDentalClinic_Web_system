@@ -9,7 +9,6 @@
     <artifactId>sunrise-dental-clinic</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <!-- WAR packaging is used because this is a Java web application. -->
     <packaging>war</packaging>
 
     <properties>
@@ -24,7 +23,7 @@
 
     <dependencies>
 
-        <!-- Servlet API used by the web controller layer. -->
+        <!-- Servlet API provided by Tomcat 9 -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -32,7 +31,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- JSP API used for dynamic web pages. -->
+        <!-- JSP API provided by Tomcat -->
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>javax.servlet.jsp-api</artifactId>
@@ -40,7 +39,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- JSTL support for JSP pages. -->
+        <!-- JSTL support -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
@@ -53,19 +52,14 @@
             <version>1.1.2</version>
         </dependency>
 
-        <!-- MySQL JDBC driver. -->
+        <!-- MySQL JDBC driver -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <version>8.0.32</version>
         </dependency>
 
-
-        <!-- ============================= -->
-        <!-- TESTING DEPENDENCIES          -->
-        <!-- ============================= -->
-
-        <!-- JUnit 5 testing framework. -->
+        <!-- JUnit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -73,7 +67,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Core Mockito framework. -->
+        <!-- Mockito -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -81,20 +75,12 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Mockito integration with JUnit 5. -->
+        <!-- Mockito support for JUnit 5 -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>${mockito.version}</version>
             <scope>test</scope>
-        </dependency>
-
-
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
-            <scope>provided</scope>
         </dependency>
 
     </dependencies>
@@ -105,18 +91,21 @@
 
         <plugins>
 
+            <!-- Java compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.14.0</version>
             </plugin>
 
+            <!-- Runs JUnit tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.3</version>
             </plugin>
 
+            <!-- Builds the WAR for Tomcat -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>

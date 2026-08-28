@@ -1,23 +1,21 @@
 package com.sunrisedental.dao;
 
 import com.sunrisedental.model.Appointment;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.PreparedStatement;
-import java.util.Optional;
-import java.sql.ResultSet;
 import com.sunrisedental.util.DBConnectionFactory;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Optional;
 
-/**
- * JDBC implementation of appointment persistence operations.
- */
 public class AppointmentDAOImpl implements AppointmentDAO {
 
     private final Connection connection;
 
-    public AppointmentDAOImpl(final Connection connection) {
+    public AppointmentDAOImpl(
+            final Connection connection) {
+
         this.connection = connection;
     }
 
@@ -32,7 +30,8 @@ public class AppointmentDAOImpl implements AppointmentDAO {
     }
 
     @Override
-    public boolean saveAppointment(final Appointment appointment)
+    public boolean saveAppointment(
+            final Appointment appointment)
             throws SQLException {
 
         if (appointment == null) {
@@ -115,14 +114,7 @@ public class AppointmentDAOImpl implements AppointmentDAO {
                     return Optional.empty();
                 }
 
-                final Appointment foundAppointment =
-                        new Appointment(
-                                resultSet.getInt(
-                                        "appointment_id"),
-                                resultSet.getString(
-                                        "appointment_number"));
-
-                return Optional.of(
+                final Appointment appointment =
                         new Appointment(
                                 resultSet.getInt(
                                         "appointment_id"),
@@ -142,8 +134,10 @@ public class AppointmentDAOImpl implements AppointmentDAO {
                                         "status"),
                                 resultSet.getString(
                                         "notes")
-                        )
-                );
+                        );
+
+                return Optional.of(
+                        appointment);
             }
 
         } catch (SQLException exception) {

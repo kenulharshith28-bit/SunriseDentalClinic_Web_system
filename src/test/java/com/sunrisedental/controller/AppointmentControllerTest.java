@@ -1,17 +1,19 @@
 package com.sunrisedental.controller;
 
-
 import com.sunrisedental.model.Appointment;
-import javax.servlet.RequestDispatcher;
-import java.util.Optional;
 import com.sunrisedental.service.AppointmentService;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.argThat;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -84,10 +86,6 @@ class AppointmentControllerTest {
                 .thenReturn(
                         Optional.of(appointment));
 
-        when(request.getRequestDispatcher(
-                "/WEB-INF/views/appointment.jsp"))
-                .thenReturn(dispatcher);
-
         controller.doGet(
                 request,
                 response);
@@ -113,11 +111,8 @@ class AppointmentControllerTest {
 
         when(appointmentService
                 .searchAppointment("A-001"))
-                .thenReturn(Optional.empty());
-
-        when(request.getRequestDispatcher(
-                "/WEB-INF/views/appointment.jsp"))
-                .thenReturn(dispatcher);
+                .thenReturn(
+                        Optional.empty());
 
         controller.doGet(
                 request,
@@ -164,12 +159,10 @@ class AppointmentControllerTest {
     }
 
     @Test
-    void shouldSaveAppointmentUsingRequestParameter()
+    void shouldSaveAppointmentUsingRequestParameters()
             throws Exception {
 
-        when(request.getParameter(
-                "appointmentNumber"))
-                .thenReturn("A-001");
+        mockAppointmentFormParameters();
 
         controller.doPost(
                 request,
@@ -181,16 +174,33 @@ class AppointmentControllerTest {
                                 appointment != null
                                         && "A-001".equals(
                                         appointment
-                                                .getAppointmentNumber())));
+                                                .getAppointmentNumber())
+                                        && appointment
+                                        .getPatientId() == 1
+                                        && appointment
+                                        .getDentistId() == 1
+                                        && "2026-08-28".equals(
+                                        appointment
+                                                .getAppointmentDate()
+                                                .toString())
+                                        && "10:00".equals(
+                                        appointment
+                                                .getAppointmentTime()
+                                                .toString())
+                                        && "SCHEDULED".equals(
+                                        appointment
+                                                .getStatus())
+                                        && "Regular checkup".equals(
+                                        appointment
+                                                .getNotes())
+                        ));
     }
 
     @Test
     void shouldShowSuccessMessageWhenAppointmentIsSaved()
             throws Exception {
 
-        when(request.getParameter(
-                "appointmentNumber"))
-                .thenReturn("A-001");
+        mockAppointmentFormParameters();
 
         when(appointmentService
                 .saveAppointment(
@@ -210,5 +220,36 @@ class AppointmentControllerTest {
                 .forward(
                         request,
                         response);
+    }
+
+    private void mockAppointmentFormParameters() {
+
+        when(request.getParameter(
+                "appointmentNumber"))
+                .thenReturn("A-001");
+
+        when(request.getParameter(
+                "patientId"))
+                .thenReturn("1");
+
+        when(request.getParameter(
+                "dentistId"))
+                .thenReturn("1");
+
+        when(request.getParameter(
+                "appointmentDate"))
+                .thenReturn("2026-08-28");
+
+        when(request.getParameter(
+                "appointmentTime"))
+                .thenReturn("10:00");
+
+        when(request.getParameter(
+                "status"))
+                .thenReturn("SCHEDULED");
+
+        when(request.getParameter(
+                "notes"))
+                .thenReturn("Regular checkup");
     }
 }
