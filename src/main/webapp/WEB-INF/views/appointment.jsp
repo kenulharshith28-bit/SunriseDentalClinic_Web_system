@@ -42,19 +42,61 @@
     </p>
 
     <p>
-        <label>Patient ID:</label><br>
+        <label>Patient:</label><br>
 
-        <input type="number"
-               name="patientId"
-               required>
+        <select name="patientId" required>
+            <option value="">
+                Select patient
+            </option>
+
+            <%
+                java.util.List<com.sunrisedental.model.Patient> patients =
+                        (java.util.List<com.sunrisedental.model.Patient>)
+                                request.getAttribute("patients");
+
+                if (patients != null) {
+                    for (com.sunrisedental.model.Patient patient : patients) {
+            %>
+
+            <option value="<%= patient.getPatientId() %>">
+                <%= patient.getFullName() %>
+                - ID: <%= patient.getPatientId() %>
+                - <%= patient.getPhone() %>
+            </option>
+
+            <%
+                    }
+                }
+            %>
+        </select>
     </p>
 
     <p>
-        <label>Dentist ID:</label><br>
+        <label>Dentist:</label><br>
 
-        <input type="number"
-               name="dentistId"
-               required>
+        <select name="dentistId" required>
+            <option value="">
+                Select dentist
+            </option>
+
+            <%
+                java.util.List<com.sunrisedental.model.Dentist> dentists =
+                        (java.util.List<com.sunrisedental.model.Dentist>)
+                                request.getAttribute("dentists");
+
+                if (dentists != null) {
+                    for (com.sunrisedental.model.Dentist dentist : dentists) {
+            %>
+
+            <option value="<%= dentist.getDentistId() %>">
+                <%= dentist.getFullName() %>
+            </option>
+
+            <%
+                    }
+                }
+            %>
+        </select>
     </p>
 
     <p>

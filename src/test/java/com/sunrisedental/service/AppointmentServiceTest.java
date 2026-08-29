@@ -2,22 +2,23 @@ package com.sunrisedental.service;
 
 import com.sunrisedental.dao.AppointmentDAO;
 import com.sunrisedental.model.Appointment;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- * Unit tests for AppointmentService.
- */
 class AppointmentServiceTest {
 
     private AppointmentDAO appointmentDAO;
@@ -26,17 +27,18 @@ class AppointmentServiceTest {
     @BeforeEach
     void setUp() {
 
-        appointmentDAO = mock(AppointmentDAO.class);
+        appointmentDAO =
+                mock(AppointmentDAO.class);
 
         appointmentService =
-                new AppointmentService(appointmentDAO);
+                new AppointmentService(
+                        appointmentDAO);
     }
 
     @Test
     void shouldReturnAppointmentWhenAppointmentExists()
             throws SQLException {
 
-        // ARRANGE
         final Appointment appointment =
                 new Appointment(
                         1,
@@ -44,16 +46,17 @@ class AppointmentServiceTest {
                 );
 
         when(appointmentDAO
-                .findByAppointmentNumber("A-001"))
+                .findByAppointmentNumber(
+                        "A-001"))
                 .thenReturn(
-                        Optional.of(appointment));
+                        Optional.of(
+                                appointment));
 
-        // ACT
         final Optional<Appointment> result =
                 appointmentService
-                        .searchAppointment("A-001");
+                        .searchAppointment(
+                                "A-001");
 
-        // ASSERT
         assertTrue(
                 result.isPresent(),
                 "Appointment should be returned when it exists");
@@ -71,10 +74,9 @@ class AppointmentServiceTest {
     @Test
     void shouldRejectBlankAppointmentNumber() {
 
-        // ARRANGE
-        final String appointmentNumber = "   ";
+        final String appointmentNumber =
+                "   ";
 
-        // ACT & ASSERT
         assertThrows(
                 IllegalArgumentException.class,
                 () -> appointmentService
@@ -87,29 +89,26 @@ class AppointmentServiceTest {
     void shouldSaveAppointmentSuccessfully()
             throws SQLException {
 
-        // ARRANGE
         final Appointment appointment =
-                new Appointment(
-                        1,
-                        "A-001"
-                );
+                createValidAppointment();
 
         when(appointmentDAO
-                .saveAppointment(appointment))
+                .saveAppointment(
+                        appointment))
                 .thenReturn(true);
 
-        // ACT
         final boolean result =
                 appointmentService
-                        .saveAppointment(appointment);
+                        .saveAppointment(
+                                appointment);
 
-        // ASSERT
         assertTrue(
                 result,
                 "Appointment should be saved successfully");
 
         verify(appointmentDAO)
-                .saveAppointment(appointment);
+                .saveAppointment(
+                        appointment);
     }
 
     @Test
@@ -118,7 +117,8 @@ class AppointmentServiceTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> appointmentService
-                        .saveAppointment(null)
+                        .saveAppointment(
+                                null)
         );
     }
 
@@ -126,14 +126,13 @@ class AppointmentServiceTest {
     void shouldProvideMeaningfulSQLExceptionWhenAppointmentSearchFails()
             throws SQLException {
 
-        // ARRANGE
         when(appointmentDAO
-                .findByAppointmentNumber("A-001"))
+                .findByAppointmentNumber(
+                        "A-001"))
                 .thenThrow(
                         new SQLException(
                                 "Database connection failed"));
 
-        // ACT
         final SQLException exception =
                 assertThrows(
                         SQLException.class,
@@ -141,7 +140,6 @@ class AppointmentServiceTest {
                                 .searchAppointment(
                                         "A-001"));
 
-        // ASSERT
         assertTrue(
                 exception.getMessage()
                         .contains(
@@ -154,13 +152,11 @@ class AppointmentServiceTest {
             throws SQLException {
 
         final Appointment appointment =
-                new Appointment(
-                        1,
-                        "A-001"
-                );
+                createValidAppointment();
 
         when(appointmentDAO
-                .saveAppointment(appointment))
+                .saveAppointment(
+                        appointment))
                 .thenThrow(
                         new SQLException(
                                 "Database connection failed"));
@@ -177,5 +173,24 @@ class AppointmentServiceTest {
                         .contains(
                                 "Failed to save appointment"),
                 "SQLException should describe the failed appointment save");
+    }
+
+    private Appointment createValidAppointment() {
+
+        return new Appointment(
+                1,
+                "A-001",
+                1,
+                1,
+                LocalDate.of(
+                        2026,
+                        8,
+                        29),
+                LocalTime.of(
+                        10,
+                        0),
+                "SCHEDULED",
+                "Regular checkup"
+        );
     }
 }

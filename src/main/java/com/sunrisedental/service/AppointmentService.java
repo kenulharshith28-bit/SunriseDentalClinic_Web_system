@@ -9,6 +9,7 @@ import java.util.Optional;
 
 
 
+
 /**
  * Handles business operations related to appointments.
  */
@@ -61,9 +62,45 @@ public class AppointmentService {
                     "Appointment must not be null");
         }
 
+        if (appointment.getAppointmentNumber() == null
+                || appointment.getAppointmentNumber().isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Appointment number must not be blank");
+        }
+
+        if (appointment.getPatientId() <= 0) {
+            throw new IllegalArgumentException(
+                    "Patient ID must be greater than 0");
+        }
+
+        if (appointment.getDentistId() <= 0) {
+            throw new IllegalArgumentException(
+                    "Dentist ID must be greater than 0");
+        }
+
+        if (appointment.getAppointmentDate() == null) {
+            throw new IllegalArgumentException(
+                    "Appointment date must not be empty");
+        }
+
+        if (appointment.getAppointmentTime() == null) {
+            throw new IllegalArgumentException(
+                    "Appointment time must not be empty");
+        }
+
+        if (appointment.getStatus() == null
+                || appointment.getStatus().isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Appointment status must not be blank");
+        }
+
         try {
+
             return appointmentDAO
-                    .saveAppointment(appointment);
+                    .saveAppointment(
+                            appointment);
 
         } catch (SQLIntegrityConstraintViolationException exception) {
 
