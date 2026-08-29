@@ -9,4 +9,8 @@ public interface PatientDAO {
 
     List<Patient> findAllPatients()
             throws SQLException;
+
+    boolean savePatient(
+            Patient patient)
+            throws SQLException;
 }

@@ -73,4 +73,47 @@ public class PatientDAOImpl implements PatientDAO {
                     exception);
         }
     }
+
+    @Override
+    public boolean savePatient(
+            final Patient patient)
+            throws SQLException {
+
+        if (patient == null) {
+            throw new IllegalArgumentException(
+                    "Patient must not be null");
+        }
+
+        final String sql =
+                "INSERT INTO patients "
+                        + "(first_name, last_name, phone) "
+                        + "VALUES (?, ?, ?)";
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setString(
+                    1,
+                    patient.getFirstName());
+
+            statement.setString(
+                    2,
+                    patient.getLastName());
+
+            statement.setString(
+                    3,
+                    patient.getPhone());
+
+            final int affectedRows =
+                    statement.executeUpdate();
+
+            return affectedRows == 1;
+
+        } catch (SQLException exception) {
+
+            throw new SQLException(
+                    "Failed to save patient",
+                    exception);
+        }
+    }
 }

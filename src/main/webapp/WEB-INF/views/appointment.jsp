@@ -69,6 +69,10 @@
                 }
             %>
         </select>
+
+        <a href="${pageContext.request.contextPath}/patients/new">
+            + Add New Patient
+        </a>
     </p>
 
     <p>
