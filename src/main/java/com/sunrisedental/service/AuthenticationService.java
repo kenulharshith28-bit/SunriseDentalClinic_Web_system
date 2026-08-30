@@ -1,8 +1,10 @@
 package com.sunrisedental.service;
 
 import com.sunrisedental.dao.UserDAO;
+import com.sunrisedental.model.User;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class AuthenticationService {
 
@@ -19,6 +21,17 @@ public class AuthenticationService {
             final String credential)
             throws SQLException {
 
+        return authenticateUser(
+                username,
+                credential)
+                .isPresent();
+    }
+
+    public Optional<User> authenticateUser(
+            final String username,
+            final String credential)
+            throws SQLException {
+
         if (username == null
                 || username.isBlank()) {
 
@@ -30,15 +43,27 @@ public class AuthenticationService {
                 || credential.isBlank()) {
 
             throw new IllegalArgumentException(
-                    "Credential must not be blank");
+                    "Password must not be blank");
         }
 
         try {
-            return userDAO.findByUsername(username)
-                    .map(user ->
-                            user.getPasswordHash()
-                                    .equals(credential))
-                    .orElse(false);
+
+            final Optional<User> user =
+                    userDAO.findByUsername(
+                            username);
+
+            if (user.isEmpty()) {
+                return Optional.empty();
+            }
+
+            if (!user.get()
+                    .getPasswordHash()
+                    .equals(credential)) {
+
+                return Optional.empty();
+            }
+
+            return user;
 
         } catch (SQLException exception) {
 

@@ -67,6 +67,49 @@ public class UserDAOImpl implements UserDAO {
         }
     }
 
+    @Override
+    public boolean saveUser(
+            final User user)
+            throws SQLException {
+
+        if (user == null) {
+            throw new IllegalArgumentException(
+                    "User must not be null");
+        }
+
+        final String sql =
+                "INSERT INTO users "
+                        + "(username, password_hash, role) "
+                        + "VALUES (?, ?, ?)";
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setString(
+                    1,
+                    user.getUsername());
+
+            statement.setString(
+                    2,
+                    user.getPasswordHash());
+
+            statement.setString(
+                    3,
+                    user.getRole());
+
+            final int affectedRows =
+                    statement.executeUpdate();
+
+            return affectedRows == 1;
+
+        } catch (SQLException exception) {
+
+            throw new SQLException(
+                    "Failed to save user",
+                    exception);
+        }
+    }
+
     public UserDAOImpl()
             throws SQLException {
 

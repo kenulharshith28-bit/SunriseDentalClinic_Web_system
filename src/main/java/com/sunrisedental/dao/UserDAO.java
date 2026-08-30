@@ -20,4 +20,8 @@ public interface UserDAO {
     Optional<User> findByUsername(
             final String username)
             throws SQLException;
+
+    boolean saveUser(
+            User user)
+            throws SQLException;
 }

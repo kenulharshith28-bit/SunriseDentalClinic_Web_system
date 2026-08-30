@@ -1,13 +1,17 @@
 package com.sunrisedental.controller;
 
+import com.sunrisedental.model.User;
 import com.sunrisedental.service.AuthenticationService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import javax.servlet.RequestDispatcher;
-
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -18,8 +22,9 @@ class LoginControllerTest {
     private AuthenticationService authenticationService;
     private HttpServletRequest request;
     private HttpServletResponse response;
-    private LoginController controller;
     private RequestDispatcher dispatcher;
+    private HttpSession session;
+    private LoginController controller;
 
     @BeforeEach
     void setUp() {
@@ -33,15 +38,25 @@ class LoginControllerTest {
         response =
                 mock(HttpServletResponse.class);
 
+        dispatcher =
+                mock(RequestDispatcher.class);
+
+        session =
+                mock(HttpSession.class);
+
         controller =
                 new LoginController(
                         authenticationService);
-        dispatcher =
-                mock(RequestDispatcher.class);
 
         when(request.getRequestDispatcher(
                 "/WEB-INF/views/login.jsp"))
                 .thenReturn(dispatcher);
+
+        when(request.getSession())
+                .thenReturn(session);
+
+        when(request.getContextPath())
+                .thenReturn("/SunriseDentalClinic");
     }
 
     @Test
@@ -50,50 +65,78 @@ class LoginControllerTest {
 
         when(request.getParameter(
                 "username"))
-                .thenReturn("receptionist");
+                .thenReturn("admin");
 
         when(request.getParameter(
                 "password"))
-                .thenReturn("stored-credential");
+                .thenReturn("admin123");
+
+        when(authenticationService
+                .authenticateUser(
+                        "admin",
+                        "admin123"))
+                .thenReturn(
+                        Optional.empty());
 
         controller.doPost(
                 request,
                 response);
 
         verify(authenticationService)
-                .authenticate(
-                        "receptionist",
-                        "stored-credential");
+                .authenticateUser(
+                        "admin",
+                        "admin123");
     }
 
     @Test
     void shouldRedirectToDashboardWhenAuthenticationSucceeds()
             throws Exception {
 
+        final User user =
+                new User(
+                        1,
+                        "admin",
+                        "admin123",
+                        "ADMIN"
+                );
+
         when(request.getParameter(
                 "username"))
-                .thenReturn("receptionist");
+                .thenReturn("admin");
 
         when(request.getParameter(
                 "password"))
-                .thenReturn("stored-credential");
+                .thenReturn("admin123");
 
-        when(authenticationService.authenticate(
-                "receptionist",
-                "stored-credential"))
-                .thenReturn(true);
-
-        when(request.getContextPath())
+        when(authenticationService
+                .authenticateUser(
+                        "admin",
+                        "admin123"))
                 .thenReturn(
-                        "/sunrise-dental-clinic");
+                        Optional.of(user));
 
         controller.doPost(
                 request,
                 response);
 
+        verify(session)
+                .setAttribute(
+                        "userId",
+                        1);
+
+        verify(session)
+                .setAttribute(
+                        "username",
+                        "admin");
+
+        verify(session)
+                .setAttribute(
+                        "role",
+                        "ADMIN");
+
         verify(response)
                 .sendRedirect(
-                        "/sunrise-dental-clinic/dashboard");
+                        "/SunriseDentalClinic/dashboard");
     }
 
     @Test
@@ -102,16 +145,18 @@ class LoginControllerTest {
 
         when(request.getParameter(
                 "username"))
-                .thenReturn("receptionist");
+                .thenReturn("admin");
 
         when(request.getParameter(
                 "password"))
                 .thenReturn("wrong-password");
 
-        when(authenticationService.authenticate(
-                "receptionist",
-                "wrong-password"))
-                .thenReturn(false);
+        when(authenticationService
+                .authenticateUser(
+                        "admin",
+                        "wrong-password"))
+                .thenReturn(
+                        Optional.empty());
 
         controller.doPost(
                 request,
