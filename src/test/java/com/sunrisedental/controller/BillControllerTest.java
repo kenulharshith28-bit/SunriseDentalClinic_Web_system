@@ -1,20 +1,19 @@
 package com.sunrisedental.controller;
 
+import com.sunrisedental.model.Bill;
 import com.sunrisedental.service.BillService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.sunrisedental.model.Bill;
-import java.math.BigDecimal;
-import static org.mockito.ArgumentMatchers.any;
-
 import javax.servlet.RequestDispatcher;
-
-import java.util.Optional;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.math.BigDecimal;
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -65,7 +64,8 @@ class BillControllerTest {
                 response);
 
         verify(billService)
-                .findBill(10);
+                .findBill(
+                        10);
     }
 
     @Test
@@ -76,16 +76,20 @@ class BillControllerTest {
                 new Bill(
                         10,
                         1,
-                        new BigDecimal("3500.00")
+                        new BigDecimal(
+                                "3500.00")
                 );
 
         when(request.getParameter(
                 "billId"))
                 .thenReturn("10");
 
-        when(billService.findBill(10))
+        when(billService
+                .findBill(
+                        10))
                 .thenReturn(
-                        Optional.of(bill));
+                        Optional.of(
+                                bill));
 
         controller.doGet(
                 request,
@@ -110,8 +114,11 @@ class BillControllerTest {
                 "billId"))
                 .thenReturn("10");
 
-        when(billService.findBill(10))
-                .thenReturn(Optional.empty());
+        when(billService
+                .findBill(
+                        10))
+                .thenReturn(
+                        Optional.empty());
 
         controller.doGet(
                 request,
@@ -152,29 +159,38 @@ class BillControllerTest {
     }
 
     @Test
-    void shouldSaveBillUsingRequestParameters()
+    void shouldSaveBillUsingCalculatedTotal()
             throws Exception {
 
         when(request.getParameter(
                 "appointmentId"))
                 .thenReturn("1");
 
-        when(request.getParameter(
-                "totalAmount"))
-                .thenReturn("3500.00");
+        when(billService
+                .calculateBillTotal(
+                        1))
+                .thenReturn(
+                        new BigDecimal(
+                                "3500.00"));
 
         controller.doPost(
                 request,
                 response);
 
         verify(billService)
+                .calculateBillTotal(
+                        1);
+
+        verify(billService)
                 .saveBill(
                         argThat(bill ->
                                 bill != null
                                         && bill.getAppointmentId() == 1
-                                        && new BigDecimal("3500.00")
+                                        && new BigDecimal(
+                                        "3500.00")
                                         .compareTo(
-                                                bill.getTotalAmount()) == 0));
+                                                bill.getTotalAmount()) == 0
+                        ));
     }
 
     @Test
@@ -185,9 +201,12 @@ class BillControllerTest {
                 "appointmentId"))
                 .thenReturn("1");
 
-        when(request.getParameter(
-                "totalAmount"))
-                .thenReturn("3500.00");
+        when(billService
+                .calculateBillTotal(
+                        1))
+                .thenReturn(
+                        new BigDecimal(
+                                "3500.00"));
 
         when(billService
                 .saveBill(
@@ -202,6 +221,12 @@ class BillControllerTest {
                 .setAttribute(
                         "successMessage",
                         "Bill saved successfully");
+
+        verify(request)
+                .setAttribute(
+                        "calculatedTotal",
+                        new BigDecimal(
+                                "3500.00"));
 
         verify(dispatcher)
                 .forward(

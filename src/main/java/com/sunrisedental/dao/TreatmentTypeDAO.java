@@ -1,0 +1,17 @@
+package com.sunrisedental.dao;
+
+import com.sunrisedental.model.TreatmentType;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
+
+public interface TreatmentTypeDAO {
+
+    List<TreatmentType> findAllTreatmentTypes()
+            throws SQLException;
+
+    Optional<TreatmentType> findById(
+            int treatmentTypeId)
+            throws SQLException;
+}

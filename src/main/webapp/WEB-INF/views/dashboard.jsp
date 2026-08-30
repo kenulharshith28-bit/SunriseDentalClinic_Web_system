@@ -34,6 +34,12 @@
 </p>
 
 <p>
+  <a href="${pageContext.request.contextPath}/treatments">
+    Assign Treatment
+  </a>
+</p>
+
+<p>
   <a href="${pageContext.request.contextPath}/reports">
     Reports
   </a>
