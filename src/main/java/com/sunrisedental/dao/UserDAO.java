@@ -24,4 +24,9 @@ public interface UserDAO {
     boolean saveUser(
             User user)
             throws SQLException;
+
+    boolean updatePassword(
+            int userId,
+            String newPassword)
+            throws SQLException;
 }

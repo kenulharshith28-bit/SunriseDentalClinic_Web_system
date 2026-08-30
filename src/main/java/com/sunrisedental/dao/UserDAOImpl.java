@@ -119,4 +119,39 @@ public class UserDAOImpl implements UserDAO {
                         .getConnection()
         );
     }
+
+    @Override
+    public boolean updatePassword(
+            final int userId,
+            final String newPassword)
+            throws SQLException {
+
+        final String sql =
+                "UPDATE users "
+                        + "SET password_hash = ? "
+                        + "WHERE user_id = ?";
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setString(
+                    1,
+                    newPassword);
+
+            statement.setInt(
+                    2,
+                    userId);
+
+            final int affectedRows =
+                    statement.executeUpdate();
+
+            return affectedRows == 1;
+
+        } catch (SQLException exception) {
+
+            throw new SQLException(
+                    "Failed to update password",
+                    exception);
+        }
+    }
 }
