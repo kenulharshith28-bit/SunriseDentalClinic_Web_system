@@ -56,13 +56,24 @@ public class RegisterStaffController extends HttpServlet {
             return;
         }
 
-        final RequestDispatcher dispatcher =
-                request.getRequestDispatcher(
-                        "/WEB-INF/views/register-staff.jsp");
+        try {
 
-        dispatcher.forward(
-                request,
-                response);
+            request.setAttribute(
+                    "users",
+                    userDAO.findAllUsers());
+
+            request.getRequestDispatcher(
+                            "/WEB-INF/views/register-staff.jsp")
+                    .forward(
+                            request,
+                            response);
+
+        } catch (SQLException exception) {
+
+            throw new ServletException(
+                    "Failed to load users",
+                    exception);
+        }
     }
 
     @Override
@@ -76,6 +87,76 @@ public class RegisterStaffController extends HttpServlet {
             response.sendRedirect(
                     request.getContextPath()
                             + "/dashboard");
+
+            return;
+        }
+
+        final String action =
+                request.getParameter("action");
+
+        if ("delete".equals(action)) {
+
+            final String userIdValue =
+                    request.getParameter("userId");
+
+            try {
+
+                final int userId =
+                        Integer.parseInt(
+                                userIdValue);
+
+                final Integer currentUserId =
+                        (Integer) request
+                                .getSession()
+                                .getAttribute("userId");
+
+                if (currentUserId != null
+                        && currentUserId == userId) {
+
+                    request.setAttribute(
+                            "errorMessage",
+                            "You cannot remove your own account");
+
+                    doGet(
+                            request,
+                            response);
+
+                    return;
+                }
+
+                final boolean deleted =
+                        userDAO.deleteUser(
+                                userId);
+
+                if (deleted) {
+
+                    request.setAttribute(
+                            "successMessage",
+                            "User removed successfully");
+
+                } else {
+
+                    request.setAttribute(
+                            "errorMessage",
+                            "User was not found");
+                }
+
+            } catch (NumberFormatException exception) {
+
+                request.setAttribute(
+                        "errorMessage",
+                        "Invalid user ID");
+
+            } catch (SQLException exception) {
+
+                request.setAttribute(
+                        "errorMessage",
+                        "Failed to remove user");
+            }
+
+            doGet(
+                    request,
+                    response);
 
             return;
         }

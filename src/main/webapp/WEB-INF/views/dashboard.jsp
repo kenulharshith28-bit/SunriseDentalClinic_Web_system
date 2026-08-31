@@ -28,10 +28,24 @@
 
     </div>
 
+<<<<<<< HEAD
     <nav class="sidebar-menu">
 
       <a class="sidebar-link active"
          href="${pageContext.request.contextPath}/dashboard">
+=======
+<p>
+  <a href="${pageContext.request.contextPath}/treatments">
+    Assign Treatment
+  </a>
+</p>
+
+<p>
+  <a href="${pageContext.request.contextPath}/bills">
+    Billing
+  </a>
+</p>
+>>>>>>> main
 
         <span>▦</span>
         Dashboard
@@ -46,8 +60,28 @@
 
       </a>
 
+<<<<<<< HEAD
       <a class="sidebar-link"
          href="${pageContext.request.contextPath}/patients/new">
+=======
+<p>
+  <a href="${pageContext.request.contextPath}/dentists">
+    Manage Dentists
+  </a>
+</p>
+
+<p>
+  <a href="${pageContext.request.contextPath}/treatment-types">
+    Manage Treatment Types
+  </a>
+</p>
+
+<p>
+  <a href="${pageContext.request.contextPath}/users/register">
+    Register Staff
+  </a>
+</p>
+>>>>>>> main
 
         <span>♙</span>
         Add Patient

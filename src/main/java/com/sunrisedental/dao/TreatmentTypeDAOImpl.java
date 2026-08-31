@@ -120,4 +120,60 @@ public class TreatmentTypeDAOImpl implements TreatmentTypeDAO {
                     exception);
         }
     }
+
+    @Override
+    public boolean saveTreatmentType(
+            final TreatmentType treatmentType)
+            throws SQLException {
+
+        if (treatmentType == null) {
+            throw new IllegalArgumentException(
+                    "Treatment type must not be null");
+        }
+
+        final String sql =
+                "INSERT INTO treatment_types "
+                        + "(treatment_name, treatment_fee) "
+                        + "VALUES (?, ?)";
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setString(
+                    1,
+                    treatmentType.getTreatmentName());
+
+            statement.setBigDecimal(
+                    2,
+                    treatmentType.getTreatmentFee());
+
+            return statement.executeUpdate() == 1;
+
+        } catch (SQLException exception) {
+
+            throw new SQLException(
+                    "Failed to save treatment type",
+                    exception);
+        }
+    }
+
+    @Override
+    public boolean deleteTreatmentType(
+            final int treatmentTypeId)
+            throws SQLException {
+
+        final String sql =
+                "DELETE FROM treatment_types "
+                        + "WHERE treatment_type_id = ?";
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setInt(
+                    1,
+                    treatmentTypeId);
+
+            return statement.executeUpdate() == 1;
+        }
+    }
 }

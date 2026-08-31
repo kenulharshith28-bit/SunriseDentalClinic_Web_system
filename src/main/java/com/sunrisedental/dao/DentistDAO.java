@@ -9,4 +9,11 @@ public interface DentistDAO {
 
     List<Dentist> findAllDentists()
             throws SQLException;
+
+    boolean saveDentist(
+            Dentist dentist)
+            throws SQLException;
+
+    boolean deleteDentist(int dentistId)
+            throws SQLException;
 }
