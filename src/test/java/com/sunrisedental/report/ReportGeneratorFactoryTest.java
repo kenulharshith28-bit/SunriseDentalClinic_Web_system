@@ -1,24 +1,41 @@
 package com.sunrisedental.report;
 
+import com.sunrisedental.dao.AppointmentDAO;
+import com.sunrisedental.dao.BillDAO;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 class ReportGeneratorFactoryTest {
+
+    private AppointmentDAO appointmentDAO;
+    private BillDAO billDAO;
+    private ReportGeneratorFactory factory;
+
+    @BeforeEach
+    void setUp() {
+
+        appointmentDAO =
+                mock(AppointmentDAO.class);
+
+        billDAO =
+                mock(BillDAO.class);
+
+        factory =
+                new ReportGeneratorFactory(
+                        appointmentDAO,
+                        billDAO);
+    }
 
     @Test
     void shouldCreateAppointmentReportGenerator() {
 
-        final ReportGeneratorFactory factory =
-                new ReportGeneratorFactory();
-
         final ReportGenerator generator =
-                factory.create("appointment");
-
-        assertNotNull(
-                generator,
-                "Factory should create a report generator");
+                factory.create(
+                        "appointment");
 
         assertInstanceOf(
                 AppointmentReportGenerator.class,
@@ -28,15 +45,9 @@ class ReportGeneratorFactoryTest {
     @Test
     void shouldCreateBillReportGenerator() {
 
-        final ReportGeneratorFactory factory =
-                new ReportGeneratorFactory();
-
         final ReportGenerator generator =
-                factory.create("bill");
-
-        assertNotNull(
-                generator,
-                "Factory should create a bill report generator");
+                factory.create(
+                        "bill");
 
         assertInstanceOf(
                 BillReportGenerator.class,
