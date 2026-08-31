@@ -5,9 +5,9 @@ import com.sunrisedental.dao.DentistDAO;
 import com.sunrisedental.dao.DentistDAOImpl;
 import com.sunrisedental.dao.PatientDAO;
 import com.sunrisedental.dao.PatientDAOImpl;
+import com.sunrisedental.model.Dentist;
 
 import com.sunrisedental.model.Appointment;
-import com.sunrisedental.model.Dentist;
 import com.sunrisedental.model.Patient;
 
 import com.sunrisedental.service.AppointmentService;

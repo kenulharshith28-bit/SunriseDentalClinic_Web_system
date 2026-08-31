@@ -3,6 +3,9 @@
 <html>
 <head>
   <title>Sunrise Dental Dashboard</title>
+
+  <link rel="stylesheet"
+        href="${pageContext.request.contextPath}/css/style.css">
 </head>
 
 <body>
@@ -28,14 +31,14 @@
 </p>
 
 <p>
-  <a href="${pageContext.request.contextPath}/bills">
-    Billing
+  <a href="${pageContext.request.contextPath}/treatments">
+    Assign Treatment
   </a>
 </p>
 
 <p>
-  <a href="${pageContext.request.contextPath}/treatments">
-    Assign Treatment
+  <a href="${pageContext.request.contextPath}/bills">
+    Billing
   </a>
 </p>
 
@@ -55,6 +58,18 @@
 <hr>
 
 <h3>Admin Options</h3>
+
+<p>
+  <a href="${pageContext.request.contextPath}/dentists">
+    Manage Dentists
+  </a>
+</p>
+
+<p>
+  <a href="${pageContext.request.contextPath}/treatment-types">
+    Manage Treatment Types
+  </a>
+</p>
 
 <p>
   <a href="${pageContext.request.contextPath}/users/register">

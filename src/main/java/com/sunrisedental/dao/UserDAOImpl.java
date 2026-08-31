@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 import com.sunrisedental.util.DBConnectionFactory;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JDBC implementation of user persistence operations.
@@ -152,6 +154,67 @@ public class UserDAOImpl implements UserDAO {
             throw new SQLException(
                     "Failed to update password",
                     exception);
+        }
+    }
+
+    @Override
+    public List<User> findAllUsers()
+            throws SQLException {
+
+        final String sql =
+                "SELECT user_id, username, password_hash, role "
+                        + "FROM users "
+                        + "ORDER BY username";
+
+        final List<User> users =
+                new ArrayList<>();
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql);
+
+             ResultSet resultSet =
+                     statement.executeQuery()) {
+
+            while (resultSet.next()) {
+
+                final User user =
+                        new User(
+                                resultSet.getInt("user_id"),
+                                resultSet.getString("username"),
+                                resultSet.getString("password_hash"),
+                                resultSet.getString("role")
+                        );
+
+                users.add(user);
+            }
+
+            return users;
+
+        } catch (SQLException exception) {
+
+            throw new SQLException(
+                    "Failed to load users",
+                    exception);
+        }
+    }
+
+    @Override
+    public boolean deleteUser(
+            final int userId)
+            throws SQLException {
+
+        final String sql =
+                "DELETE FROM users "
+                        + "WHERE user_id = ?";
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setInt(
+                    1,
+                    userId);
+
+            return statement.executeUpdate() == 1;
         }
     }
 }

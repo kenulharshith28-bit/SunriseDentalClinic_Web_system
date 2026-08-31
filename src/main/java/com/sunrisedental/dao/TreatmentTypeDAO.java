@@ -14,4 +14,12 @@ public interface TreatmentTypeDAO {
     Optional<TreatmentType> findById(
             int treatmentTypeId)
             throws SQLException;
+
+    boolean saveTreatmentType(
+            TreatmentType treatmentType)
+            throws SQLException;
+
+    boolean deleteTreatmentType(
+            int treatmentTypeId)
+            throws SQLException;
 }

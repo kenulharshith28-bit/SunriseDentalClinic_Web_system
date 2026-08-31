@@ -3,6 +3,7 @@ package com.sunrisedental.dao;
 import com.sunrisedental.model.User;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -28,5 +29,12 @@ public interface UserDAO {
     boolean updatePassword(
             int userId,
             String newPassword)
+            throws SQLException;
+
+    List<User> findAllUsers()
+            throws SQLException;
+
+    boolean deleteUser(
+            int userId)
             throws SQLException;
 }
