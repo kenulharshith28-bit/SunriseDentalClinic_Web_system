@@ -8,6 +8,8 @@ import java.sql.PreparedStatement;
 import java.util.Optional;
 import java.sql.ResultSet;
 import com.sunrisedental.util.DBConnectionFactory;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -110,5 +112,49 @@ public class BillDAOImpl implements BillDAO {
                         .getInstance()
                         .getConnection()
         );
+    }
+
+    @Override
+    public List<Bill> findAllBills()
+            throws SQLException {
+
+        final String sql =
+                "SELECT bill_id, appointment_id, total_amount "
+                        + "FROM bills "
+                        + "ORDER BY bill_id";
+
+        final List<Bill> bills =
+                new ArrayList<>();
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql);
+
+             ResultSet resultSet =
+                     statement.executeQuery()) {
+
+            while (resultSet.next()) {
+
+                final Bill bill =
+                        new Bill(
+                                resultSet.getInt(
+                                        "bill_id"),
+                                resultSet.getInt(
+                                        "appointment_id"),
+                                resultSet.getBigDecimal(
+                                        "total_amount")
+                        );
+
+                bills.add(
+                        bill);
+            }
+
+            return bills;
+
+        } catch (SQLException exception) {
+
+            throw new SQLException(
+                    "Failed to load bills",
+                    exception);
+        }
     }
 }

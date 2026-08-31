@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Optional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AppointmentDAOImpl implements AppointmentDAO {
 
     private final Connection connection;
@@ -155,6 +158,65 @@ public class AppointmentDAOImpl implements AppointmentDAO {
 
             throw new SQLException(
                     "Failed to find appointment",
+                    exception);
+        }
+    }
+
+    @Override
+    public List<Appointment> findAllAppointments()
+            throws SQLException {
+
+        final String sql =
+                "SELECT appointment_id, appointment_number, "
+                        + "patient_id, dentist_id, "
+                        + "appointment_date, appointment_time, "
+                        + "status, notes "
+                        + "FROM appointments "
+                        + "ORDER BY appointment_date, appointment_time";
+
+        final List<Appointment> appointments =
+                new ArrayList<>();
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql);
+
+             ResultSet resultSet =
+                     statement.executeQuery()) {
+
+            while (resultSet.next()) {
+
+                final Appointment appointment =
+                        new Appointment(
+                                resultSet.getInt(
+                                        "appointment_id"),
+                                resultSet.getString(
+                                        "appointment_number"),
+                                resultSet.getInt(
+                                        "patient_id"),
+                                resultSet.getInt(
+                                        "dentist_id"),
+                                resultSet.getDate(
+                                                "appointment_date")
+                                        .toLocalDate(),
+                                resultSet.getTime(
+                                                "appointment_time")
+                                        .toLocalTime(),
+                                resultSet.getString(
+                                        "status"),
+                                resultSet.getString(
+                                        "notes")
+                        );
+
+                appointments.add(
+                        appointment);
+            }
+
+            return appointments;
+
+        } catch (SQLException exception) {
+
+            throw new SQLException(
+                    "Failed to load appointments",
                     exception);
         }
     }

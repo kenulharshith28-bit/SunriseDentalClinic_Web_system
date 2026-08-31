@@ -1,18 +1,46 @@
 package com.sunrisedental.report;
 
+import com.sunrisedental.dao.AppointmentDAO;
+import com.sunrisedental.dao.AppointmentDAOImpl;
+import com.sunrisedental.dao.BillDAO;
+import com.sunrisedental.dao.BillDAOImpl;
+
+import java.sql.SQLException;
+
 public class ReportGeneratorFactory {
 
     public ReportGenerator create(
             final String reportType) {
 
-        if ("appointment".equalsIgnoreCase(reportType)) {
-            return new AppointmentReportGenerator();
-        }
+        try {
 
-        if ("bill".equalsIgnoreCase(reportType)) {
-            return new BillReportGenerator();
-        }
+            if ("appointment".equalsIgnoreCase(
+                    reportType)) {
 
-        return null;
+                final AppointmentDAO appointmentDAO =
+                        new AppointmentDAOImpl();
+
+                return new AppointmentReportGenerator(
+                        appointmentDAO);
+            }
+
+            if ("bill".equalsIgnoreCase(
+                    reportType)) {
+
+                final BillDAO billDAO =
+                        new BillDAOImpl();
+
+                return new BillReportGenerator(
+                        billDAO);
+            }
+
+            return null;
+
+        } catch (SQLException exception) {
+
+            throw new IllegalStateException(
+                    "Failed to create report generator",
+                    exception);
+        }
     }
 }
