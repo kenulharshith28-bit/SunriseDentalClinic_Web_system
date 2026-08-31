@@ -3,112 +3,226 @@
 <html>
 <head>
   <title>Billing</title>
+
+  <link rel="stylesheet"
+        href="${pageContext.request.contextPath}/css/style.css">
 </head>
 
 <body>
 
-<h2>Billing</h2>
+<div class="topbar">
 
-<h3>Search Bill</h3>
+  <div class="page-container topbar-content">
 
-<form method="get"
-      action="${pageContext.request.contextPath}/bills">
+    <div class="brand">
+      Sunrise Dental Clinic
+    </div>
 
-  <p>
-    <label>Bill ID:</label><br>
+    <div class="nav-links">
 
-    <input type="number"
-           name="billId"
-           required>
-  </p>
+      <a href="${pageContext.request.contextPath}/dashboard">
+        Dashboard
+      </a>
 
-  <button type="submit">
-    Search Bill
-  </button>
+      <a href="${pageContext.request.contextPath}/appointments">
+        Appointments
+      </a>
 
-</form>
+      <a href="${pageContext.request.contextPath}/treatments">
+        Treatments
+      </a>
 
-<hr>
+      <a href="${pageContext.request.contextPath}/reports">
+        Reports
+      </a>
 
-<h3>Create Bill</h3>
+    </div>
 
-<form method="post"
-      action="${pageContext.request.contextPath}/bills">
+  </div>
 
-  <p>
-    <label>Appointment ID:</label><br>
+</div>
 
-    <input type="number"
-           name="appointmentId"
-           required>
-  </p>
+<div class="page-container main-content">
 
-  <p>
-    The total amount will be calculated automatically
-    from the treatments assigned to the appointment.
-  </p>
+  <div class="page-title">
 
-  <button type="submit">
-    Generate Bill
-  </button>
+    <h1>Billing</h1>
 
-</form>
+    <p>
+      Generate bills from treatments assigned to appointments.
+    </p>
 
-<hr>
+  </div>
 
-<% if (request.getAttribute("bill") != null) { %>
+  <% if (request.getAttribute("successMessage") != null) { %>
 
-<h3>Bill Found</h3>
+  <div class="alert alert-success">
+    ${successMessage}
+  </div>
 
-<p>
-  Bill ID:
-  ${bill.billId}
-</p>
+  <% } %>
 
-<p>
-  Appointment ID:
-  ${bill.appointmentId}
-</p>
+  <% if (request.getAttribute("errorMessage") != null) { %>
 
-<p>
-  Total Amount:
-  ${bill.totalAmount}
-</p>
+  <div class="alert alert-error">
+    ${errorMessage}
+  </div>
 
-<% } %>
+  <% } %>
 
-<% if (request.getAttribute("calculatedTotal") != null) { %>
+  <div class="grid grid-2">
 
-<h3>Generated Bill</h3>
+    <div class="card">
 
-<p>
-  Total Amount:
-  ${calculatedTotal}
-</p>
+      <h2>Generate Bill</h2>
 
-<% } %>
+      <form method="post"
+            action="${pageContext.request.contextPath}/bills">
 
-<% if (request.getAttribute("successMessage") != null) { %>
+        <div class="form-group">
 
-<p>
-  ${successMessage}
-</p>
+          <label for="appointmentId">
+            Appointment ID
+          </label>
 
-<% } %>
+          <input class="form-control"
+                 type="number"
+                 id="appointmentId"
+                 name="appointmentId"
+                 placeholder="Enter appointment ID"
+                 required>
 
-<% if (request.getAttribute("errorMessage") != null) { %>
+        </div>
 
-<p>
-  ${errorMessage}
-</p>
+        <p>
+          The total amount is calculated automatically
+          using the treatments assigned to this appointment.
+        </p>
 
-<% } %>
+        <button class="btn btn-primary"
+                type="submit">
 
-<p>
-  <a href="${pageContext.request.contextPath}/dashboard">
-    Back to Dashboard
-  </a>
-</p>
+          Generate Bill
+
+        </button>
+
+      </form>
+
+    </div>
+
+    <div class="card">
+
+      <h2>Search Bill</h2>
+
+      <form method="get"
+            action="${pageContext.request.contextPath}/bills">
+
+        <div class="form-group">
+
+          <label for="billId">
+            Bill ID
+          </label>
+
+          <input class="form-control"
+                 type="number"
+                 id="billId"
+                 name="billId"
+                 placeholder="Enter bill ID"
+                 required>
+
+        </div>
+
+        <button class="btn btn-primary"
+                type="submit">
+
+          Search Bill
+
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <% if (request.getAttribute("calculatedTotal") != null) { %>
+
+  <div class="card">
+
+    <h2>Generated Bill</h2>
+
+    <table>
+
+      <tr>
+        <th>Total Amount</th>
+
+        <td>
+          Rs. ${calculatedTotal}
+        </td>
+      </tr>
+
+    </table>
+
+  </div>
+
+  <% } %>
+
+  <% if (request.getAttribute("bill") != null) { %>
+
+  <div class="card">
+
+    <h2>Bill Details</h2>
+
+    <div class="table-wrapper">
+
+      <table>
+
+        <tr>
+          <th>Bill ID</th>
+          <td>${bill.billId}</td>
+        </tr>
+
+        <tr>
+          <th>Appointment ID</th>
+          <td>${bill.appointmentId}</td>
+        </tr>
+
+        <tr>
+          <th>Total Amount</th>
+          <td>Rs. ${bill.totalAmount}</td>
+        </tr>
+
+      </table>
+
+    </div>
+
+  </div>
+
+  <% } %>
+
+  <div class="card">
+
+    <h3>Need to assign treatment first?</h3>
+
+    <p>
+      A bill can only be generated after at least one
+      treatment has been assigned to the appointment.
+    </p>
+
+    <a class="btn btn-secondary"
+       href="${pageContext.request.contextPath}/treatments">
+
+      Assign Treatment
+
+    </a>
+
+  </div>
+
+</div>
+
+<div class="footer">
+  Sunrise Dental Clinic Management System
+</div>
 
 </body>
 </html>

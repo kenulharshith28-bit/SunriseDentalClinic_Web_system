@@ -3,46 +3,81 @@
 <html>
 <head>
   <title>Sunrise Dental Login</title>
+
+  <link rel="stylesheet"
+        href="${pageContext.request.contextPath}/css/style.css">
 </head>
 
 <body>
 
-<h2>Sunrise Dental Clinic</h2>
+<div class="login-page">
 
-<h3>Login</h3>
+  <div class="login-card">
 
-<form method="post"
-      action="${pageContext.request.contextPath}/login">
+    <h1>Sunrise Dental Clinic</h1>
 
-  <p>
-    <label>Username:</label><br>
+    <p class="subtitle">
+      Sign in to continue
+    </p>
 
-    <input type="text"
-           name="username"
-           required>
-  </p>
+    <% if (request.getAttribute("errorMessage") != null) { %>
 
-  <p>
-    <label>Password:</label><br>
+    <div class="alert alert-error">
+      ${errorMessage}
+    </div>
 
-    <input type="password"
-           name="password"
-           required>
-  </p>
+    <% } %>
 
-  <button type="submit">
-    Login
-  </button>
+    <form method="post"
+          action="${pageContext.request.contextPath}/login">
 
-</form>
+      <div class="form-group">
 
-<% if (request.getAttribute("errorMessage") != null) { %>
+        <label for="username">
+          Username
+        </label>
 
-<p>
-  ${errorMessage}
-</p>
+        <input class="form-control"
+               type="text"
+               id="username"
+               name="username"
+               placeholder="Enter username"
+               required>
 
-<% } %>
+      </div>
+
+      <div class="form-group">
+
+        <label for="password">
+          Password
+        </label>
+
+        <input class="form-control"
+               type="password"
+               id="password"
+               name="password"
+               placeholder="Enter password"
+               required>
+
+      </div>
+
+      <button class="btn btn-primary"
+              type="submit"
+              style="width: 100%;">
+
+        Login
+
+      </button>
+
+    </form>
+
+    <div class="footer">
+      Sunrise Dental Clinic Management System
+    </div>
+
+  </div>
+
+</div>
 
 </body>
 </html>

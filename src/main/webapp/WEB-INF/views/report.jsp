@@ -3,67 +3,165 @@
 <html>
 <head>
     <title>Reports</title>
+
+    <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/style.css">
 </head>
 
 <body>
 
-<h2>Reports</h2>
+<div class="topbar">
 
-<form method="get"
-      action="${pageContext.request.contextPath}/reports">
+    <div class="page-container topbar-content">
 
-    <p>
-        <label>Select Report Type:</label><br>
+        <div class="brand">
+            Sunrise Dental Clinic
+        </div>
 
-        <select name="reportType"
-                required>
+        <div class="nav-links">
 
-            <option value="">
-                Select report
-            </option>
+            <a href="${pageContext.request.contextPath}/dashboard">
+                Dashboard
+            </a>
 
-            <option value="appointment">
-                Appointment Report
-            </option>
+            <a href="${pageContext.request.contextPath}/appointments">
+                Appointments
+            </a>
 
-            <option value="bill">
-                Bill Report
-            </option>
+            <a href="${pageContext.request.contextPath}/treatments">
+                Treatments
+            </a>
 
-        </select>
-    </p>
+            <a href="${pageContext.request.contextPath}/bills">
+                Billing
+            </a>
 
-    <button type="submit">
-        Generate Report
-    </button>
+        </div>
 
-</form>
+    </div>
 
-<hr>
+</div>
 
-<% if (request.getAttribute("report") != null) { %>
+<div class="page-container main-content">
 
-<h3>Generated Report</h3>
+    <div class="page-title">
 
-<pre>${report}</pre>
+        <h1>Reports</h1>
 
-<% } %>
+        <p>
+            Generate appointment and billing reports
+            using current clinic data.
+        </p>
 
-<% if (request.getAttribute("errorMessage") != null) { %>
+    </div>
 
-<p>
-    ${errorMessage}
-</p>
+    <% if (request.getAttribute("errorMessage") != null) { %>
 
-<% } %>
+    <div class="alert alert-error">
+        ${errorMessage}
+    </div>
 
-<hr>
+    <% } %>
 
-<p>
-    <a href="${pageContext.request.contextPath}/dashboard">
-        Back to Dashboard
-    </a>
-</p>
+    <div class="card">
+
+        <h2>Generate Report</h2>
+
+        <form method="get"
+              action="${pageContext.request.contextPath}/reports">
+
+            <div class="form-group">
+
+                <label for="reportType">
+                    Report Type
+                </label>
+
+                <select class="form-control"
+                        id="reportType"
+                        name="reportType"
+                        required>
+
+                    <option value="">
+                        Select report type
+                    </option>
+
+                    <option value="appointment">
+                        Appointment Report
+                    </option>
+
+                    <option value="bill">
+                        Billing Report
+                    </option>
+
+                </select>
+
+            </div>
+
+            <button class="btn btn-primary"
+                    type="submit">
+
+                Generate Report
+
+            </button>
+
+        </form>
+
+    </div>
+
+    <% if (request.getAttribute("report") != null) { %>
+
+    <div class="card">
+
+        <h2>Generated Report</h2>
+
+        <pre style="
+            white-space: pre-wrap;
+            font-family: inherit;
+            line-height: 1.7;
+            margin: 0;
+        ">${report}</pre>
+
+    </div>
+
+    <% } %>
+
+    <div class="card">
+
+        <h3>Available Reports</h3>
+
+        <div class="grid grid-2">
+
+            <div class="dashboard-card">
+
+                <h3>Appointment Report</h3>
+
+                <p>
+                    Shows appointment numbers,
+                    dates, times and status information.
+                </p>
+
+            </div>
+
+            <div class="dashboard-card">
+
+                <h3>Billing Report</h3>
+
+                <p>
+                    Shows bill IDs, appointment IDs
+                    and total amounts.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="footer">
+    Sunrise Dental Clinic Management System
+</div>
 
 </body>
 </html>

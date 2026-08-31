@@ -3,58 +3,150 @@
 <html>
 <head>
     <title>Register Staff</title>
+
+    <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/style.css">
 </head>
 
 <body>
 
-<h2>Register Staff User</h2>
+<div class="topbar">
 
-<form method="post"
-      action="${pageContext.request.contextPath}/users/register">
+    <div class="page-container topbar-content">
 
-    <p>
-        <label>Username:</label><br>
+        <div class="brand">
+            Sunrise Dental Clinic
+        </div>
 
-        <input type="text"
-               name="username"
-               required>
-    </p>
+        <div class="nav-links">
 
-    <p>
-        <label>Password:</label><br>
+            <a href="${pageContext.request.contextPath}/dashboard">
+                Dashboard
+            </a>
 
-        <input type="password"
-               name="password"
-               required>
-    </p>
+            <a href="${pageContext.request.contextPath}/appointments">
+                Appointments
+            </a>
 
-    <button type="submit">
-        Register Staff
-    </button>
+            <a href="${pageContext.request.contextPath}/treatments">
+                Treatments
+            </a>
 
-</form>
+            <a href="${pageContext.request.contextPath}/bills">
+                Billing
+            </a>
 
-<% if (request.getAttribute("successMessage") != null) { %>
+            <a href="${pageContext.request.contextPath}/reports">
+                Reports
+            </a>
 
-<p>
-    ${successMessage}
-</p>
+        </div>
 
-<% } %>
+    </div>
 
-<% if (request.getAttribute("errorMessage") != null) { %>
+</div>
 
-<p>
-    ${errorMessage}
-</p>
+<div class="page-container main-content">
 
-<% } %>
+    <div class="page-title">
 
-<p>
-    <a href="${pageContext.request.contextPath}/dashboard">
-        Back to Dashboard
-    </a>
-</p>
+        <h1>Register Staff</h1>
+
+        <p>
+            Create a new receptionist account for the clinic system.
+        </p>
+
+    </div>
+
+    <% if (request.getAttribute("successMessage") != null) { %>
+
+    <div class="alert alert-success">
+        ${successMessage}
+    </div>
+
+    <% } %>
+
+    <% if (request.getAttribute("errorMessage") != null) { %>
+
+    <div class="alert alert-error">
+        ${errorMessage}
+    </div>
+
+    <% } %>
+
+    <div class="card">
+
+        <h2>Staff Account Details</h2>
+
+        <form method="post"
+              action="${pageContext.request.contextPath}/users/register">
+
+            <div class="form-group">
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input class="form-control"
+                       type="text"
+                       id="username"
+                       name="username"
+                       placeholder="Enter staff username"
+                       required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input class="form-control"
+                       type="password"
+                       id="password"
+                       name="password"
+                       placeholder="Enter temporary password"
+                       required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    Role
+                </label>
+
+                <input class="form-control"
+                       type="text"
+                       value="RECEPTIONIST"
+                       disabled>
+
+            </div>
+
+            <button class="btn btn-primary"
+                    type="submit">
+
+                Register Staff
+
+            </button>
+
+            <a class="btn btn-secondary"
+               href="${pageContext.request.contextPath}/dashboard">
+
+                Cancel
+
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div class="footer">
+    Sunrise Dental Clinic Management System
+</div>
 
 </body>
 </html>
