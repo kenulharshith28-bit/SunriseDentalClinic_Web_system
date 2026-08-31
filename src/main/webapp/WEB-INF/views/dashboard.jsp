@@ -28,88 +28,42 @@
 
     </div>
 
-<<<<<<< HEAD
     <nav class="sidebar-menu">
 
       <a class="sidebar-link active"
          href="${pageContext.request.contextPath}/dashboard">
-=======
-<p>
-  <a href="${pageContext.request.contextPath}/treatments">
-    Assign Treatment
-  </a>
-</p>
-
-<p>
-  <a href="${pageContext.request.contextPath}/bills">
-    Billing
-  </a>
-</p>
->>>>>>> main
-
         <span>▦</span>
         Dashboard
-
       </a>
 
       <a class="sidebar-link"
          href="${pageContext.request.contextPath}/appointments">
-
         <span>▤</span>
         Appointments
-
       </a>
 
-<<<<<<< HEAD
       <a class="sidebar-link"
          href="${pageContext.request.contextPath}/patients/new">
-=======
-<p>
-  <a href="${pageContext.request.contextPath}/dentists">
-    Manage Dentists
-  </a>
-</p>
-
-<p>
-  <a href="${pageContext.request.contextPath}/treatment-types">
-    Manage Treatment Types
-  </a>
-</p>
-
-<p>
-  <a href="${pageContext.request.contextPath}/users/register">
-    Register Staff
-  </a>
-</p>
->>>>>>> main
-
         <span>♙</span>
         Add Patient
-
       </a>
 
       <a class="sidebar-link"
          href="${pageContext.request.contextPath}/treatments">
-
         <span>✚</span>
         Treatments
-
       </a>
 
       <a class="sidebar-link"
          href="${pageContext.request.contextPath}/bills">
-
         <span>▣</span>
         Billing
-
       </a>
 
       <a class="sidebar-link"
          href="${pageContext.request.contextPath}/reports">
-
         <span>◫</span>
         Reports
-
       </a>
 
       <%
@@ -124,19 +78,27 @@
       </div>
 
       <a class="sidebar-link"
-         href="${pageContext.request.contextPath}/users/register">
+         href="${pageContext.request.contextPath}/dentists">
+        <span>🦷</span>
+        Manage Dentists
+      </a>
 
+      <a class="sidebar-link"
+         href="${pageContext.request.contextPath}/treatment-types">
+        <span>🩺</span>
+        Treatment Types
+      </a>
+
+      <a class="sidebar-link"
+         href="${pageContext.request.contextPath}/users/register">
         <span>♚</span>
         Register Staff
-
       </a>
 
       <a class="sidebar-link"
          href="${pageContext.request.contextPath}/users/change-password">
-
         <span>⚙</span>
         Change Password
-
       </a>
 
       <%
@@ -149,10 +111,8 @@
 
       <a class="sidebar-link logout-link"
          href="${pageContext.request.contextPath}/logout">
-
         <span>↪</span>
         Logout
-
       </a>
 
     </div>
@@ -163,17 +123,12 @@
   <!-- MAIN AREA -->
   <main class="dashboard-main">
 
-    <!-- TOPBAR -->
+    <!-- TOP BAR -->
     <header class="dashboard-topbar">
 
       <div>
-
         <h3>Dashboard</h3>
-
-        <p>
-          Clinic overview and management
-        </p>
-
+        <p>Clinic overview and management</p>
       </div>
 
       <div class="dashboard-user">
@@ -183,7 +138,6 @@
         </div>
 
         <div>
-
           <strong>
             ${sessionScope.username}
           </strong>
@@ -191,7 +145,6 @@
           <span>
             ${sessionScope.role}
           </span>
-
         </div>
 
       </div>
@@ -202,19 +155,15 @@
     <!-- WELCOME -->
     <section class="dashboard-welcome">
 
-      <div>
+      <h1>
+        Welcome back,
+        <span>${sessionScope.username}</span>
+      </h1>
 
-        <h1>
-          Welcome back,
-          <span>${sessionScope.username}</span>
-        </h1>
-
-        <p>
-          Manage appointments, treatments,
-          billing and clinic reports from one place.
-        </p>
-
-      </div>
+      <p>
+        Manage appointments, treatments, billing
+        and clinic reports from one place.
+      </p>
 
     </section>
 
@@ -229,13 +178,8 @@
         </div>
 
         <div>
-
           <span>Patients</span>
-
-          <strong>
-            Manage
-          </strong>
-
+          <strong>Manage</strong>
         </div>
 
       </div>
@@ -247,13 +191,8 @@
         </div>
 
         <div>
-
           <span>Appointments</span>
-
-          <strong>
-            Bookings
-          </strong>
-
+          <strong>Bookings</strong>
         </div>
 
       </div>
@@ -265,13 +204,8 @@
         </div>
 
         <div>
-
           <span>Treatments</span>
-
-          <strong>
-            Clinical
-          </strong>
-
+          <strong>Clinical</strong>
         </div>
 
       </div>
@@ -283,13 +217,8 @@
         </div>
 
         <div>
-
           <span>Billing</span>
-
-          <strong>
-            Payments
-          </strong>
-
+          <strong>Payments</strong>
         </div>
 
       </div>
@@ -305,13 +234,11 @@
         <div class="panel-heading">
 
           <div>
-
             <h2>Clinic Management</h2>
 
             <p>
               Quick access to daily clinic operations
             </p>
-
           </div>
 
         </div>
@@ -383,18 +310,17 @@
       </div>
 
 
+      <!-- QUICK LINKS -->
       <div class="dashboard-panel side-panel">
 
         <div class="panel-heading">
 
           <div>
-
             <h2>Quick Links</h2>
 
             <p>
               Common system actions
             </p>
-
           </div>
 
         </div>
@@ -446,6 +372,7 @@
     </section>
 
 
+    <!-- ADMIN SECTION -->
     <% if ("ADMIN".equals(role)) { %>
 
     <section class="dashboard-panel admin-panel">
@@ -467,16 +394,46 @@
       <div class="admin-action-grid">
 
         <a class="admin-action-card"
+           href="${pageContext.request.contextPath}/dentists">
+
+          <div>
+            🦷
+          </div>
+
+          <h3>Manage Dentists</h3>
+
+          <p>
+            Add and manage clinic dentists.
+          </p>
+
+        </a>
+
+        <a class="admin-action-card"
+           href="${pageContext.request.contextPath}/treatment-types">
+
+          <div>
+            🩺
+          </div>
+
+          <h3>Treatment Types</h3>
+
+          <p>
+            Manage procedures and treatment fees.
+          </p>
+
+        </a>
+
+        <a class="admin-action-card"
            href="${pageContext.request.contextPath}/users/register">
 
           <div>
             👥
           </div>
 
-          <h3>Register Staff</h3>
+          <h3>Staff Management</h3>
 
           <p>
-            Create receptionist accounts.
+            Register and manage receptionist accounts.
           </p>
 
         </a>
