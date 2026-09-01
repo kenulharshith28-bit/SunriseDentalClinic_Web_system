@@ -9,4 +9,6 @@ public interface BillCalculator {
 
     BigDecimal calculateTotal(
             List<TreatmentType> treatmentTypes);
+
+    BigDecimal getConsultationFee();
 }
