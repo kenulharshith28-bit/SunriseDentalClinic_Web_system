@@ -52,4 +52,50 @@ class StandardBillCalculatorTest {
                 new BigDecimal("22000.00"),
                 result);
     }
+
+    @Test
+    void shouldIncludeConsultationFeeForSingleTreatment() {
+
+        final TreatmentType filling =
+                new TreatmentType(
+                        1,
+                        "Filling",
+                        new BigDecimal("4000.00")
+                );
+
+        final BigDecimal result =
+                billCalculator
+                        .calculateTotal(
+                                List.of(filling));
+
+        assertEquals(
+                new BigDecimal("6000.00"),
+                result);
+    }
+
+    @Test
+    void shouldReturnZeroForEmptyTreatmentList() {
+
+        final BigDecimal result =
+                billCalculator
+                        .calculateTotal(
+                                List.of());
+
+        assertEquals(
+                BigDecimal.ZERO,
+                result);
+    }
+
+    @Test
+    void shouldReturnZeroForNullTreatmentList() {
+
+        final BigDecimal result =
+                billCalculator
+                        .calculateTotal(
+                                null);
+
+        assertEquals(
+                BigDecimal.ZERO,
+                result);
+    }
 }
