@@ -16,7 +16,7 @@
 <%
     request.setAttribute(
             "activePage",
-            "appointments");
+            "manage-appointments");
 %>
 
 <div class="dashboard-shell">

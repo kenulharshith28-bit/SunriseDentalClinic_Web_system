@@ -8,21 +8,34 @@
 
 <aside class="sidebar">
 
+    <!-- BRAND -->
     <div class="sidebar-brand">
 
         <div class="brand-icon">
+
             <i class="bi bi-heart-pulse-fill"
                aria-hidden="true"></i>
+
         </div>
 
         <div>
-            <h2>Sunrise Dental</h2>
-            <span>Clinic Management</span>
+
+            <h2>
+                Sunrise Dental
+            </h2>
+
+            <span>
+                Clinic Management
+            </span>
+
         </div>
 
     </div>
 
+
+    <!-- MAIN NAVIGATION -->
     <nav class="sidebar-menu">
+
 
         <!-- DASHBOARD -->
         <a class="sidebar-link <%= "dashboard".equals(activePage) ? "active" : "" %>"
@@ -38,30 +51,30 @@
         </a>
 
 
-        <!-- APPOINTMENT MANAGEMENT -->
-        <a class="sidebar-link <%= "appointments".equals(activePage) ? "active" : "" %>"
+        <!-- CREATE APPOINTMENT -->
+        <a class="sidebar-link <%= "create-appointment".equals(activePage) ? "active" : "" %>"
            href="${pageContext.request.contextPath}/appointments">
 
             <span>
-                <i class="bi bi-calendar2-check"
+                <i class="bi bi-calendar-plus"
                    aria-hidden="true"></i>
             </span>
 
-            Appointments
+            Create Appointment
 
         </a>
 
 
-        <!-- ALL APPOINTMENTS -->
-        <a class="sidebar-link <%= "all-appointments".equals(activePage) ? "active" : "" %>"
+        <!-- MANAGE APPOINTMENTS -->
+        <a class="sidebar-link <%= "manage-appointments".equals(activePage) ? "active" : "" %>"
            href="${pageContext.request.contextPath}/appointments/all">
 
             <span>
-                <i class="bi bi-list-check"
+                <i class="bi bi-calendar2-week"
                    aria-hidden="true"></i>
             </span>
 
-            All Appointments
+            Manage Appointments
 
         </a>
 
@@ -76,20 +89,6 @@
             </span>
 
             Add Patient
-
-        </a>
-
-
-        <!-- TREATMENTS -->
-        <a class="sidebar-link <%= "treatments".equals(activePage) ? "active" : "" %>"
-           href="${pageContext.request.contextPath}/treatments">
-
-            <span>
-                <i class="bi bi-clipboard2-pulse"
-                   aria-hidden="true"></i>
-            </span>
-
-            Treatments
 
         </a>
 
@@ -122,7 +121,7 @@
         </a>
 
 
-        <!-- ADMIN ONLY -->
+        <!-- ADMIN SECTION -->
         <% if ("ADMIN".equals(sidebarRole)) { %>
 
         <div class="sidebar-section-title">
@@ -168,6 +167,20 @@
             </span>
 
             Register Staff
+
+        </a>
+
+
+        <!-- MANAGE ADMINS -->
+        <a class="sidebar-link <%= "admins".equals(activePage) ? "active" : "" %>"
+           href="${pageContext.request.contextPath}/users/admins">
+
+            <span>
+                <i class="bi bi-shield-lock"
+                   aria-hidden="true"></i>
+            </span>
+
+            Manage Admins
 
         </a>
 

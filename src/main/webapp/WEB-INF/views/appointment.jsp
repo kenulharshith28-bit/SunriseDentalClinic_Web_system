@@ -16,7 +16,7 @@
 <%
     request.setAttribute(
             "activePage",
-            "appointments");
+            "create-appointment");
 %>
 
 <div class="dashboard-shell">
@@ -412,13 +412,14 @@
                                 </label>
 
                                 <p class="form-help-text">
-                                    Select one or more treatments if they are
-                                    already known. You can also add treatments later.
+                                    Select one or more treatments if they are already known.
+                                    You can also add treatments later.
                                 </p>
 
                             </div>
 
-                            <i class="bi bi-clipboard2-pulse"></i>
+                            <i class="bi bi-activity"
+                               aria-hidden="true"></i>
 
                         </div>
 
@@ -438,12 +439,13 @@
                                             : treatmentTypes) {
                             %>
 
-
                             <label class="treatment-option">
 
                                 <input type="checkbox"
                                        name="treatmentTypeIds"
-                                       value="<%= treatmentType.getTreatmentTypeId() %>">
+                                       class="treatment-checkbox"
+                                       value="<%= treatmentType.getTreatmentTypeId() %>"
+                                       data-fee="<%= treatmentType.getTreatmentFee() %>">
 
                                 <div class="treatment-option-content">
 
@@ -452,33 +454,48 @@
                                     </strong>
 
                                     <span>
-                                        Rs. <%= treatmentType.getTreatmentFee() %>
+                                        Rs.
+                                        <%= String.format(
+                                                "%,.2f",
+                                                treatmentType.getTreatmentFee()) %>
                                     </span>
 
                                 </div>
 
                             </label>
 
-
                             <%
-                                }
+                                    }
 
-                            } else {
+                                } else {
                             %>
-
 
                             <div class="treatment-empty-message">
 
-                                <i class="bi bi-info-circle"></i>
+                                <i class="bi bi-info-circle"
+                                   aria-hidden="true"></i>
 
                                 No treatment types are currently available.
 
                             </div>
 
-
                             <%
                                 }
                             %>
+
+                        </div>
+
+
+                        <div class="treatment-total-bar">
+
+                            <span class="treatment-total-label">
+                                Estimated Treatment Total:
+                            </span>
+
+                            <span class="treatment-total-value"
+                                  id="estimatedTreatmentTotal">
+                                Rs. 0.00
+                            </span>
 
                         </div>
 
@@ -537,6 +554,68 @@
     </main>
 
 </div>
+
+<script>
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            const checkboxes =
+                document.querySelectorAll(
+                    ".treatment-checkbox"
+                );
+
+            const totalElement =
+                document.getElementById(
+                    "estimatedTreatmentTotal"
+                );
+
+            function updateTreatmentTotal() {
+
+                let total = 0;
+
+                checkboxes.forEach(
+                    function (checkbox) {
+
+                        if (checkbox.checked) {
+
+                            const fee =
+                                parseFloat(
+                                    checkbox.dataset.fee
+                                );
+
+                            if (!Number.isNaN(fee)) {
+                                total += fee;
+                            }
+                        }
+                    }
+                );
+
+                totalElement.textContent =
+                    "Rs. "
+                    + total.toLocaleString(
+                        "en-US",
+                        {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        }
+                    );
+            }
+
+            checkboxes.forEach(
+                function (checkbox) {
+
+                    checkbox.addEventListener(
+                        "change",
+                        updateTreatmentTotal
+                    );
+                }
+            );
+
+            updateTreatmentTotal();
+        }
+    );
+</script>
 
 </body>
 </html>
