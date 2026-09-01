@@ -1,9 +1,12 @@
 package com.sunrisedental.controller;
 
+import com.sunrisedental.dao.AppointmentDAO;
+import com.sunrisedental.dao.AppointmentDAOImpl;
 import com.sunrisedental.dao.BillDAOImpl;
 import com.sunrisedental.dao.TreatmentDAOImpl;
 import com.sunrisedental.dao.TreatmentTypeDAOImpl;
 
+import com.sunrisedental.model.Appointment;
 import com.sunrisedental.model.Bill;
 
 import com.sunrisedental.service.BillService;
@@ -19,36 +22,26 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Optional;
 
 @WebServlet("/bills")
 public class BillController extends HttpServlet {
 
     private final BillService billService;
+    private final AppointmentDAO appointmentDAO;
 
     public BillController() {
 
-        this.billService =
-                createBillService();
-    }
-
-    public BillController(
-            final BillService billService) {
-
-        this.billService =
-                billService;
-    }
-
-    private static BillService createBillService() {
-
         try {
 
-            return new BillService(
-                    new BillDAOImpl(),
-                    new TreatmentDAOImpl(),
-                    new TreatmentTypeDAOImpl(),
-                    new StandardBillCalculator()
-            );
+            this.billService =
+                    createBillService();
+
+            this.appointmentDAO =
+                    new AppointmentDAOImpl();
 
         } catch (SQLException exception) {
 
@@ -58,59 +51,126 @@ public class BillController extends HttpServlet {
         }
     }
 
+    /*
+     * Kept for older unit tests.
+     */
+    public BillController(
+            final BillService billService) {
+
+        this.billService =
+                billService;
+
+        this.appointmentDAO =
+                null;
+    }
+
+    /*
+     * Full constructor for tests that need appointment data.
+     */
+    public BillController(
+            final BillService billService,
+            final AppointmentDAO appointmentDAO) {
+
+        this.billService =
+                billService;
+
+        this.appointmentDAO =
+                appointmentDAO;
+    }
+
+    private static BillService createBillService()
+            throws SQLException {
+
+        return new BillService(
+                new BillDAOImpl(),
+                new TreatmentDAOImpl(),
+                new TreatmentTypeDAOImpl(),
+                new StandardBillCalculator()
+        );
+    }
+
     @Override
     protected void doGet(
             final HttpServletRequest request,
             final HttpServletResponse response)
             throws ServletException, IOException {
 
-        final String billIdValue =
+        /*
+         * These values may come directly from
+         * Create Appointment after saving.
+         */
+        final String appointmentIdValue =
                 request.getParameter(
-                        "billId");
+                        "appointmentId");
 
-        final String appointmentId =
-                request.getParameter("appointmentId");
+        final String appointmentDateValue =
+                request.getParameter(
+                        "appointmentDate");
 
-        if (appointmentId != null
-                && !appointmentId.isBlank()) {
+        final String appointmentNumber =
+                request.getParameter(
+                        "appointmentNumber");
+
+        final String created =
+                request.getParameter(
+                        "created");
+
+        /*
+         * Preserve preselected appointment information.
+         */
+        if (appointmentIdValue != null
+                && !appointmentIdValue.isBlank()) {
 
             request.setAttribute(
                     "appointmentId",
-                    appointmentId);
+                    appointmentIdValue);
         }
 
-        if (billIdValue == null
-                || billIdValue.isBlank()) {
+        if (appointmentDateValue != null
+                && !appointmentDateValue.isBlank()) {
 
-            forwardToBillPage(
-                    request,
-                    response);
+            request.setAttribute(
+                    "selectedAppointmentDate",
+                    appointmentDateValue);
+        }
 
-            return;
+        if (appointmentNumber != null
+                && !appointmentNumber.isBlank()) {
+
+            request.setAttribute(
+                    "selectedAppointmentNumber",
+                    appointmentNumber);
+        }
+
+        if ("true".equalsIgnoreCase(created)) {
+
+            request.setAttribute(
+                    "infoMessage",
+                    "Appointment created successfully. "
+                            + "Generate the bill when ready.");
         }
 
         try {
 
-            final int billId =
-                    Integer.parseInt(
-                            billIdValue);
+            /*
+             * Load appointments for the dropdown.
+             */
+            loadAppointments(
+                    request);
 
-            final Optional<Bill> bill =
-                    billService
-                            .findBill(
-                                    billId);
+            /*
+             * Existing bill search functionality.
+             */
+            final String billIdValue =
+                    request.getParameter(
+                            "billId");
 
-            if (bill.isPresent()) {
+            if (billIdValue != null
+                    && !billIdValue.isBlank()) {
 
-                request.setAttribute(
-                        "bill",
-                        bill.get());
-
-            } else {
-
-                request.setAttribute(
-                        "errorMessage",
-                        "Bill not found");
+                searchBill(
+                        request,
+                        billIdValue);
             }
 
             forwardToBillPage(
@@ -140,7 +200,7 @@ public class BillController extends HttpServlet {
         } catch (SQLException exception) {
 
             throw new ServletException(
-                    "Unable to search bill",
+                    "Unable to load billing page",
                     exception);
         }
     }
@@ -153,11 +213,28 @@ public class BillController extends HttpServlet {
 
         try {
 
-            final int appointmentId =
-                    Integer.parseInt(
-                            request.getParameter(
-                                    "appointmentId"));
+            final String appointmentIdValue =
+                    request.getParameter(
+                            "appointmentId");
 
+            final String appointmentDateValue =
+                    request.getParameter(
+                            "appointmentDate");
+
+            final String appointmentNumber =
+                    request.getParameter(
+                            "appointmentNumber");
+
+            final int appointmentId =
+                    resolveAppointmentId(
+                            appointmentIdValue,
+                            appointmentDateValue,
+                            appointmentNumber);
+
+            /*
+             * Calculate total from all treatments already
+             * attached to this appointment.
+             */
             final BigDecimal totalAmount =
                     billService
                             .calculateBillTotal(
@@ -168,7 +245,16 @@ public class BillController extends HttpServlet {
 
                 request.setAttribute(
                         "errorMessage",
-                        "No treatments found for this appointment");
+                        "No treatments were selected for this appointment");
+
+                preserveSelection(
+                        request,
+                        appointmentId,
+                        appointmentDateValue,
+                        appointmentNumber);
+
+                loadAppointmentsSafely(
+                        request);
 
                 forwardToBillPage(
                         request,
@@ -193,12 +279,29 @@ public class BillController extends HttpServlet {
 
                 request.setAttribute(
                         "successMessage",
-                        "Bill saved successfully");
+                        "Bill generated successfully");
 
                 request.setAttribute(
                         "calculatedTotal",
                         totalAmount);
+
+                request.setAttribute(
+                        "generatedAppointmentNumber",
+                        appointmentNumber);
+
+                request.setAttribute(
+                        "generatedAppointmentDate",
+                        appointmentDateValue);
             }
+
+            preserveSelection(
+                    request,
+                    appointmentId,
+                    appointmentDateValue,
+                    appointmentNumber);
+
+            loadAppointments(
+                    request);
 
             forwardToBillPage(
                     request,
@@ -208,7 +311,23 @@ public class BillController extends HttpServlet {
 
             request.setAttribute(
                     "errorMessage",
-                    "Appointment ID must be a valid number");
+                    "Please select a valid appointment");
+
+            loadAppointmentsSafely(
+                    request);
+
+            forwardToBillPage(
+                    request,
+                    response);
+
+        } catch (DateTimeParseException exception) {
+
+            request.setAttribute(
+                    "errorMessage",
+                    "Appointment date must be valid");
+
+            loadAppointmentsSafely(
+                    request);
 
             forwardToBillPage(
                     request,
@@ -220,6 +339,9 @@ public class BillController extends HttpServlet {
                     "errorMessage",
                     exception.getMessage());
 
+            loadAppointmentsSafely(
+                    request);
+
             forwardToBillPage(
                     request,
                     response);
@@ -227,9 +349,151 @@ public class BillController extends HttpServlet {
         } catch (SQLException exception) {
 
             throw new ServletException(
-                    "Unable to save bill",
+                    "Unable to generate bill",
                     exception);
         }
+    }
+
+    private int resolveAppointmentId(
+            final String appointmentIdValue,
+            final String appointmentDateValue,
+            final String appointmentNumber)
+            throws SQLException {
+
+        /*
+         * If the page already supplied an appointment ID
+         * from the dropdown, use it.
+         */
+        if (appointmentIdValue != null
+                && !appointmentIdValue.isBlank()) {
+
+            return Integer.parseInt(
+                    appointmentIdValue);
+        }
+
+        /*
+         * Otherwise resolve the appointment using
+         * the date + appointment number entered by the user.
+         */
+        if (appointmentDateValue == null
+                || appointmentDateValue.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Appointment date is required");
+        }
+
+        if (appointmentNumber == null
+                || appointmentNumber.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Appointment number is required");
+        }
+
+        if (appointmentDAO == null) {
+
+            throw new IllegalStateException(
+                    "Appointment lookup is unavailable");
+        }
+
+        final LocalDate appointmentDate =
+                LocalDate.parse(
+                        appointmentDateValue);
+
+        final Optional<Appointment> appointment =
+                appointmentDAO
+                        .findByAppointmentDateAndNumber(
+                                appointmentDate,
+                                appointmentNumber.trim());
+
+        if (appointment.isEmpty()) {
+
+            throw new IllegalArgumentException(
+                    "Appointment not found for the selected date");
+        }
+
+        return appointment
+                .get()
+                .getAppointmentId();
+    }
+
+    private void searchBill(
+            final HttpServletRequest request,
+            final String billIdValue)
+            throws SQLException {
+
+        final int billId =
+                Integer.parseInt(
+                        billIdValue);
+
+        final Optional<Bill> bill =
+                billService
+                        .findBill(
+                                billId);
+
+        if (bill.isPresent()) {
+
+            request.setAttribute(
+                    "bill",
+                    bill.get());
+
+        } else {
+
+            request.setAttribute(
+                    "errorMessage",
+                    "Bill not found");
+        }
+    }
+
+    private void loadAppointments(
+            final HttpServletRequest request)
+            throws SQLException {
+
+        if (appointmentDAO == null) {
+            return;
+        }
+
+        final List<Appointment> appointments =
+                appointmentDAO
+                        .findAllAppointments();
+
+        request.setAttribute(
+                "appointments",
+                appointments);
+    }
+
+    private void loadAppointmentsSafely(
+            final HttpServletRequest request) {
+
+        try {
+
+            loadAppointments(
+                    request);
+
+        } catch (SQLException exception) {
+
+            request.setAttribute(
+                    "errorMessage",
+                    "Unable to load appointments");
+        }
+    }
+
+    private void preserveSelection(
+            final HttpServletRequest request,
+            final int appointmentId,
+            final String appointmentDate,
+            final String appointmentNumber) {
+
+        request.setAttribute(
+                "appointmentId",
+                appointmentId);
+
+        request.setAttribute(
+                "selectedAppointmentDate",
+                appointmentDate);
+
+        request.setAttribute(
+                "selectedAppointmentNumber",
+                appointmentNumber);
     }
 
     private void forwardToBillPage(

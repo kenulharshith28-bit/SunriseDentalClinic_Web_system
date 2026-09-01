@@ -1269,3 +1269,56 @@ th {
         box-sizing: border-box;
     }
 }
+
+
+/* =========================================
+   BILLING
+   ========================================= */
+
+.billing-selection-summary {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+    padding: 16px;
+    border: 1px solid #dfe8ec;
+    border-radius: 12px;
+    background: #f8fbfc;
+}
+
+.billing-selection-summary > div {
+    min-width: 0;
+}
+
+.billing-selection-summary span {
+    display: block;
+    margin-bottom: 5px;
+    color: #71828d;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.billing-selection-summary strong {
+    display: block;
+    color: #173042;
+    font-size: 15px;
+    overflow-wrap: anywhere;
+}
+
+.billing-total {
+    color: #0f766e;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.generated-bill-card {
+    border-color: #cbe7e3;
+}
+
+@media (max-width: 600px) {
+
+    .billing-selection-summary {
+        grid-template-columns: 1fr;
+    }
+}
