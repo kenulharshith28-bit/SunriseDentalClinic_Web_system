@@ -1927,3 +1927,95 @@ th {
         min-width: 950px;
     }
 }
+
+
+/* =========================================
+   HELP / STAFF GUIDE
+   ========================================= */
+
+.help-step-card {
+    margin-bottom: 20px;
+}
+
+.help-step-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.help-step-header h2 {
+    margin: 0 0 4px;
+}
+
+.help-step-header p {
+    margin: 0;
+}
+
+.help-step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    font-weight: 700;
+    font-size: 16px;
+
+    background: #e6f5f4;
+    color: #087f78;
+}
+
+.help-instructions {
+    margin: 0;
+    padding-left: 24px;
+}
+
+.help-instructions li {
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.help-instructions li:last-child {
+    margin-bottom: 0;
+}
+
+.help-workflow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.help-workflow span {
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #f4f7f9;
+    font-weight: 600;
+}
+
+.help-workflow i {
+    opacity: 0.6;
+}
+
+@media (max-width: 700px) {
+
+    .help-workflow {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .help-workflow span {
+        text-align: center;
+    }
+
+    .help-workflow i {
+        transform: rotate(90deg);
+        text-align: center;
+    }
+}

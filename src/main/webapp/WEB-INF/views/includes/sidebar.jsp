@@ -121,6 +121,20 @@
         </a>
 
 
+        <!-- HELP -->
+        <a class="sidebar-link <%= "help".equals(activePage) ? "active" : "" %>"
+           href="${pageContext.request.contextPath}/help">
+
+            <span>
+                <i class="bi bi-question-circle"
+                   aria-hidden="true"></i>
+            </span>
+
+            Help
+
+        </a>
+
+
         <!-- ADMIN SECTION -->
         <% if ("ADMIN".equals(sidebarRole)) { %>
 

@@ -21,6 +21,7 @@ import java.io.IOException;
                 "/patients/*",
                 "/bills",
                 "/reports",
+                "/help",
                 "/users/*",
                 "/dentists",
                 "/treatment-types"
