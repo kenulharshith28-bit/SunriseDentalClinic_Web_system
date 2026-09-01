@@ -157,4 +157,26 @@ public class BillDAOImpl implements BillDAO {
                     exception);
         }
     }
+
+    @Override
+    public int getBillCount()
+            throws SQLException {
+
+        final String sql =
+                "SELECT COUNT(*) AS total "
+                        + "FROM bills";
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql);
+
+             ResultSet resultSet =
+                     statement.executeQuery()) {
+
+            if (resultSet.next()) {
+                return resultSet.getInt("total");
+            }
+
+            return 0;
+        }
+    }
 }

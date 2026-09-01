@@ -5,362 +5,537 @@
     <title>Appointment Management</title>
 
     <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/style.css">
 </head>
 
-<body>
+<body class="dashboard-body">
 
-<div class="topbar">
+<%
+    request.setAttribute(
+            "activePage",
+            "appointments");
+%>
 
-    <div class="page-container topbar-content">
+<div class="dashboard-shell">
 
-        <div class="brand">
-            Sunrise Dental Clinic
-        </div>
+    <%@ include file="includes/sidebar.jsp" %>
 
-        <div class="nav-links">
+    <main class="dashboard-main">
 
-            <a href="${pageContext.request.contextPath}/dashboard">
-                Dashboard
-            </a>
+        <div class="page-container main-content">
 
-            <a href="${pageContext.request.contextPath}/treatments">
-                Treatments
-            </a>
+            <div class="page-title">
 
-            <a href="${pageContext.request.contextPath}/bills">
-                Billing
-            </a>
+                <h1>Appointment Management</h1>
 
-            <a href="${pageContext.request.contextPath}/reports">
-                Reports
-            </a>
+                <p>
+                    Search existing appointments or create a new booking.
+                </p>
 
-        </div>
+                <a class="btn btn-secondary"
+                   href="${pageContext.request.contextPath}/appointments/all">
 
-    </div>
+                    <i class="bi bi-list-ul"></i>
+                    View All Appointments
 
-</div>
-
-<div class="page-container main-content">
-
-    <div class="page-title">
-
-        <h1>Appointment Management</h1>
-
-        <p>
-            Search existing appointments or create a new booking.
-        </p>
-
-    </div>
-
-    <% if (request.getAttribute("successMessage") != null) { %>
-
-    <div class="alert alert-success">
-        ${successMessage}
-    </div>
-
-    <% } %>
-
-    <% if (request.getAttribute("errorMessage") != null) { %>
-
-    <div class="alert alert-error">
-        ${errorMessage}
-    </div>
-
-    <% } %>
-
-    <div class="card">
-
-        <h2>Search Appointment</h2>
-
-        <form method="get"
-              action="${pageContext.request.contextPath}/appointments">
-
-            <div class="form-group">
-
-                <label for="searchAppointmentNumber">
-                    Appointment Number
-                </label>
-
-                <input class="form-control"
-                       type="text"
-                       id="searchAppointmentNumber"
-                       name="appointmentNumber"
-                       placeholder="Example: A-004"
-                       required>
+                </a>
 
             </div>
 
-            <button class="btn btn-primary"
-                    type="submit">
 
-                Search Appointment
+            <!-- SUCCESS MESSAGE -->
+            <% if (request.getAttribute("successMessage") != null) { %>
 
-            </button>
+            <div class="alert alert-success">
+                ${successMessage}
+            </div>
 
-        </form>
+            <% } %>
 
-    </div>
 
-    <% if (request.getAttribute("appointment") != null) { %>
+            <!-- NEXT STEP -->
+            <% if (request.getAttribute("createdAppointment") != null) { %>
 
-    <div class="card">
+            <div class="card">
 
-        <h2>Appointment Details</h2>
+                <h2>Appointment Created</h2>
 
-        <div class="table-wrapper">
+                <p>
+                    The appointment has been created successfully.
+                    You can continue to treatment management if another
+                    treatment needs to be added later.
+                </p>
 
-            <table>
+                <a class="btn btn-primary"
+                   href="${pageContext.request.contextPath}/treatments?appointmentId=${createdAppointment.appointmentId}">
 
-                <tr>
-                    <th>Appointment Number</th>
-                    <td>${appointment.appointmentNumber}</td>
-                </tr>
+                    <i class="bi bi-clipboard2-pulse"></i>
+                    Manage Treatments
 
-                <tr>
-                    <th>Patient ID</th>
-                    <td>${appointment.patientId}</td>
-                </tr>
+                </a>
 
-                <tr>
-                    <th>Dentist ID</th>
-                    <td>${appointment.dentistId}</td>
-                </tr>
+            </div>
 
-                <tr>
-                    <th>Date</th>
-                    <td>${appointment.appointmentDate}</td>
-                </tr>
+            <% } %>
 
-                <tr>
-                    <th>Time</th>
-                    <td>${appointment.appointmentTime}</td>
-                </tr>
 
-                <tr>
-                    <th>Status</th>
-                    <td>${appointment.status}</td>
-                </tr>
+            <!-- ERROR MESSAGE -->
+            <% if (request.getAttribute("errorMessage") != null) { %>
 
-                <tr>
-                    <th>Notes</th>
-                    <td>${appointment.notes}</td>
-                </tr>
+            <div class="alert alert-error">
+                ${errorMessage}
+            </div>
 
-            </table>
+            <% } %>
 
-        </div>
 
-    </div>
+            <!-- SEARCH APPOINTMENT -->
+            <div class="card">
 
-    <% } %>
+                <h2>Search Appointment</h2>
 
-    <div class="card">
+                <form method="get"
+                      action="${pageContext.request.contextPath}/appointments">
 
-        <h2>Create Appointment</h2>
+                    <div class="grid grid-2">
 
-        <form method="post"
-              action="${pageContext.request.contextPath}/appointments">
+                        <div class="form-group">
 
-            <div class="grid grid-2">
+                            <label for="searchAppointmentDate">
+                                Appointment Date
+                            </label>
 
-                <div class="form-group">
+                            <input class="form-control"
+                                   type="date"
+                                   id="searchAppointmentDate"
+                                   name="appointmentDate"
+                                   required>
 
-                    <label for="appointmentNumber">
-                        Appointment Number
-                    </label>
+                        </div>
 
-                    <input class="form-control"
-                           type="text"
-                           id="appointmentNumber"
-                           name="appointmentNumber"
-                           placeholder="Example: A-005"
-                           required>
 
-                </div>
+                        <div class="form-group">
 
-                <div class="form-group">
+                            <label for="searchAppointmentNumber">
+                                Appointment Number
+                            </label>
 
-                    <label for="status">
-                        Status
-                    </label>
+                            <input class="form-control"
+                                   type="text"
+                                   id="searchAppointmentNumber"
+                                   name="appointmentNumber"
+                                   placeholder="Example: A-001"
+                                   required>
 
-                    <select class="form-control"
-                            id="status"
-                            name="status"
-                            required>
+                        </div>
 
-                        <option value="SCHEDULED">
-                            Scheduled
-                        </option>
+                    </div>
 
-                        <option value="COMPLETED">
-                            Completed
-                        </option>
 
-                        <option value="CANCELLED">
-                            Cancelled
-                        </option>
+                    <button class="btn btn-primary"
+                            type="submit">
 
-                    </select>
+                        <i class="bi bi-search"></i>
+                        Search Appointment
+
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <!-- SEARCH RESULT -->
+            <% if (request.getAttribute("appointment") != null) { %>
+
+            <div class="card">
+
+                <h2>Appointment Details</h2>
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <tr>
+                            <th>Appointment Number</th>
+                            <td>${appointment.appointmentNumber}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Patient ID</th>
+                            <td>${appointment.patientId}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Dentist ID</th>
+                            <td>${appointment.dentistId}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Date</th>
+                            <td>${appointment.appointmentDate}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Time</th>
+                            <td>${appointment.appointmentTime}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Status</th>
+                            <td>${appointment.status}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Notes</th>
+                            <td>${appointment.notes}</td>
+                        </tr>
+
+                    </table>
 
                 </div>
 
             </div>
 
-            <div class="grid grid-2">
+            <% } %>
 
-                <div class="form-group">
 
-                    <label for="patientId">
-                        Patient
-                    </label>
+            <!-- CREATE APPOINTMENT -->
+            <div class="card">
 
-                    <select class="form-control"
-                            id="patientId"
-                            name="patientId"
-                            required>
+                <div class="appointment-form-header">
 
-                        <option value="">
-                            Select patient
-                        </option>
+                    <div>
 
-                        <%
-                            java.util.List<com.sunrisedental.model.Patient> patients =
-                                    (java.util.List<com.sunrisedental.model.Patient>)
-                                            request.getAttribute("patients");
+                        <h2>Create Appointment</h2>
 
-                            if (patients != null) {
-                                for (com.sunrisedental.model.Patient patient : patients) {
-                        %>
+                        <p>
+                            Enter appointment details and optionally
+                            select one or more treatments.
+                        </p>
 
-                        <option value="<%= patient.getPatientId() %>">
-                            <%= patient.getFullName() %>
-                            - ID: <%= patient.getPatientId() %>
-                            - <%= patient.getPhone() %>
-                        </option>
+                    </div>
 
-                        <%
-                                }
-                            }
-                        %>
+                    <div class="appointment-form-icon">
 
-                    </select>
-
-                    <div style="margin-top: 8px;">
-
-                        <a class="btn-link"
-                           href="${pageContext.request.contextPath}/patients/new">
-
-                            + Add New Patient
-
-                        </a>
+                        <i class="bi bi-calendar2-plus"></i>
 
                     </div>
 
                 </div>
 
-                <div class="form-group">
 
-                    <label for="dentistId">
-                        Dentist
-                    </label>
+                <form method="post"
+                      action="${pageContext.request.contextPath}/appointments">
 
-                    <select class="form-control"
-                            id="dentistId"
-                            name="dentistId"
-                            required>
 
-                        <option value="">
-                            Select dentist
-                        </option>
+                    <!-- PATIENT + DENTIST -->
+                    <div class="grid grid-2">
 
-                        <%
-                            java.util.List<com.sunrisedental.model.Dentist> dentists =
-                                    (java.util.List<com.sunrisedental.model.Dentist>)
-                                            request.getAttribute("dentists");
+                        <div class="form-group">
 
-                            if (dentists != null) {
-                                for (com.sunrisedental.model.Dentist dentist : dentists) {
-                        %>
+                            <label for="patientId">
+                                Patient
+                            </label>
 
-                        <option value="<%= dentist.getDentistId() %>">
-                            <%= dentist.getFullName() %>
-                        </option>
+                            <select class="form-control"
+                                    id="patientId"
+                                    name="patientId"
+                                    required>
 
-                        <%
+                                <option value="">
+                                    Select patient
+                                </option>
+
+                                <%
+                                    java.util.List<com.sunrisedental.model.Patient> patients =
+                                            (java.util.List<com.sunrisedental.model.Patient>)
+                                                    request.getAttribute("patients");
+
+                                    if (patients != null) {
+
+                                        for (com.sunrisedental.model.Patient patient
+                                                : patients) {
+                                %>
+
+                                <option value="<%= patient.getPatientId() %>">
+
+                                    <%= patient.getFullName() %>
+                                    - ID: <%= patient.getPatientId() %>
+                                    - <%= patient.getPhone() %>
+
+                                </option>
+
+                                <%
+                                        }
+                                    }
+                                %>
+
+                            </select>
+
+
+                            <div class="appointment-add-patient">
+
+                                <a class="btn-link"
+                                   href="${pageContext.request.contextPath}/patients/new">
+
+                                    <i class="bi bi-person-plus"></i>
+                                    Add New Patient
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="dentistId">
+                                Dentist
+                            </label>
+
+                            <select class="form-control"
+                                    id="dentistId"
+                                    name="dentistId"
+                                    required>
+
+                                <option value="">
+                                    Select dentist
+                                </option>
+
+                                <%
+                                    java.util.List<com.sunrisedental.model.Dentist> dentists =
+                                            (java.util.List<com.sunrisedental.model.Dentist>)
+                                                    request.getAttribute("dentists");
+
+                                    if (dentists != null) {
+
+                                        for (com.sunrisedental.model.Dentist dentist
+                                                : dentists) {
+                                %>
+
+                                <option value="<%= dentist.getDentistId() %>">
+
+                                    Dr. <%= dentist.getFullName() %>
+
+                                </option>
+
+                                <%
+                                        }
+                                    }
+                                %>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DATE + TIME -->
+                    <div class="grid grid-2">
+
+                        <div class="form-group">
+
+                            <label for="appointmentDate">
+                                Appointment Date
+                            </label>
+
+                            <input class="form-control"
+                                   type="date"
+                                   id="appointmentDate"
+                                   name="appointmentDate"
+                                   required>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="appointmentTime">
+                                Appointment Time
+                            </label>
+
+                            <input class="form-control"
+                                   type="time"
+                                   id="appointmentTime"
+                                   name="appointmentTime"
+                                   required>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- STATUS -->
+                    <div class="form-group">
+
+                        <label for="status">
+                            Status
+                        </label>
+
+                        <select class="form-control"
+                                id="status"
+                                name="status"
+                                required>
+
+                            <option value="SCHEDULED">
+                                Scheduled
+                            </option>
+
+                            <option value="COMPLETED">
+                                Completed
+                            </option>
+
+                            <option value="CANCELLED">
+                                Cancelled
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- MULTIPLE TREATMENTS -->
+                    <div class="form-group treatment-selection-section">
+
+                        <div class="treatment-selection-heading">
+
+                            <div>
+
+                                <label>
+                                    Treatments
+                                </label>
+
+                                <p class="form-help-text">
+                                    Select one or more treatments if they are
+                                    already known. You can also add treatments later.
+                                </p>
+
+                            </div>
+
+                            <i class="bi bi-clipboard2-pulse"></i>
+
+                        </div>
+
+
+                        <div class="treatment-selection-grid">
+
+                            <%
+                                java.util.List<com.sunrisedental.model.TreatmentType>
+                                        treatmentTypes =
+                                        (java.util.List<com.sunrisedental.model.TreatmentType>)
+                                                request.getAttribute("treatmentTypes");
+
+                                if (treatmentTypes != null
+                                        && !treatmentTypes.isEmpty()) {
+
+                                    for (com.sunrisedental.model.TreatmentType treatmentType
+                                            : treatmentTypes) {
+                            %>
+
+
+                            <label class="treatment-option">
+
+                                <input type="checkbox"
+                                       name="treatmentTypeIds"
+                                       value="<%= treatmentType.getTreatmentTypeId() %>">
+
+                                <div class="treatment-option-content">
+
+                                    <strong>
+                                        <%= treatmentType.getTreatmentName() %>
+                                    </strong>
+
+                                    <span>
+                                        Rs. <%= treatmentType.getTreatmentFee() %>
+                                    </span>
+
+                                </div>
+
+                            </label>
+
+
+                            <%
                                 }
-                            }
-                        %>
 
-                    </select>
+                            } else {
+                            %>
 
-                </div>
+
+                            <div class="treatment-empty-message">
+
+                                <i class="bi bi-info-circle"></i>
+
+                                No treatment types are currently available.
+
+                            </div>
+
+
+                            <%
+                                }
+                            %>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- NOTES -->
+                    <div class="form-group">
+
+                        <label for="notes">
+                            Notes
+                        </label>
+
+                        <textarea class="form-control"
+                                  id="notes"
+                                  name="notes"
+                                  rows="4"
+                                  placeholder="Add any notes about this appointment"></textarea>
+
+                    </div>
+
+
+                    <!-- SAVE -->
+                    <div class="appointment-form-actions">
+
+                        <button class="btn btn-primary"
+                                type="submit">
+
+                            <i class="bi bi-calendar2-check"></i>
+                            Save Appointment
+
+                        </button>
+
+
+                        <a class="btn btn-secondary"
+                           href="${pageContext.request.contextPath}/appointments/all">
+
+                            <i class="bi bi-list-ul"></i>
+                            All Appointments
+
+                        </a>
+
+                    </div>
+
+                </form>
 
             </div>
 
-            <div class="grid grid-2">
+        </div>
 
-                <div class="form-group">
 
-                    <label for="appointmentDate">
-                        Appointment Date
-                    </label>
+        <div class="footer">
+            Sunrise Dental Clinic Management System
+        </div>
 
-                    <input class="form-control"
-                           type="date"
-                           id="appointmentDate"
-                           name="appointmentDate"
-                           required>
+    </main>
 
-                </div>
-
-                <div class="form-group">
-
-                    <label for="appointmentTime">
-                        Appointment Time
-                    </label>
-
-                    <input class="form-control"
-                           type="time"
-                           id="appointmentTime"
-                           name="appointmentTime"
-                           required>
-
-                </div>
-
-            </div>
-
-            <div class="form-group">
-
-                <label for="notes">
-                    Notes
-                </label>
-
-                <textarea class="form-control"
-                          id="notes"
-                          name="notes"
-                          rows="4"
-                          placeholder="Add any notes about this appointment"></textarea>
-
-            </div>
-
-            <button class="btn btn-primary"
-                    type="submit">
-
-                Save Appointment
-
-            </button>
-
-        </form>
-
-    </div>
-
-</div>
-
-<div class="footer">
-    Sunrise Dental Clinic Management System
 </div>
 
 </body>

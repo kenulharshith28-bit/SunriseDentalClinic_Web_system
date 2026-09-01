@@ -86,25 +86,123 @@ class AppointmentServiceTest {
     }
 
     @Test
+    void shouldReturnAppointmentWhenDateAndNumberMatch()
+            throws SQLException {
+
+        final LocalDate appointmentDate =
+                LocalDate.of(
+                        2026,
+                        8,
+                        28);
+
+        final Appointment appointment =
+                new Appointment(
+                        1,
+                        "A-001"
+                );
+
+        when(appointmentDAO
+                .findByAppointmentDateAndNumber(
+                        appointmentDate,
+                        "A-001"))
+                .thenReturn(
+                        Optional.of(
+                                appointment));
+
+        final Optional<Appointment> result =
+                appointmentService
+                        .searchAppointment(
+                                appointmentDate,
+                                " A-001 ");
+
+        assertTrue(
+                result.isPresent(),
+                "Appointment should be returned when date and number match");
+
+        verify(appointmentDAO)
+                .findByAppointmentDateAndNumber(
+                        appointmentDate,
+                        "A-001");
+    }
+
+    @Test
+    void shouldRejectNullAppointmentDateWhenSearchingByDateAndNumber() {
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> appointmentService
+                        .searchAppointment(
+                                null,
+                                "A-001")
+        );
+    }
+
+    @Test
+    void shouldGenerateNextAppointmentNumberForDate()
+            throws SQLException {
+
+        final LocalDate appointmentDate =
+                LocalDate.of(
+                        2026,
+                        8,
+                        28);
+
+        when(appointmentDAO
+                .generateNextAppointmentNumber(
+                        appointmentDate))
+                .thenReturn(
+                        "A-004");
+
+        final String appointmentNumber =
+                appointmentService
+                        .generateNextAppointmentNumber(
+                                appointmentDate);
+
+        assertEquals(
+                "A-004",
+                appointmentNumber);
+
+        verify(appointmentDAO)
+                .generateNextAppointmentNumber(
+                        appointmentDate);
+    }
+
+    @Test
+    void shouldRejectNullAppointmentDateWhenGeneratingNumber() {
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> appointmentService
+                        .generateNextAppointmentNumber(
+                                null)
+        );
+    }
+
+    @Test
     void shouldSaveAppointmentSuccessfully()
             throws SQLException {
 
         final Appointment appointment =
                 createValidAppointment();
 
+        final int generatedAppointmentId =
+                25;
+
         when(appointmentDAO
                 .saveAppointment(
                         appointment))
-                .thenReturn(true);
+                .thenReturn(
+                        generatedAppointmentId);
 
-        final boolean result =
+        final int result =
                 appointmentService
                         .saveAppointment(
                                 appointment);
 
-        assertTrue(
+        assertEquals(
+                generatedAppointmentId,
                 result,
-                "Appointment should be saved successfully");
+                "Generated appointment ID should be returned");
 
         verify(appointmentDAO)
                 .saveAppointment(

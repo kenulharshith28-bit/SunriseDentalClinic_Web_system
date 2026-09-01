@@ -1,5 +1,8 @@
 package com.sunrisedental.controller;
 
+import com.sunrisedental.dao.AppointmentDAO;
+import com.sunrisedental.dao.DentistDAO;
+import com.sunrisedental.dao.PatientDAO;
 import com.sunrisedental.model.Appointment;
 import com.sunrisedental.service.AppointmentService;
 
@@ -10,6 +13,9 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -21,6 +27,9 @@ import static org.mockito.Mockito.when;
 class AppointmentControllerTest {
 
     private AppointmentService appointmentService;
+    private AppointmentDAO appointmentDAO;
+    private PatientDAO patientDAO;
+    private DentistDAO dentistDAO;
     private HttpServletRequest request;
     private HttpServletResponse response;
     private RequestDispatcher dispatcher;
@@ -31,6 +40,15 @@ class AppointmentControllerTest {
 
         appointmentService =
                 mock(AppointmentService.class);
+
+        appointmentDAO =
+                mock(AppointmentDAO.class);
+
+        patientDAO =
+                mock(PatientDAO.class);
+
+        dentistDAO =
+                mock(DentistDAO.class);
 
         request =
                 mock(HttpServletRequest.class);
@@ -58,12 +76,20 @@ class AppointmentControllerTest {
                 "appointmentNumber"))
                 .thenReturn("A-001");
 
+        when(request.getParameter(
+                "appointmentDate"))
+                .thenReturn("2026-08-28");
+
         controller.doGet(
                 request,
                 response);
 
         verify(appointmentService)
                 .searchAppointment(
+                        LocalDate.of(
+                                2026,
+                                8,
+                                28),
                         "A-001");
     }
 
@@ -81,8 +107,17 @@ class AppointmentControllerTest {
                 "appointmentNumber"))
                 .thenReturn("A-001");
 
+        when(request.getParameter(
+                "appointmentDate"))
+                .thenReturn("2026-08-28");
+
         when(appointmentService
-                .searchAppointment("A-001"))
+                .searchAppointment(
+                        LocalDate.of(
+                                2026,
+                                8,
+                                28),
+                        "A-001"))
                 .thenReturn(
                         Optional.of(appointment));
 
@@ -109,8 +144,17 @@ class AppointmentControllerTest {
                 "appointmentNumber"))
                 .thenReturn("A-001");
 
+        when(request.getParameter(
+                "appointmentDate"))
+                .thenReturn("2026-08-28");
+
         when(appointmentService
-                .searchAppointment("A-001"))
+                .searchAppointment(
+                        LocalDate.of(
+                                2026,
+                                8,
+                                28),
+                        "A-001"))
                 .thenReturn(
                         Optional.empty());
 
@@ -137,11 +181,78 @@ class AppointmentControllerTest {
                 "appointmentNumber"))
                 .thenReturn("");
 
-        when(appointmentService
-                .searchAppointment(""))
-                .thenThrow(
-                        new IllegalArgumentException(
-                                "Appointment number must not be blank"));
+        when(request.getParameter(
+                "appointmentDate"))
+                .thenReturn("2026-08-28");
+
+        controller.doGet(
+                request,
+                response);
+
+        verify(dispatcher)
+                .forward(
+                        request,
+                        response);
+    }
+
+    @Test
+    void shouldShowAllAppointmentsNewestFirst()
+            throws Exception {
+
+        controller =
+                new AppointmentController(
+                        appointmentService,
+                        appointmentDAO,
+                        patientDAO,
+                        dentistDAO);
+
+        final RequestDispatcher allAppointmentsDispatcher =
+                mock(RequestDispatcher.class);
+
+        final Appointment olderAppointment =
+                new Appointment(
+                        1,
+                        "A-001",
+                        1,
+                        1,
+                        LocalDate.of(
+                                2026,
+                                8,
+                                28),
+                        LocalTime.of(
+                                10,
+                                0),
+                        "SCHEDULED",
+                        "Older appointment");
+
+        final Appointment newerAppointment =
+                new Appointment(
+                        2,
+                        "A-002",
+                        2,
+                        2,
+                        LocalDate.of(
+                                2026,
+                                8,
+                                29),
+                        LocalTime.of(
+                                11,
+                                0),
+                        "COMPLETED",
+                        "Newer appointment");
+
+        when(request.getServletPath())
+                .thenReturn("/appointments/all");
+
+        when(request.getRequestDispatcher(
+                "/WEB-INF/views/appointments-all.jsp"))
+                .thenReturn(allAppointmentsDispatcher);
+
+        when(appointmentDAO.findAllAppointments())
+                .thenReturn(
+                        List.of(
+                                olderAppointment,
+                                newerAppointment));
 
         controller.doGet(
                 request,
@@ -149,10 +260,20 @@ class AppointmentControllerTest {
 
         verify(request)
                 .setAttribute(
-                        "errorMessage",
-                        "Appointment number must not be blank");
+                        "appointments",
+                        argThat(value -> {
+                            if (!(value instanceof List<?> appointments)) {
+                                return false;
+                            }
 
-        verify(dispatcher)
+                            return appointments.size() == 2
+                                    && newerAppointment.equals(
+                                    appointments.get(0))
+                                    && olderAppointment.equals(
+                                    appointments.get(1));
+                        }));
+
+        verify(allAppointmentsDispatcher)
                 .forward(
                         request,
                         response);
@@ -163,6 +284,13 @@ class AppointmentControllerTest {
             throws Exception {
 
         mockAppointmentFormParameters();
+
+        when(appointmentService.generateNextAppointmentNumber(
+                LocalDate.of(
+                        2026,
+                        8,
+                        28)))
+                .thenReturn("A-001");
 
         controller.doPost(
                 request,
@@ -202,10 +330,17 @@ class AppointmentControllerTest {
 
         mockAppointmentFormParameters();
 
+        when(appointmentService.generateNextAppointmentNumber(
+                LocalDate.of(
+                        2026,
+                        8,
+                        28)))
+                .thenReturn("A-001");
+
         when(appointmentService
                 .saveAppointment(
                         any(Appointment.class)))
-                .thenReturn(true);
+                .thenReturn(25);
 
         controller.doPost(
                 request,
@@ -214,7 +349,7 @@ class AppointmentControllerTest {
         verify(request)
                 .setAttribute(
                         "successMessage",
-                        "Appointment saved successfully");
+                        "Appointment created successfully. Appointment Number: A-001");
 
         verify(dispatcher)
                 .forward(
@@ -223,10 +358,6 @@ class AppointmentControllerTest {
     }
 
     private void mockAppointmentFormParameters() {
-
-        when(request.getParameter(
-                "appointmentNumber"))
-                .thenReturn("A-001");
 
         when(request.getParameter(
                 "patientId"))

@@ -116,4 +116,26 @@ public class PatientDAOImpl implements PatientDAO {
                     exception);
         }
     }
+
+    @Override
+    public int getPatientCount()
+            throws SQLException {
+
+        final String sql =
+                "SELECT COUNT(*) AS total "
+                        + "FROM patients";
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql);
+
+             ResultSet resultSet =
+                     statement.executeQuery()) {
+
+            if (resultSet.next()) {
+                return resultSet.getInt("total");
+            }
+
+            return 0;
+        }
+    }
 }

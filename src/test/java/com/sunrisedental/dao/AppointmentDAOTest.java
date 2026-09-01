@@ -1,6 +1,7 @@
 package com.sunrisedental.dao;
 
 import com.sunrisedental.model.Appointment;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -8,15 +9,21 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
+
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,19 +33,31 @@ class AppointmentDAOTest {
     private Connection connection;
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
+    private ResultSet generatedKeys;
     private Appointment appointment;
     private AppointmentDAO appointmentDAO;
 
     @BeforeEach
     void setUp() {
 
-        connection = mock(Connection.class);
-        preparedStatement = mock(PreparedStatement.class);
-        resultSet = mock(ResultSet.class);
-        appointment = mock(Appointment.class);
+        connection =
+                mock(Connection.class);
+
+        preparedStatement =
+                mock(PreparedStatement.class);
+
+        resultSet =
+                mock(ResultSet.class);
+
+        generatedKeys =
+                mock(ResultSet.class);
+
+        appointment =
+                mock(Appointment.class);
 
         appointmentDAO =
-                new AppointmentDAOImpl(connection);
+                new AppointmentDAOImpl(
+                        connection);
     }
 
     @Test
@@ -68,24 +87,46 @@ class AppointmentDAOTest {
                                 0));
 
         when(appointment.getStatus())
-                .thenReturn("SCHEDULED");
+                .thenReturn(
+                        "SCHEDULED");
 
         when(appointment.getNotes())
-                .thenReturn("Initial appointment");
+                .thenReturn(
+                        "Initial appointment");
 
-        when(connection.prepareStatement(anyString()))
-                .thenReturn(preparedStatement);
+        /*
+         * saveAppointment now requests generated keys,
+         * so this mock must use the two-argument
+         * prepareStatement method.
+         */
+        when(connection.prepareStatement(
+                anyString(),
+                eq(Statement.RETURN_GENERATED_KEYS)))
+                .thenReturn(
+                        preparedStatement);
 
         when(preparedStatement.executeUpdate())
                 .thenReturn(1);
 
-        final boolean result =
-                appointmentDAO.saveAppointment(
-                        appointment);
+        when(preparedStatement.getGeneratedKeys())
+                .thenReturn(
+                        generatedKeys);
 
-        assertTrue(
+        when(generatedKeys.next())
+                .thenReturn(true);
+
+        when(generatedKeys.getInt(1))
+                .thenReturn(25);
+
+        final int result =
+                appointmentDAO
+                        .saveAppointment(
+                                appointment);
+
+        assertEquals(
+                25,
                 result,
-                "Appointment should be saved successfully");
+                "Generated appointment ID should be returned");
 
         verify(preparedStatement)
                 .setString(
@@ -131,6 +172,12 @@ class AppointmentDAOTest {
 
         verify(preparedStatement)
                 .executeUpdate();
+
+        verify(preparedStatement)
+                .getGeneratedKeys();
+
+        verify(generatedKeys)
+                .getInt(1);
     }
 
     @Test
@@ -139,7 +186,8 @@ class AppointmentDAOTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> appointmentDAO
-                        .saveAppointment(null));
+                        .saveAppointment(
+                                null));
     }
 
     @Test
@@ -147,9 +195,12 @@ class AppointmentDAOTest {
             throws SQLException {
 
         when(appointment.getAppointmentNumber())
-                .thenReturn("A-001");
+                .thenReturn(
+                        "A-001");
 
-        when(connection.prepareStatement(anyString()))
+        when(connection.prepareStatement(
+                anyString(),
+                eq(Statement.RETURN_GENERATED_KEYS)))
                 .thenThrow(
                         new SQLException(
                                 "Database connection failed"));
@@ -172,14 +223,18 @@ class AppointmentDAOTest {
     void shouldReturnEmptyWhenAppointmentDoesNotExist()
             throws SQLException {
 
-        when(connection.prepareStatement(anyString()))
-                .thenReturn(preparedStatement);
+        when(connection.prepareStatement(
+                anyString()))
+                .thenReturn(
+                        preparedStatement);
 
         when(preparedStatement.executeQuery())
-                .thenReturn(resultSet);
+                .thenReturn(
+                        resultSet);
 
         when(resultSet.next())
-                .thenReturn(false);
+                .thenReturn(
+                        false);
 
         final Optional<Appointment> result =
                 appointmentDAO
@@ -207,30 +262,38 @@ class AppointmentDAOTest {
     void shouldFindAppointmentByAppointmentNumber()
             throws SQLException {
 
-        when(connection.prepareStatement(anyString()))
-                .thenReturn(preparedStatement);
+        when(connection.prepareStatement(
+                anyString()))
+                .thenReturn(
+                        preparedStatement);
 
         when(preparedStatement.executeQuery())
-                .thenReturn(resultSet);
+                .thenReturn(
+                        resultSet);
 
         when(resultSet.next())
-                .thenReturn(true);
+                .thenReturn(
+                        true);
 
         when(resultSet.getInt(
                 "appointment_id"))
-                .thenReturn(1);
+                .thenReturn(
+                        1);
 
         when(resultSet.getString(
                 "appointment_number"))
-                .thenReturn("A-001");
+                .thenReturn(
+                        "A-001");
 
         when(resultSet.getInt(
                 "patient_id"))
-                .thenReturn(1);
+                .thenReturn(
+                        1);
 
         when(resultSet.getInt(
                 "dentist_id"))
-                .thenReturn(1);
+                .thenReturn(
+                        1);
 
         when(resultSet.getDate(
                 "appointment_date"))
@@ -251,7 +314,8 @@ class AppointmentDAOTest {
 
         when(resultSet.getString(
                 "status"))
-                .thenReturn("SCHEDULED");
+                .thenReturn(
+                        "SCHEDULED");
 
         when(resultSet.getString(
                 "notes"))
@@ -325,7 +389,8 @@ class AppointmentDAOTest {
     void shouldProvideMeaningfulSQLExceptionWhenLookupFails()
             throws SQLException {
 
-        when(connection.prepareStatement(anyString()))
+        when(connection.prepareStatement(
+                anyString()))
                 .thenThrow(
                         new SQLException(
                                 "Database connection failed"));

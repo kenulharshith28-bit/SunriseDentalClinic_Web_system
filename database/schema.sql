@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS treatment_types (
 
 CREATE TABLE IF NOT EXISTS appointments (
                                             appointment_id INT AUTO_INCREMENT PRIMARY KEY,
-                                            appointment_number VARCHAR(30) NOT NULL UNIQUE,
+                                            appointment_number VARCHAR(30) NOT NULL,
 
     patient_id INT NOT NULL,
     dentist_id INT NOT NULL,
@@ -66,6 +66,9 @@ CREATE TABLE IF NOT EXISTS appointments (
 
     status VARCHAR(30) NOT NULL DEFAULT 'SCHEDULED',
     notes VARCHAR(255),
+
+    CONSTRAINT unique_daily_appointment
+    UNIQUE (appointment_date, appointment_number),
 
     FOREIGN KEY (patient_id)
     REFERENCES patients(patient_id),

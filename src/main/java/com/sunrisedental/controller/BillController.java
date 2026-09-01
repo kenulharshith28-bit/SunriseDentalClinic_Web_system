@@ -68,6 +68,17 @@ public class BillController extends HttpServlet {
                 request.getParameter(
                         "billId");
 
+        final String appointmentId =
+                request.getParameter("appointmentId");
+
+        if (appointmentId != null
+                && !appointmentId.isBlank()) {
+
+            request.setAttribute(
+                    "appointmentId",
+                    appointmentId);
+        }
+
         if (billIdValue == null
                 || billIdValue.isBlank()) {
 

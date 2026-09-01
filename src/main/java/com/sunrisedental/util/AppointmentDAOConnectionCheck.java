@@ -32,13 +32,13 @@ public class AppointmentDAOConnectionCheck {
                         "Follow-up appointment"
                 );
 
-        final boolean saved =
+        final int appointmentId =
                 appointmentDAO
                         .saveAppointment(
                                 appointment);
 
         System.out.println(
-                "Appointment saved: "
-                        + saved);
+                "Appointment saved successfully. ID: "
+                        + appointmentId);
     }
 }

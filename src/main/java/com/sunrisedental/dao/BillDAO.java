@@ -27,4 +27,7 @@ public interface BillDAO {
 
     List<Bill> findAllBills()
             throws SQLException;
+
+    int getBillCount()
+            throws SQLException;
 }

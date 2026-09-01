@@ -5,62 +5,34 @@
     <title>Register Staff</title>
 
     <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/style.css">
 </head>
 
-<body>
+<body class="dashboard-body">
 
-<div class="topbar">
+<%
+    request.setAttribute(
+            "activePage",
+            "register-staff");
+%>
 
-    <div class="page-container topbar-content">
+<div class="dashboard-shell">
 
-        <div class="brand">
-            Sunrise Dental Clinic
-        </div>
+<%@ include file="includes/sidebar.jsp" %>
 
-        <div class="nav-links">
-
-            <a href="${pageContext.request.contextPath}/dashboard">
-                Dashboard
-            </a>
-
-            <a href="${pageContext.request.contextPath}/appointments">
-                Appointments
-            </a>
-
-            <a href="${pageContext.request.contextPath}/treatments">
-                Treatments
-            </a>
-
-            <a href="${pageContext.request.contextPath}/bills">
-                Billing
-            </a>
-
-            <a href="${pageContext.request.contextPath}/reports">
-                Reports
-            </a>
-
-        </div>
-
-    </div>
-
-</div>
+<main class="dashboard-main">
 
 <div class="page-container main-content">
 
     <div class="page-title">
 
-<<<<<<< HEAD
-        <h1>Register Staff</h1>
-
-        <p>
-            Create a new receptionist account for the clinic system.
-=======
         <h1>Staff Management</h1>
 
         <p>
             Register receptionist accounts and manage existing users.
->>>>>>> main
         </p>
 
     </div>
@@ -81,73 +53,6 @@
 
     <% } %>
 
-<<<<<<< HEAD
-    <div class="card">
-
-        <h2>Staff Account Details</h2>
-
-        <form method="post"
-              action="${pageContext.request.contextPath}/users/register">
-
-            <div class="form-group">
-
-                <label for="username">
-                    Username
-                </label>
-
-                <input class="form-control"
-                       type="text"
-                       id="username"
-                       name="username"
-                       placeholder="Enter staff username"
-                       required>
-
-            </div>
-
-            <div class="form-group">
-
-                <label for="password">
-                    Password
-                </label>
-
-                <input class="form-control"
-                       type="password"
-                       id="password"
-                       name="password"
-                       placeholder="Enter temporary password"
-                       required>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>
-                    Role
-                </label>
-
-                <input class="form-control"
-                       type="text"
-                       value="RECEPTIONIST"
-                       disabled>
-
-            </div>
-
-            <button class="btn btn-primary"
-                    type="submit">
-
-                Register Staff
-
-            </button>
-
-            <a class="btn btn-secondary"
-               href="${pageContext.request.contextPath}/dashboard">
-
-                Cancel
-
-            </a>
-
-        </form>
-=======
     <div class="grid grid-2">
 
         <div class="card">
@@ -345,7 +250,6 @@
             </table>
 
         </div>
->>>>>>> main
 
     </div>
 
@@ -353,6 +257,10 @@
 
 <div class="footer">
     Sunrise Dental Clinic Management System
+</div>
+
+</main>
+
 </div>
 
 </body>

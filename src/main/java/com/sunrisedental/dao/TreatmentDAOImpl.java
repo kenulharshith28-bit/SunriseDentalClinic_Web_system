@@ -126,4 +126,26 @@ public class TreatmentDAOImpl implements TreatmentDAO {
                     exception);
         }
     }
+
+    @Override
+    public int getTreatmentCount()
+            throws SQLException {
+
+        final String sql =
+                "SELECT COUNT(*) AS total "
+                        + "FROM treatments";
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql);
+
+             ResultSet resultSet =
+                     statement.executeQuery()) {
+
+            if (resultSet.next()) {
+                return resultSet.getInt("total");
+            }
+
+            return 0;
+        }
+    }
 }

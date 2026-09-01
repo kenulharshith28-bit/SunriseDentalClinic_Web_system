@@ -14,4 +14,7 @@ public interface TreatmentDAO {
     List<Treatment> findByAppointmentId(
             int appointmentId)
             throws SQLException;
+
+    int getTreatmentCount()
+            throws SQLException;
 }

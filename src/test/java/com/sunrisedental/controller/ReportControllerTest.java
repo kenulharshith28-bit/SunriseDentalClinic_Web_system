@@ -1,5 +1,9 @@
 package com.sunrisedental.controller;
 
+import com.sunrisedental.dao.AppointmentDAO;
+import com.sunrisedental.dao.BillDAO;
+import com.sunrisedental.model.Appointment;
+import com.sunrisedental.model.Bill;
 import com.sunrisedental.service.ReportService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,6 +11,11 @@ import org.junit.jupiter.api.Test;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.RequestDispatcher;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -16,6 +25,8 @@ import static org.mockito.Mockito.when;
 class ReportControllerTest {
 
     private ReportService reportService;
+    private AppointmentDAO appointmentDAO;
+    private BillDAO billDAO;
     private HttpServletRequest request;
     private HttpServletResponse response;
     private ReportController controller;
@@ -26,6 +37,12 @@ class ReportControllerTest {
 
         reportService =
                 mock(ReportService.class);
+
+        appointmentDAO =
+                mock(AppointmentDAO.class);
+
+        billDAO =
+                mock(BillDAO.class);
 
         request =
                 mock(HttpServletRequest.class);
@@ -38,7 +55,9 @@ class ReportControllerTest {
 
         controller =
                 new ReportController(
-                        reportService);
+                        reportService,
+                        appointmentDAO,
+                        billDAO);
 
         when(request.getRequestDispatcher(
                 "/WEB-INF/views/report.jsp"))
@@ -53,27 +72,50 @@ class ReportControllerTest {
                 "reportType"))
                 .thenReturn("appointment");
 
+        when(appointmentDAO.findAllAppointments())
+                .thenReturn(
+                        List.of());
+
         controller.doGet(
                 request,
                 response);
 
-        verify(reportService)
-                .generateReport(
-                        "appointment");
+        verify(appointmentDAO)
+                .findAllAppointments();
     }
 
     @Test
     void shouldDisplayGeneratedReportOnPage()
             throws Exception {
 
+        final Appointment appointment =
+                new Appointment(
+                        1,
+                        "A-001",
+                        1,
+                        1,
+                        LocalDate.of(
+                                2026,
+                                8,
+                                28),
+                        LocalTime.of(
+                                10,
+                                0),
+                        "SCHEDULED",
+                        "Regular checkup"
+                );
+
+        final List<Appointment> appointments =
+                List.of(
+                        appointment);
+
         when(request.getParameter(
                 "reportType"))
                 .thenReturn("appointment");
 
-        when(reportService.generateReport(
-                "appointment"))
+        when(appointmentDAO.findAllAppointments())
                 .thenReturn(
-                        "Appointment Report");
+                        appointments);
 
         controller.doGet(
                 request,
@@ -81,8 +123,13 @@ class ReportControllerTest {
 
         verify(request)
                 .setAttribute(
-                        "report",
-                        "Appointment Report");
+                        "appointments",
+                        appointments);
+
+        verify(request)
+                .setAttribute(
+                        "reportType",
+                        "appointment");
 
         verify(dispatcher)
                 .forward(
@@ -98,12 +145,6 @@ class ReportControllerTest {
                 "reportType"))
                 .thenReturn("unknown");
 
-        when(reportService.generateReport(
-                "unknown"))
-                .thenThrow(
-                        new IllegalArgumentException(
-                                "Unsupported report type"));
-
         controller.doGet(
                 request,
                 response);
@@ -112,6 +153,45 @@ class ReportControllerTest {
                 .setAttribute(
                         "errorMessage",
                         "Unsupported report type");
+
+        verify(dispatcher)
+                .forward(
+                        request,
+                        response);
+    }
+
+    @Test
+    void shouldDisplayBillingReportOnPage()
+            throws Exception {
+
+        final List<Bill> bills =
+                List.of(
+                        new Bill(
+                                1,
+                                4,
+                                new BigDecimal("3500.00")));
+
+        when(request.getParameter(
+                "reportType"))
+                .thenReturn("bill");
+
+        when(billDAO.findAllBills())
+                .thenReturn(
+                        bills);
+
+        controller.doGet(
+                request,
+                response);
+
+        verify(request)
+                .setAttribute(
+                        "bills",
+                        bills);
+
+        verify(request)
+                .setAttribute(
+                        "reportType",
+                        "bill");
 
         verify(dispatcher)
                 .forward(

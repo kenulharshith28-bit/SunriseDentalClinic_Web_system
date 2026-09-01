@@ -1,9 +1,12 @@
 package com.sunrisedental.controller;
 
+import com.sunrisedental.dao.AppointmentDAO;
+import com.sunrisedental.dao.AppointmentDAOImpl;
+import com.sunrisedental.dao.BillDAO;
+import com.sunrisedental.dao.BillDAOImpl;
 import com.sunrisedental.report.ReportGeneratorFactory;
 import com.sunrisedental.service.ReportService;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -11,24 +14,63 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet("/reports")
 public class ReportController extends HttpServlet {
 
-    private final ReportService reportService;
+    private ReportService reportService;
+    private AppointmentDAO appointmentDAO;
+    private BillDAO billDAO;
 
     public ReportController() {
-
-        this.reportService =
-                new ReportService(
-                        new ReportGeneratorFactory());
     }
 
     public ReportController(
             final ReportService reportService) {
 
-        this.reportService =
-                reportService;
+        this.reportService = reportService;
+    }
+
+    public ReportController(
+            final ReportService reportService,
+            final AppointmentDAO appointmentDAO,
+            final BillDAO billDAO) {
+
+        this.reportService = reportService;
+        this.appointmentDAO = appointmentDAO;
+        this.billDAO = billDAO;
+    }
+
+    @Override
+    public void init()
+            throws ServletException {
+
+        try {
+
+            if (reportService == null) {
+
+                reportService =
+                        new ReportService(
+                                new ReportGeneratorFactory());
+            }
+
+            if (appointmentDAO == null) {
+                appointmentDAO =
+                        new AppointmentDAOImpl();
+            }
+
+            if (billDAO == null) {
+                billDAO =
+                        new BillDAOImpl();
+            }
+
+        } catch (SQLException exception) {
+
+            throw new ServletException(
+                    "Failed to initialize report controller",
+                    exception);
+        }
     }
 
     @Override
@@ -53,26 +95,48 @@ public class ReportController extends HttpServlet {
 
         try {
 
-            final String report =
-                    reportService
-                            .generateReport(
-                                    reportType);
+            if ("appointment".equals(
+                    reportType)) {
+
+                request.setAttribute(
+                        "appointments",
+                        appointmentDAO
+                                .findAllAppointments());
+
+                request.setAttribute(
+                        "reportType",
+                        "appointment");
+
+            } else if ("bill".equals(
+                    reportType)) {
+
+                request.setAttribute(
+                        "bills",
+                        billDAO.findAllBills());
+
+                request.setAttribute(
+                        "reportType",
+                        "bill");
+
+            } else {
+
+                request.setAttribute(
+                        "errorMessage",
+                        "Unsupported report type");
+            }
+
+        } catch (SQLException exception) {
 
             request.setAttribute(
-                    "report",
-                    report);
+                    "errorMessage",
+                    "Failed to load appointment report");
 
-        } catch (IllegalArgumentException exception) {
+        } catch (IllegalArgumentException
+                 | IllegalStateException exception) {
 
             request.setAttribute(
                     "errorMessage",
                     exception.getMessage());
-
-        } catch (IllegalStateException exception) {
-
-            throw new ServletException(
-                    "Unable to generate report",
-                    exception);
         }
 
         forwardToReportPage(
@@ -85,12 +149,10 @@ public class ReportController extends HttpServlet {
             final HttpServletResponse response)
             throws ServletException, IOException {
 
-        final RequestDispatcher dispatcher =
-                request.getRequestDispatcher(
-                        "/WEB-INF/views/report.jsp");
-
-        dispatcher.forward(
-                request,
-                response);
+        request.getRequestDispatcher(
+                        "/WEB-INF/views/report.jsp")
+                .forward(
+                        request,
+                        response);
     }
 }

@@ -5,42 +5,25 @@
   <title>Billing</title>
 
   <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet"
         href="${pageContext.request.contextPath}/css/style.css">
 </head>
 
-<body>
+<body class="dashboard-body">
 
-<div class="topbar">
+<%
+  request.setAttribute(
+          "activePage",
+          "bills");
+%>
 
-  <div class="page-container topbar-content">
+<div class="dashboard-shell">
 
-    <div class="brand">
-      Sunrise Dental Clinic
-    </div>
+<%@ include file="includes/sidebar.jsp" %>
 
-    <div class="nav-links">
-
-      <a href="${pageContext.request.contextPath}/dashboard">
-        Dashboard
-      </a>
-
-      <a href="${pageContext.request.contextPath}/appointments">
-        Appointments
-      </a>
-
-      <a href="${pageContext.request.contextPath}/treatments">
-        Treatments
-      </a>
-
-      <a href="${pageContext.request.contextPath}/reports">
-        Reports
-      </a>
-
-    </div>
-
-  </div>
-
-</div>
+<main class="dashboard-main">
 
 <div class="page-container main-content">
 
@@ -89,7 +72,9 @@
                  type="number"
                  id="appointmentId"
                  name="appointmentId"
+                 value="${appointmentId}"
                  placeholder="Enter appointment ID"
+                 min="1"
                  required>
 
         </div>
@@ -222,6 +207,10 @@
 
 <div class="footer">
   Sunrise Dental Clinic Management System
+</div>
+
+</main>
+
 </div>
 
 </body>

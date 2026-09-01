@@ -63,6 +63,17 @@ public class TreatmentController extends HttpServlet {
                     treatmentTypeDAO
                             .findAllTreatmentTypes());
 
+            final String appointmentId =
+                    request.getParameter("appointmentId");
+
+            if (appointmentId != null
+                    && !appointmentId.isBlank()) {
+
+                request.setAttribute(
+                        "appointmentId",
+                        appointmentId);
+            }
+
             forwardToPage(
                     request,
                     response);
@@ -111,6 +122,10 @@ public class TreatmentController extends HttpServlet {
                                     treatment);
 
             if (saved) {
+
+                request.setAttribute(
+                        "appointmentId",
+                        appointmentId);
 
                 request.setAttribute(
                         "successMessage",

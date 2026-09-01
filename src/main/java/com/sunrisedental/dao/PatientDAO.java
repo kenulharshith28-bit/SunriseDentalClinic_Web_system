@@ -13,4 +13,7 @@ public interface PatientDAO {
     boolean savePatient(
             Patient patient)
             throws SQLException;
+
+    int getPatientCount()
+            throws SQLException;
 }
