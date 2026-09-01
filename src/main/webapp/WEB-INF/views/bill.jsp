@@ -364,9 +364,9 @@
 
             <div class="invoice-detail-box">
 
-                            <span class="invoice-label">
-                                Bill Type
-                            </span>
+              <span class="invoice-label">
+                Bill Type
+              </span>
 
               <strong>
                 Dental Treatment Invoice
@@ -377,9 +377,9 @@
 
             <div class="invoice-detail-box">
 
-                            <span class="invoice-label">
-                                Clinic
-                            </span>
+              <span class="invoice-label">
+                Clinic
+              </span>
 
               <strong>
                 Sunrise Dental Clinic
@@ -390,9 +390,9 @@
 
             <div class="invoice-detail-box">
 
-                            <span class="invoice-label">
-                                Billing Source
-                            </span>
+              <span class="invoice-label">
+                Billing Source
+              </span>
 
               <strong>
                 Appointment Treatments
@@ -464,6 +464,7 @@
               %>
 
 
+              <!-- TREATMENT ROW -->
               <tr>
 
                 <td>
@@ -521,6 +522,37 @@
                 }
               %>
 
+
+              <!-- CONSULTATION FEE -->
+              <tr>
+
+                <td>
+
+                  <strong>
+                    Consultation Fee
+                  </strong>
+
+                </td>
+
+                <td>
+                  ${generatedAppointmentNumber}
+                </td>
+
+                <td>
+                  ${generatedAppointmentDate}
+                </td>
+
+                <td>
+
+                  <strong>
+                    Rs. ${consultationFee}
+                  </strong>
+
+                </td>
+
+              </tr>
+
+
               </tbody>
 
             </table>
@@ -535,9 +567,9 @@
 
               <div class="summary-row">
 
-                                <span>
-                                    Subtotal
-                                </span>
+                <span>
+                  Subtotal
+                </span>
 
                 <strong>
                   Rs. ${calculatedTotal}
@@ -548,9 +580,9 @@
 
               <div class="summary-row">
 
-                                <span>
-                                    Tax
-                                </span>
+                <span>
+                  Tax
+                </span>
 
                 <strong>
                   Rs. 0.00
@@ -561,9 +593,9 @@
 
               <div class="summary-row total-row">
 
-                                <span>
-                                    Total Amount
-                                </span>
+                <span>
+                  Total Amount
+                </span>
 
                 <strong>
                   Rs. ${calculatedTotal}
@@ -610,7 +642,8 @@
           <div class="invoice-footer-note">
 
             This invoice was generated from the treatment
-            types selected for this appointment.
+            types selected for this appointment and includes
+            the clinic consultation fee.
 
           </div>
 

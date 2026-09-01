@@ -323,6 +323,10 @@ public class BillController extends HttpServlet {
                         totalAmount);
 
                 request.setAttribute(
+                        "consultationFee",
+                        new BigDecimal("2000.00"));
+
+                request.setAttribute(
                         "generatedAppointmentNumber",
                         appointmentNumber);
 
