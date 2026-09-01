@@ -243,6 +243,7 @@ textarea.form-control {
 
 .table-wrapper {
     width: 100%;
+    max-width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
@@ -263,6 +264,29 @@ td {
 th {
     background: #f9fafb;
     font-weight: 600;
+}
+
+.table-action-form {
+    margin: 0;
+}
+
+.status-label {
+    display: inline-flex;
+    align-items: center;
+    min-height: 38px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.admin-management-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.admin-form-grid {
+    align-items: start;
 }
 
 .login-page {

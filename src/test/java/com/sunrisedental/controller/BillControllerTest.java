@@ -201,6 +201,14 @@ class BillControllerTest {
                 "appointmentId"))
                 .thenReturn("1");
 
+        when(request.getParameter(
+                "appointmentDate"))
+                .thenReturn("2026-09-01");
+
+        when(request.getParameter(
+                "appointmentNumber"))
+                .thenReturn("A-001");
+
         when(billService
                 .calculateBillTotal(
                         1))
@@ -220,7 +228,7 @@ class BillControllerTest {
         verify(request)
                 .setAttribute(
                         "successMessage",
-                        "Bill saved successfully");
+                        "Bill generated successfully");
 
         verify(request)
                 .setAttribute(

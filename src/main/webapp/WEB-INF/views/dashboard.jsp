@@ -293,27 +293,6 @@
 
 
           <a class="quick-action"
-             href="${pageContext.request.contextPath}/treatments">
-
-            <div class="quick-action-icon">
-
-              <i class="bi bi-clipboard2-pulse"
-                 aria-hidden="true"></i>
-
-            </div>
-
-            <h3>
-              Treatments
-            </h3>
-
-            <p>
-              Assign treatments to appointments.
-            </p>
-
-          </a>
-
-
-          <a class="quick-action"
              href="${pageContext.request.contextPath}/bills">
 
             <div class="quick-action-icon">

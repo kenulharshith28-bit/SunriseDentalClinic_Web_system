@@ -17,11 +17,13 @@ import java.io.IOException;
         urlPatterns = {
                 "/dashboard",
                 "/appointments",
+                "/appointments/*",
                 "/patients/*",
-                "/treatments",
                 "/bills",
                 "/reports",
-                "/users/*"
+                "/users/*",
+                "/dentists",
+                "/treatment-types"
         }
 )
 public class AuthenticationFilter

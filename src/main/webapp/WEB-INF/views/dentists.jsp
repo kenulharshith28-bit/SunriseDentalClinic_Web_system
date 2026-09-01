@@ -54,7 +54,7 @@
 
     <% } %>
 
-    <div class="grid grid-2">
+    <div class="admin-management-grid">
 
         <!-- ADD DENTIST -->
         <div class="card">
@@ -151,29 +151,6 @@
 
         </div>
 
-
-        <!-- INFO -->
-        <div class="card">
-
-            <h2>About Dentist Management</h2>
-
-            <p>
-                Dentists added here will automatically become
-                available when creating a new appointment.
-            </p>
-
-            <p>
-                Only administrators can access this page.
-            </p>
-
-            <a class="btn btn-secondary"
-               href="${pageContext.request.contextPath}/appointments">
-
-                View Appointments
-
-            </a>
-
-        </div>
 
     </div>
 

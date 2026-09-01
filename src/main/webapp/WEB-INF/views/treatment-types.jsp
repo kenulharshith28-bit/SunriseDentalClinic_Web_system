@@ -53,7 +53,7 @@
 
   <% } %>
 
-  <div class="grid grid-2">
+  <div class="admin-management-grid">
 
     <div class="card">
 
@@ -62,35 +62,39 @@
       <form method="post"
             action="${pageContext.request.contextPath}/treatment-types">
 
-        <div class="form-group">
+        <div class="grid grid-2 admin-form-grid">
 
-          <label for="treatmentName">
-            Treatment / Procedure Name
-          </label>
+          <div class="form-group">
 
-          <input class="form-control"
-                 type="text"
-                 id="treatmentName"
-                 name="treatmentName"
-                 placeholder="Example: Root Canal"
-                 required>
+            <label for="treatmentName">
+              Treatment / Procedure Name
+            </label>
 
-        </div>
+            <input class="form-control"
+                   type="text"
+                   id="treatmentName"
+                   name="treatmentName"
+                   placeholder="Example: Root Canal"
+                   required>
 
-        <div class="form-group">
+          </div>
 
-          <label for="treatmentFee">
-            Treatment Fee
-          </label>
+          <div class="form-group">
 
-          <input class="form-control"
-                 type="number"
-                 id="treatmentFee"
-                 name="treatmentFee"
-                 min="0"
-                 step="0.01"
-                 placeholder="Example: 15000.00"
-                 required>
+            <label for="treatmentFee">
+              Treatment Fee
+            </label>
+
+            <input class="form-control"
+                   type="number"
+                   id="treatmentFee"
+                   name="treatmentFee"
+                   min="0"
+                   step="0.01"
+                   placeholder="Example: 15000.00"
+                   required>
+
+          </div>
 
         </div>
 
@@ -102,27 +106,6 @@
         </button>
 
       </form>
-
-    </div>
-
-    <div class="card">
-
-      <h2>Examples</h2>
-
-      <p>
-        You can add procedures such as:
-      </p>
-
-      <p>
-        Dental Cleaning, Filling, Extraction,
-        Root Canal, Crown, Orthodontic Treatment,
-        Wisdom Tooth Surgery and other clinic procedures.
-      </p>
-
-      <p>
-        Once added, the treatment will automatically
-        appear on the Assign Treatment page.
-      </p>
 
     </div>
 
