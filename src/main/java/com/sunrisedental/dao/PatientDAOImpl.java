@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,8 @@ public class PatientDAOImpl implements PatientDAO {
             throws SQLException {
 
         final String sql =
-                "SELECT patient_id, first_name, last_name, phone "
+                "SELECT patient_id, first_name, last_name, "
+                        + "phone, email, date_of_birth, address "
                         + "FROM patients "
                         + "ORDER BY first_name, last_name";
 
@@ -50,18 +52,38 @@ public class PatientDAOImpl implements PatientDAO {
 
             while (resultSet.next()) {
 
+                final java.sql.Date dateOfBirthValue =
+                        resultSet.getDate(
+                                "date_of_birth");
+
                 final Patient patient =
                         new Patient(
                                 resultSet.getInt(
                                         "patient_id"),
+
                                 resultSet.getString(
                                         "first_name"),
+
                                 resultSet.getString(
                                         "last_name"),
-                                resultSet.getString("phone")
+
+                                resultSet.getString(
+                                        "phone"),
+
+                                resultSet.getString(
+                                        "email"),
+
+                                dateOfBirthValue == null
+                                        ? null
+                                        : dateOfBirthValue
+                                        .toLocalDate(),
+
+                                resultSet.getString(
+                                        "address")
                         );
 
-                patients.add(patient);
+                patients.add(
+                        patient);
             }
 
             return patients;
@@ -80,14 +102,16 @@ public class PatientDAOImpl implements PatientDAO {
             throws SQLException {
 
         if (patient == null) {
+
             throw new IllegalArgumentException(
                     "Patient must not be null");
         }
 
         final String sql =
                 "INSERT INTO patients "
-                        + "(first_name, last_name, phone) "
-                        + "VALUES (?, ?, ?)";
+                        + "(first_name, last_name, phone, email, "
+                        + "date_of_birth, address) "
+                        + "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement =
                      connection.prepareStatement(sql)) {
@@ -103,6 +127,28 @@ public class PatientDAOImpl implements PatientDAO {
             statement.setString(
                     3,
                     patient.getPhone());
+
+            statement.setString(
+                    4,
+                    patient.getEmail());
+
+            if (patient.getDateOfBirth() != null) {
+
+                statement.setDate(
+                        5,
+                        java.sql.Date.valueOf(
+                                patient.getDateOfBirth()));
+
+            } else {
+
+                statement.setNull(
+                        5,
+                        java.sql.Types.DATE);
+            }
+
+            statement.setString(
+                    6,
+                    patient.getAddress());
 
             final int affectedRows =
                     statement.executeUpdate();
@@ -132,10 +178,18 @@ public class PatientDAOImpl implements PatientDAO {
                      statement.executeQuery()) {
 
             if (resultSet.next()) {
-                return resultSet.getInt("total");
+
+                return resultSet.getInt(
+                        "total");
             }
 
             return 0;
+
+        } catch (SQLException exception) {
+
+            throw new SQLException(
+                    "Failed to get patient count",
+                    exception);
         }
     }
 }

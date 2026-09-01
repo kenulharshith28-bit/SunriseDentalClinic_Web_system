@@ -86,7 +86,7 @@
 
 
       <!-- GENERATE BILL -->
-      <div class="card">
+      <div class="card no-print">
 
         <div class="appointment-form-header">
 
@@ -239,8 +239,8 @@
                    required>
 
             <p class="form-help-text">
-              Choose from the dropdown above or type the
-              appointment number manually.
+              Choose from the dropdown above or type
+              the appointment number manually.
             </p>
 
           </div>
@@ -272,7 +272,7 @@
       </div>
 
 
-      <!-- GENERATED PROFESSIONAL INVOICE -->
+      <!-- PROFESSIONAL INVOICE -->
       <% if (request.getAttribute("calculatedTotal") != null) { %>
 
       <div class="card invoice-card">
@@ -295,7 +295,7 @@
         <div class="invoice-sheet">
 
 
-          <!-- INVOICE HEADER -->
+          <!-- HEADER -->
           <div class="invoice-header">
 
             <div class="invoice-brand">
@@ -332,19 +332,23 @@
               </h1>
 
               <p>
+
                 <strong>
                   Appointment No:
                 </strong>
 
                 ${generatedAppointmentNumber}
+
               </p>
 
               <p>
+
                 <strong>
                   Appointment Date:
                 </strong>
 
                 ${generatedAppointmentDate}
+
               </p>
 
             </div>
@@ -356,7 +360,7 @@
 
 
           <!-- GENERAL DETAILS -->
-          <div class="invoice-details-grid">
+          <div class="invoice-details-grid invoice-details-grid-3">
 
             <div class="invoice-detail-box">
 
@@ -366,19 +370,6 @@
 
               <strong>
                 Dental Treatment Invoice
-              </strong>
-
-            </div>
-
-
-            <div class="invoice-detail-box">
-
-                            <span class="invoice-label">
-                                Status
-                            </span>
-
-              <strong>
-                Generated
               </strong>
 
             </div>
@@ -412,7 +403,7 @@
           </div>
 
 
-          <!-- BILL CHARGE TABLE -->
+          <!-- TREATMENT TABLE -->
           <div class="table-wrapper invoice-table-wrapper">
 
             <table class="invoice-table">
@@ -444,10 +435,43 @@
 
               <tbody>
 
+              <%
+                java.util.List<com.sunrisedental.model.Treatment>
+                        billTreatments =
+                        (java.util.List<com.sunrisedental.model.Treatment>)
+                                request.getAttribute(
+                                        "billTreatments");
+
+                java.util.Map<Integer, com.sunrisedental.model.TreatmentType>
+                        treatmentTypeMap =
+                        (java.util.Map<Integer, com.sunrisedental.model.TreatmentType>)
+                                request.getAttribute(
+                                        "treatmentTypeMap");
+
+                if (billTreatments != null
+                        && !billTreatments.isEmpty()
+                        && treatmentTypeMap != null) {
+
+                  for (com.sunrisedental.model.Treatment treatment
+                          : billTreatments) {
+
+                    com.sunrisedental.model.TreatmentType treatmentType =
+                            treatmentTypeMap.get(
+                                    treatment
+                                            .getTreatmentTypeId());
+
+                    if (treatmentType != null) {
+              %>
+
+
               <tr>
 
                 <td>
-                  Dental treatment charges
+
+                  <strong>
+                    <%= treatmentType.getTreatmentName() %>
+                  </strong>
+
                 </td>
 
                 <td>
@@ -461,12 +485,41 @@
                 <td>
 
                   <strong>
-                    Rs. ${calculatedTotal}
+                    Rs.
+                    <%= String.format(
+                            "%,.2f",
+                            treatmentType
+                                    .getTreatmentFee()) %>
                   </strong>
 
                 </td>
 
               </tr>
+
+
+              <%
+                  }
+                }
+
+              } else {
+              %>
+
+
+              <tr>
+
+                <td colspan="4"
+                    style="text-align:center;">
+
+                  No treatment details available.
+
+                </td>
+
+              </tr>
+
+
+              <%
+                }
+              %>
 
               </tbody>
 
@@ -538,6 +591,7 @@
 
             </div>
 
+
             <div>
 
               <strong>
@@ -555,8 +609,8 @@
 
           <div class="invoice-footer-note">
 
-            This invoice was generated automatically from
-            the treatment types attached to the appointment.
+            This invoice was generated from the treatment
+            types selected for this appointment.
 
           </div>
 

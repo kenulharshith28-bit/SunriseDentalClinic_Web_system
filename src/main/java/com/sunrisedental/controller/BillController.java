@@ -3,11 +3,15 @@ package com.sunrisedental.controller;
 import com.sunrisedental.dao.AppointmentDAO;
 import com.sunrisedental.dao.AppointmentDAOImpl;
 import com.sunrisedental.dao.BillDAOImpl;
+import com.sunrisedental.dao.TreatmentDAO;
 import com.sunrisedental.dao.TreatmentDAOImpl;
+import com.sunrisedental.dao.TreatmentTypeDAO;
 import com.sunrisedental.dao.TreatmentTypeDAOImpl;
 
 import com.sunrisedental.model.Appointment;
 import com.sunrisedental.model.Bill;
+import com.sunrisedental.model.Treatment;
+import com.sunrisedental.model.TreatmentType;
 
 import com.sunrisedental.service.BillService;
 import com.sunrisedental.service.StandardBillCalculator;
@@ -24,7 +28,9 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @WebServlet("/bills")
@@ -32,6 +38,8 @@ public class BillController extends HttpServlet {
 
     private final BillService billService;
     private final AppointmentDAO appointmentDAO;
+    private final TreatmentDAO treatmentDAO;
+    private final TreatmentTypeDAO treatmentTypeDAO;
 
     public BillController() {
 
@@ -42,6 +50,12 @@ public class BillController extends HttpServlet {
 
             this.appointmentDAO =
                     new AppointmentDAOImpl();
+
+            this.treatmentDAO =
+                    new TreatmentDAOImpl();
+
+            this.treatmentTypeDAO =
+                    new TreatmentTypeDAOImpl();
 
         } catch (SQLException exception) {
 
@@ -62,10 +76,16 @@ public class BillController extends HttpServlet {
 
         this.appointmentDAO =
                 null;
+
+        this.treatmentDAO =
+                null;
+
+        this.treatmentTypeDAO =
+                null;
     }
 
     /*
-     * Full constructor for tests that need appointment data.
+     * Kept for tests using appointment data.
      */
     public BillController(
             final BillService billService,
@@ -76,6 +96,35 @@ public class BillController extends HttpServlet {
 
         this.appointmentDAO =
                 appointmentDAO;
+
+        this.treatmentDAO =
+                null;
+
+        this.treatmentTypeDAO =
+                null;
+    }
+
+    /*
+     * Full constructor for testing the invoice
+     * treatment-detail workflow.
+     */
+    public BillController(
+            final BillService billService,
+            final AppointmentDAO appointmentDAO,
+            final TreatmentDAO treatmentDAO,
+            final TreatmentTypeDAO treatmentTypeDAO) {
+
+        this.billService =
+                billService;
+
+        this.appointmentDAO =
+                appointmentDAO;
+
+        this.treatmentDAO =
+                treatmentDAO;
+
+        this.treatmentTypeDAO =
+                treatmentTypeDAO;
     }
 
     private static BillService createBillService()
@@ -95,10 +144,6 @@ public class BillController extends HttpServlet {
             final HttpServletResponse response)
             throws ServletException, IOException {
 
-        /*
-         * These values may come directly from
-         * Create Appointment after saving.
-         */
         final String appointmentIdValue =
                 request.getParameter(
                         "appointmentId");
@@ -115,9 +160,6 @@ public class BillController extends HttpServlet {
                 request.getParameter(
                         "created");
 
-        /*
-         * Preserve preselected appointment information.
-         */
         if (appointmentIdValue != null
                 && !appointmentIdValue.isBlank()) {
 
@@ -142,7 +184,8 @@ public class BillController extends HttpServlet {
                     appointmentNumber);
         }
 
-        if ("true".equalsIgnoreCase(created)) {
+        if ("true".equalsIgnoreCase(
+                created)) {
 
             request.setAttribute(
                     "infoMessage",
@@ -152,15 +195,9 @@ public class BillController extends HttpServlet {
 
         try {
 
-            /*
-             * Load appointments for the dropdown.
-             */
             loadAppointments(
                     request);
 
-            /*
-             * Existing bill search functionality.
-             */
             final String billIdValue =
                     request.getParameter(
                             "billId");
@@ -232,8 +269,8 @@ public class BillController extends HttpServlet {
                             appointmentNumber);
 
             /*
-             * Calculate total from all treatments already
-             * attached to this appointment.
+             * Calculate the complete bill total from
+             * all treatments attached to the appointment.
              */
             final BigDecimal totalAmount =
                     billService
@@ -292,6 +329,14 @@ public class BillController extends HttpServlet {
                 request.setAttribute(
                         "generatedAppointmentDate",
                         appointmentDateValue);
+
+                /*
+                 * Load treatment names and individual fees
+                 * for the professional invoice table.
+                 */
+                loadInvoiceTreatmentDetails(
+                        request,
+                        appointmentId);
             }
 
             preserveSelection(
@@ -354,6 +399,57 @@ public class BillController extends HttpServlet {
         }
     }
 
+    /*
+     * Loads all treatments belonging to the appointment
+     * and creates a lookup map for their treatment types.
+     *
+     * bill.jsp uses these attributes to display:
+     *
+     * Root Canal       Rs. 15,000
+     * Cleaning          Rs. 5,000
+     * Filling           Rs. 4,000
+     */
+    private void loadInvoiceTreatmentDetails(
+            final HttpServletRequest request,
+            final int appointmentId)
+            throws SQLException {
+
+        if (treatmentDAO == null
+                || treatmentTypeDAO == null) {
+
+            return;
+        }
+
+        final List<Treatment> treatments =
+                treatmentDAO
+                        .findByAppointmentId(
+                                appointmentId);
+
+        final List<TreatmentType> treatmentTypes =
+                treatmentTypeDAO
+                        .findAllTreatmentTypes();
+
+        final Map<Integer, TreatmentType> treatmentTypeMap =
+                new HashMap<>();
+
+        for (TreatmentType treatmentType
+                : treatmentTypes) {
+
+            treatmentTypeMap.put(
+                    treatmentType
+                            .getTreatmentTypeId(),
+                    treatmentType);
+        }
+
+        request.setAttribute(
+                "billTreatments",
+                treatments);
+
+        request.setAttribute(
+                "treatmentTypeMap",
+                treatmentTypeMap);
+    }
+
     private int resolveAppointmentId(
             final String appointmentIdValue,
             final String appointmentDateValue,
@@ -361,8 +457,9 @@ public class BillController extends HttpServlet {
             throws SQLException {
 
         /*
-         * If the page already supplied an appointment ID
-         * from the dropdown, use it.
+         * Appointment ID is supplied when an appointment
+         * was selected from the dropdown or redirected
+         * from Create Appointment.
          */
         if (appointmentIdValue != null
                 && !appointmentIdValue.isBlank()) {
@@ -372,8 +469,8 @@ public class BillController extends HttpServlet {
         }
 
         /*
-         * Otherwise resolve the appointment using
-         * the date + appointment number entered by the user.
+         * Otherwise locate the appointment using
+         * date + daily appointment number.
          */
         if (appointmentDateValue == null
                 || appointmentDateValue.isBlank()) {
@@ -449,6 +546,7 @@ public class BillController extends HttpServlet {
             throws SQLException {
 
         if (appointmentDAO == null) {
+
             return;
         }
 
