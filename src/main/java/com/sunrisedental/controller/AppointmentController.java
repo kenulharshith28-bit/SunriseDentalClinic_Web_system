@@ -688,6 +688,14 @@ public class AppointmentController extends HttpServlet {
                     "appointments",
                     appointments);
 
+            request.setAttribute(
+                    "patients",
+                    patientDAO.findAllPatients());
+
+            request.setAttribute(
+                    "dentists",
+                    dentistDAO.findAllDentists());
+
             request.getRequestDispatcher(
                             "/WEB-INF/views/appointments-all.jsp")
                     .forward(

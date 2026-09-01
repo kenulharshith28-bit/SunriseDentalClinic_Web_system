@@ -44,7 +44,12 @@
             <% if (request.getAttribute("errorMessage") != null) { %>
 
             <div class="alert alert-error">
+
+                <i class="bi bi-exclamation-circle"
+                   aria-hidden="true"></i>
+
                 ${errorMessage}
+
             </div>
 
             <% } %>
@@ -87,7 +92,12 @@
                         <div class="form-group">
 
                             <label for="patientId">
+
+                                <i class="bi bi-person"
+                                   aria-hidden="true"></i>
+
                                 Patient
+
                             </label>
 
                             <select class="form-control"
@@ -103,7 +113,8 @@
                                     java.util.List<com.sunrisedental.model.Patient>
                                             patients =
                                             (java.util.List<com.sunrisedental.model.Patient>)
-                                                    request.getAttribute("patients");
+                                                    request.getAttribute(
+                                                            "patients");
 
                                     if (patients != null) {
 
@@ -111,17 +122,31 @@
                                                 : patients) {
                                 %>
 
-                                <option value="<%= patient.getPatientId() %>">
+                                <option
+                                        value="<%= patient.getPatientId() %>"
+                                        data-name="<%= patient.getFullName() %>"
+                                        data-phone="<%= patient.getPhone() == null
+                                                ? ""
+                                                : patient.getPhone() %>"
+                                        data-email="<%= patient.getEmail() == null
+                                                ? ""
+                                                : patient.getEmail() %>"
+                                        data-dob="<%= patient.getDateOfBirth() == null
+                                                ? ""
+                                                : patient.getDateOfBirth() %>"
+                                        data-address="<%= patient.getAddress() == null
+                                                ? ""
+                                                : patient.getAddress() %>">
 
                                     <%= patient.getFullName() %>
-                                    - ID: <%= patient.getPatientId() %>
 
                                     <%
                                         if (patient.getPhone() != null
                                                 && !patient.getPhone().isBlank()) {
                                     %>
 
-                                    - <%= patient.getPhone() %>
+                                    -
+                                    <%= patient.getPhone() %>
 
                                     <%
                                         }
@@ -158,7 +183,12 @@
                         <div class="form-group">
 
                             <label for="dentistId">
+
+                                <i class="bi bi-person-badge"
+                                   aria-hidden="true"></i>
+
                                 Dentist
+
                             </label>
 
                             <select class="form-control"
@@ -174,7 +204,8 @@
                                     java.util.List<com.sunrisedental.model.Dentist>
                                             dentists =
                                             (java.util.List<com.sunrisedental.model.Dentist>)
-                                                    request.getAttribute("dentists");
+                                                    request.getAttribute(
+                                                            "dentists");
 
                                     if (dentists != null) {
 
@@ -191,7 +222,8 @@
                                                 && !dentist.getSpecialization().isBlank()) {
                                     %>
 
-                                    - <%= dentist.getSpecialization() %>
+                                    -
+                                    <%= dentist.getSpecialization() %>
 
                                     <%
                                         }
@@ -211,13 +243,101 @@
                     </div>
 
 
+                    <!-- SELECTED PATIENT DETAILS -->
+                    <div id="selectedPatientCard"
+                         class="selected-patient-card"
+                         style="display:none;">
+
+                        <div class="selected-patient-header">
+
+                            <div>
+
+                                <span class="form-help-text">
+                                    Selected Patient
+                                </span>
+
+                                <h3 id="selectedPatientName">
+                                    -
+                                </h3>
+
+                            </div>
+
+                            <i class="bi bi-person-vcard"
+                               aria-hidden="true"></i>
+
+                        </div>
+
+
+                        <div class="selected-patient-grid">
+
+                            <div class="selected-patient-item">
+
+                                <span>
+                                    Contact Number
+                                </span>
+
+                                <strong id="selectedPatientPhone">
+                                    -
+                                </strong>
+
+                            </div>
+
+
+                            <div class="selected-patient-item">
+
+                                <span>
+                                    Email
+                                </span>
+
+                                <strong id="selectedPatientEmail">
+                                    -
+                                </strong>
+
+                            </div>
+
+
+                            <div class="selected-patient-item">
+
+                                <span>
+                                    Date of Birth
+                                </span>
+
+                                <strong id="selectedPatientDob">
+                                    -
+                                </strong>
+
+                            </div>
+
+
+                            <div class="selected-patient-item">
+
+                                <span>
+                                    Address
+                                </span>
+
+                                <strong id="selectedPatientAddress">
+                                    -
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
                     <!-- DATE + TIME -->
                     <div class="grid grid-2">
 
                         <div class="form-group">
 
                             <label for="appointmentDate">
+
+                                <i class="bi bi-calendar3"
+                                   aria-hidden="true"></i>
+
                                 Appointment Date
+
                             </label>
 
                             <input class="form-control"
@@ -232,7 +352,12 @@
                         <div class="form-group">
 
                             <label for="appointmentTime">
+
+                                <i class="bi bi-clock"
+                                   aria-hidden="true"></i>
+
                                 Appointment Time
+
                             </label>
 
                             <input class="form-control"
@@ -250,7 +375,12 @@
                     <div class="form-group">
 
                         <label for="status">
+
+                            <i class="bi bi-check-circle"
+                               aria-hidden="true"></i>
+
                             Status
+
                         </label>
 
                         <select class="form-control"
@@ -306,7 +436,8 @@
                                 java.util.List<com.sunrisedental.model.TreatmentType>
                                         treatmentTypes =
                                         (java.util.List<com.sunrisedental.model.TreatmentType>)
-                                                request.getAttribute("treatmentTypes");
+                                                request.getAttribute(
+                                                        "treatmentTypes");
 
                                 if (treatmentTypes != null
                                         && !treatmentTypes.isEmpty()) {
@@ -385,13 +516,19 @@
                     <div class="form-group">
 
                         <label for="notes">
+
+                            <i class="bi bi-journal-text"
+                               aria-hidden="true"></i>
+
                             Notes
+
                         </label>
 
                         <textarea class="form-control"
                                   id="notes"
                                   name="notes"
                                   rows="4"
+                                  maxlength="255"
                                   placeholder="Add any notes about this appointment"></textarea>
 
                     </div>
@@ -433,6 +570,104 @@
     document.addEventListener(
         "DOMContentLoaded",
         function () {
+
+            /*
+             * ---------------------------------
+             * PATIENT INFORMATION
+             * ---------------------------------
+             */
+
+            const patientSelect =
+                document.getElementById(
+                    "patientId"
+                );
+
+            const patientCard =
+                document.getElementById(
+                    "selectedPatientCard"
+                );
+
+            const patientName =
+                document.getElementById(
+                    "selectedPatientName"
+                );
+
+            const patientPhone =
+                document.getElementById(
+                    "selectedPatientPhone"
+                );
+
+            const patientEmail =
+                document.getElementById(
+                    "selectedPatientEmail"
+                );
+
+            const patientDob =
+                document.getElementById(
+                    "selectedPatientDob"
+                );
+
+            const patientAddress =
+                document.getElementById(
+                    "selectedPatientAddress"
+                );
+
+
+            function showSelectedPatient() {
+
+                const option =
+                    patientSelect.options[
+                        patientSelect.selectedIndex
+                        ];
+
+                if (!option
+                    || !option.value) {
+
+                    patientCard.style.display =
+                        "none";
+
+                    return;
+                }
+
+                patientName.textContent =
+                    option.dataset.name
+                    || "Not provided";
+
+                patientPhone.textContent =
+                    option.dataset.phone
+                    || "Not provided";
+
+                patientEmail.textContent =
+                    option.dataset.email
+                    || "Not provided";
+
+                patientDob.textContent =
+                    option.dataset.dob
+                    || "Not provided";
+
+                patientAddress.textContent =
+                    option.dataset.address
+                    || "Not provided";
+
+                patientCard.style.display =
+                    "block";
+            }
+
+
+            patientSelect.addEventListener(
+                "change",
+                showSelectedPatient
+            );
+
+
+            showSelectedPatient();
+
+
+            /*
+             * ---------------------------------
+             * TREATMENT TOTAL
+             * ---------------------------------
+             */
 
             const checkboxes =
                 document.querySelectorAll(
