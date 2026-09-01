@@ -448,4 +448,61 @@ public class AppointmentDAOImpl implements AppointmentDAO {
                         "notes")
         );
     }
+
+    @Override
+    public boolean cancelAppointment(
+            final int appointmentId)
+            throws SQLException {
+
+        final String sql =
+                "UPDATE appointments "
+                        + "SET status = 'CANCELLED' "
+                        + "WHERE appointment_id = ? "
+                        + "AND status = 'SCHEDULED'";
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setInt(
+                    1,
+                    appointmentId);
+
+            final int affectedRows =
+                    statement.executeUpdate();
+
+            return affectedRows == 1;
+
+        } catch (SQLException exception) {
+
+            throw new SQLException(
+                    "Failed to cancel appointment",
+                    exception);
+        }
+    }
+
+
+    @Override
+    public int cancelExpiredAppointments()
+            throws SQLException {
+
+        final String sql =
+                "UPDATE appointments "
+                        + "SET status = 'CANCELLED' "
+                        + "WHERE status = 'SCHEDULED' "
+                        + "AND TIMESTAMP("
+                        + "appointment_date, appointment_time"
+                        + ") < NOW()";
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            return statement.executeUpdate();
+
+        } catch (SQLException exception) {
+
+            throw new SQLException(
+                    "Failed to update expired appointments",
+                    exception);
+        }
+    }
 }

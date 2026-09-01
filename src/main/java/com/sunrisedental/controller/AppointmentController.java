@@ -231,6 +231,24 @@ public class AppointmentController extends HttpServlet {
             final HttpServletResponse response)
             throws ServletException, IOException {
 
+        /*
+         * POST on /appointments/all means
+         * manual appointment cancellation.
+         */
+        if ("/appointments/all".equals(
+                request.getServletPath())) {
+
+            cancelAppointment(
+                    request,
+                    response);
+
+            return;
+        }
+
+        /*
+         * Otherwise this is a normal
+         * Create Appointment request.
+         */
         try {
 
             final int patientId =
@@ -266,7 +284,8 @@ public class AppointmentController extends HttpServlet {
                             "treatmentTypeIds");
 
             /*
-             * Generate the daily appointment number.
+             * Generate the next number for
+             * the selected appointment date.
              */
             final String appointmentNumber =
                     appointmentService
@@ -286,8 +305,8 @@ public class AppointmentController extends HttpServlet {
                     );
 
             /*
-             * Save the appointment and obtain the
-             * generated database appointment ID.
+             * Save appointment and receive
+             * the generated database ID.
              */
             final int appointmentId =
                     appointmentService
@@ -295,7 +314,8 @@ public class AppointmentController extends HttpServlet {
                                     appointment);
 
             /*
-             * Save all selected treatments.
+             * Save every selected treatment
+             * against the new appointment.
              */
             if (selectedTreatmentTypeIds != null
                     && treatmentDAO != null) {
@@ -315,16 +335,16 @@ public class AppointmentController extends HttpServlet {
                                     null
                             );
 
-                    treatmentDAO.saveTreatment(
-                            treatment);
+                    treatmentDAO
+                            .saveTreatment(
+                                    treatment);
                 }
             }
 
             /*
-             * After the appointment and treatments
-             * are saved, immediately move to Billing.
+             * Appointment and treatments are done.
+             * Move directly to Billing.
              */
-
             final String encodedAppointmentNumber =
                     URLEncoder.encode(
                             appointmentNumber,
@@ -393,6 +413,86 @@ public class AppointmentController extends HttpServlet {
         }
     }
 
+    private void cancelAppointment(
+            final HttpServletRequest request,
+            final HttpServletResponse response)
+            throws ServletException, IOException {
+
+        try {
+
+            if (appointmentDAO == null) {
+
+                throw new IllegalStateException(
+                        "Appointment management is unavailable");
+            }
+
+            final String appointmentIdValue =
+                    request.getParameter(
+                            "appointmentId");
+
+            if (appointmentIdValue == null
+                    || appointmentIdValue.isBlank()) {
+
+                request.getSession()
+                        .setAttribute(
+                                "appointmentError",
+                                "Please select an appointment to cancel");
+
+                response.sendRedirect(
+                        request.getContextPath()
+                                + "/appointments/all");
+
+                return;
+            }
+
+            final int appointmentId =
+                    Integer.parseInt(
+                            appointmentIdValue);
+
+            final boolean cancelled =
+                    appointmentDAO
+                            .cancelAppointment(
+                                    appointmentId);
+
+            if (cancelled) {
+
+                request.getSession()
+                        .setAttribute(
+                                "appointmentMessage",
+                                "Appointment cancelled successfully");
+
+            } else {
+
+                request.getSession()
+                        .setAttribute(
+                                "appointmentError",
+                                "Appointment could not be cancelled. "
+                                        + "It may already be completed or cancelled.");
+            }
+
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/appointments/all");
+
+        } catch (NumberFormatException exception) {
+
+            request.getSession()
+                    .setAttribute(
+                            "appointmentError",
+                            "Invalid appointment");
+
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/appointments/all");
+
+        } catch (SQLException exception) {
+
+            throw new ServletException(
+                    "Unable to cancel appointment",
+                    exception);
+        }
+    }
+
     private void loadDropdownData(
             final HttpServletRequest request)
             throws SQLException {
@@ -400,7 +500,8 @@ public class AppointmentController extends HttpServlet {
         if (patientDAO != null) {
 
             final List<Patient> patients =
-                    patientDAO.findAllPatients();
+                    patientDAO
+                            .findAllPatients();
 
             request.setAttribute(
                     "patients",
@@ -410,7 +511,8 @@ public class AppointmentController extends HttpServlet {
         if (dentistDAO != null) {
 
             final List<Dentist> dentists =
-                    dentistDAO.findAllDentists();
+                    dentistDAO
+                            .findAllDentists();
 
             request.setAttribute(
                     "dentists",
@@ -466,6 +568,59 @@ public class AppointmentController extends HttpServlet {
 
         try {
 
+            if (appointmentDAO == null) {
+
+                throw new IllegalStateException(
+                        "Appointment management is unavailable");
+            }
+
+            /*
+             * Automatically cancel any scheduled
+             * appointment whose date/time has passed.
+             */
+            appointmentDAO
+                    .cancelExpiredAppointments();
+
+            /*
+             * Show success message after
+             * manual cancellation redirect.
+             */
+            final Object successMessage =
+                    request.getSession()
+                            .getAttribute(
+                                    "appointmentMessage");
+
+            if (successMessage != null) {
+
+                request.setAttribute(
+                        "successMessage",
+                        successMessage);
+
+                request.getSession()
+                        .removeAttribute(
+                                "appointmentMessage");
+            }
+
+            /*
+             * Show error message after
+             * manual cancellation redirect.
+             */
+            final Object errorMessage =
+                    request.getSession()
+                            .getAttribute(
+                                    "appointmentError");
+
+            if (errorMessage != null) {
+
+                request.setAttribute(
+                        "errorMessage",
+                        errorMessage);
+
+                request.getSession()
+                        .removeAttribute(
+                                "appointmentError");
+            }
+
             final String appointmentDateValue =
                     request.getParameter(
                             "appointmentDate");
@@ -479,6 +634,9 @@ public class AppointmentController extends HttpServlet {
                             appointmentDAO
                                     .findAllAppointments());
 
+            /*
+             * Filter by date.
+             */
             if (appointmentDateValue != null
                     && !appointmentDateValue.isBlank()) {
 
@@ -497,6 +655,9 @@ public class AppointmentController extends HttpServlet {
                         appointmentDateValue);
             }
 
+            /*
+             * Filter by status.
+             */
             if (status != null
                     && !status.isBlank()
                     && !"ALL".equals(status)) {
@@ -512,6 +673,9 @@ public class AppointmentController extends HttpServlet {
                         status);
             }
 
+            /*
+             * Newest appointments first.
+             */
             appointments.sort(
                     Comparator
                             .comparing(

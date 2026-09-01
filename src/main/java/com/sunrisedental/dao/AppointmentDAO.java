@@ -39,9 +39,18 @@ public interface AppointmentDAO {
             LocalDate appointmentDate)
             throws SQLException;
 
+    boolean cancelAppointment(
+            int appointmentId)
+            throws SQLException;
+
+    int cancelExpiredAppointments()
+            throws SQLException;
+
     int getAppointmentCount()
             throws SQLException;
 
     List<Integer> getAppointmentCountsForCurrentWeek()
             throws SQLException;
 }
+
+
