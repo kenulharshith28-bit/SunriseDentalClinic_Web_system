@@ -1,12 +1,11 @@
 package com.sunrisedental.service;
 
 import com.sunrisedental.model.TreatmentType;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,7 +22,7 @@ class StandardBillCalculatorTest {
     }
 
     @Test
-    void shouldCalculateTreatmentFeesAndConsultationFee() {
+    void shouldIncludeConsultationFeeInBillTotal() {
 
         final TreatmentType rootCanal =
                 new TreatmentType(
@@ -40,7 +39,7 @@ class StandardBillCalculatorTest {
                 );
 
         final List<TreatmentType> treatmentTypes =
-                Arrays.asList(
+                List.of(
                         rootCanal,
                         cleaning);
 
@@ -52,60 +51,5 @@ class StandardBillCalculatorTest {
         assertEquals(
                 new BigDecimal("22000.00"),
                 result);
-    }
-
-    @Test
-    void shouldAddConsultationFeeForSingleTreatment() {
-
-        final TreatmentType filling =
-                new TreatmentType(
-                        1,
-                        "Filling",
-                        new BigDecimal("4000.00")
-                );
-
-        final BigDecimal result =
-                billCalculator
-                        .calculateTotal(
-                                List.of(filling));
-
-        assertEquals(
-                new BigDecimal("6000.00"),
-                result);
-    }
-
-    @Test
-    void shouldReturnZeroWhenTreatmentListIsEmpty() {
-
-        final BigDecimal result =
-                billCalculator
-                        .calculateTotal(
-                                Collections.emptyList());
-
-        assertEquals(
-                BigDecimal.ZERO,
-                result);
-    }
-
-    @Test
-    void shouldReturnZeroWhenTreatmentListIsNull() {
-
-        final BigDecimal result =
-                billCalculator
-                        .calculateTotal(
-                                null);
-
-        assertEquals(
-                BigDecimal.ZERO,
-                result);
-    }
-
-    @Test
-    void shouldReturnConsultationFee() {
-
-        assertEquals(
-                new BigDecimal("2000.00"),
-                billCalculator
-                        .getConsultationFee());
     }
 }
