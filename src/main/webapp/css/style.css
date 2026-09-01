@@ -1346,3 +1346,313 @@ th {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* =========================================
+   PROFESSIONAL BILL / INVOICE
+   ========================================= */
+
+.invoice-card {
+    padding: 20px;
+}
+
+.invoice-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+
+.invoice-sheet {
+    background: #ffffff;
+    border: 1px solid #dbe6ec;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.invoice-brand-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.invoice-logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e4f7f8;
+    color: #0f766e;
+    font-size: 23px;
+}
+
+.invoice-brand h2 {
+    margin: 0 0 5px;
+    color: #173042;
+    font-size: 26px;
+}
+
+.invoice-brand p {
+    margin: 0;
+    color: #71828d;
+    font-size: 14px;
+}
+
+.invoice-title-block {
+    text-align: right;
+}
+
+.invoice-title-block h1 {
+    margin: 0 0 12px;
+    color: #0f766e;
+    font-size: 31px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.invoice-title-block p {
+    margin: 5px 0;
+    color: #344854;
+    font-size: 14px;
+}
+
+.invoice-divider {
+    width: 100%;
+    height: 2px;
+    margin: 25px 0;
+    border-radius: 999px;
+    background: #0f766e;
+}
+
+.invoice-details-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 25px;
+}
+
+.invoice-detail-box {
+    min-width: 0;
+    padding: 15px;
+    border: 1px solid #dfe8ed;
+    border-radius: 12px;
+    background: #f8fbfc;
+}
+
+.invoice-label {
+    display: block;
+    margin-bottom: 6px;
+    color: #71828d;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.invoice-detail-box strong {
+    color: #173042;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.invoice-table-wrapper {
+    margin-top: 6px;
+}
+
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.invoice-table thead th {
+    padding: 14px 16px;
+    border-bottom: 2px solid #bddfe2;
+    background: #eef8f9;
+    color: #173042;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.invoice-table tbody td {
+    padding: 15px 16px;
+    border-bottom: 1px solid #e4ebef;
+    color: #344854;
+    font-size: 14px;
+    vertical-align: top;
+}
+
+.invoice-summary {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
+.invoice-summary-box {
+    width: 100%;
+    max-width: 390px;
+    padding: 18px;
+    border: 1px solid #dfe8ed;
+    border-radius: 13px;
+    background: #f8fbfc;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e4ebef;
+    color: #485d68;
+}
+
+.summary-row:last-child {
+    border-bottom: 0;
+}
+
+.total-row {
+    margin-top: 4px;
+    padding-top: 15px;
+    color: #0f766e;
+    font-size: 17px;
+}
+
+.invoice-footer-section {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid #dfe8ed;
+}
+
+.invoice-footer-section strong {
+    color: #173042;
+}
+
+.invoice-footer-section p {
+    margin: 6px 0 0;
+    color: #71828d;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.invoice-footer-note {
+    margin-top: 22px;
+    padding: 13px 15px;
+    border-radius: 10px;
+    background: #f4f8fa;
+    color: #71828d;
+    font-size: 12px;
+    text-align: center;
+}
+
+.billing-total {
+    color: #0f766e;
+    font-size: 17px;
+    font-weight: 800;
+}
+
+
+/* =========================================
+   INVOICE RESPONSIVENESS
+   ========================================= */
+
+@media (max-width: 1000px) {
+
+    .invoice-details-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+
+    .invoice-sheet {
+        padding: 20px;
+    }
+
+    .invoice-header {
+        flex-direction: column;
+    }
+
+    .invoice-title-block {
+        width: 100%;
+        text-align: left;
+    }
+
+    .invoice-details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .invoice-footer-section {
+        grid-template-columns: 1fr;
+    }
+
+    .invoice-summary {
+        justify-content: stretch;
+    }
+
+    .invoice-summary-box {
+        max-width: none;
+    }
+}
+
+
+/* =========================================
+   PRINT INVOICE
+   ========================================= */
+
+@media print {
+
+    .sidebar,
+    .page-title,
+    .alert,
+    .footer,
+    .no-print,
+    #billGenerationForm {
+        display: none !important;
+    }
+
+    .dashboard-shell,
+    .dashboard-main,
+    .page-container,
+    .main-content,
+    .invoice-card {
+        display: block !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        box-shadow: none !important;
+    }
+
+    .invoice-card {
+        border: 0 !important;
+    }
+
+    .invoice-sheet {
+        width: 100%;
+        border: 0;
+        border-radius: 0;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    body {
+        margin: 0;
+        background: #ffffff !important;
+    }
+}

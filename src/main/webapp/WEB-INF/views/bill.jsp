@@ -96,8 +96,8 @@
 
             <p>
               Choose the appointment date and appointment number.
-              The total is calculated automatically from the
-              treatments selected during appointment creation.
+              The bill total is calculated automatically from
+              the treatments selected during appointment creation.
             </p>
 
           </div>
@@ -218,7 +218,7 @@
           </div>
 
 
-          <!-- TYPE APPOINTMENT NUMBER -->
+          <!-- APPOINTMENT NUMBER -->
           <div class="form-group">
 
             <label for="appointmentNumber">
@@ -239,8 +239,8 @@
                    required>
 
             <p class="form-help-text">
-              You can choose from the dropdown above or type
-              the appointment number manually.
+              Choose from the dropdown above or type the
+              appointment number manually.
             </p>
 
           </div>
@@ -251,37 +251,6 @@
                  id="appointmentId"
                  name="appointmentId"
                  value="${appointmentId}">
-
-
-          <!-- SELECTED APPOINTMENT SUMMARY -->
-          <div class="billing-selection-summary"
-               id="appointmentSummary">
-
-            <div>
-
-                            <span>
-                                Selected Appointment
-                            </span>
-
-              <strong id="summaryAppointmentNumber">
-                ${selectedAppointmentNumber}
-              </strong>
-
-            </div>
-
-            <div>
-
-                            <span>
-                                Appointment Date
-                            </span>
-
-              <strong id="summaryAppointmentDate">
-                ${selectedAppointmentDate}
-              </strong>
-
-            </div>
-
-          </div>
 
 
           <!-- GENERATE -->
@@ -303,78 +272,293 @@
       </div>
 
 
-      <!-- GENERATED BILL -->
+      <!-- GENERATED PROFESSIONAL INVOICE -->
       <% if (request.getAttribute("calculatedTotal") != null) { %>
 
-      <div class="card generated-bill-card">
+      <div class="card invoice-card">
 
-        <div class="appointment-form-header">
+        <div class="invoice-toolbar no-print">
 
-          <div>
+          <button class="btn btn-secondary"
+                  type="button"
+                  onclick="window.print()">
 
-            <h2>Generated Bill</h2>
+            <i class="bi bi-printer"></i>
 
-            <p>
-              Bill generated from the treatments attached
-              to this appointment.
-            </p>
+            Print Invoice
 
-          </div>
-
-          <div class="appointment-form-icon">
-
-            <i class="bi bi-check-circle"></i>
-
-          </div>
+          </button>
 
         </div>
 
 
-        <div class="table-wrapper">
+        <div class="invoice-sheet">
 
-          <table>
 
-            <tr>
+          <!-- INVOICE HEADER -->
+          <div class="invoice-header">
 
-              <th>
-                Appointment Number
-              </th>
+            <div class="invoice-brand">
 
-              <td>
+              <div class="invoice-brand-row">
+
+                <div class="invoice-logo">
+
+                  <i class="bi bi-heart-pulse-fill"></i>
+
+                </div>
+
+                <div>
+
+                  <h2>
+                    Sunrise Dental Clinic
+                  </h2>
+
+                  <p>
+                    Dental Care & Clinic Management
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="invoice-title-block">
+
+              <h1>
+                INVOICE
+              </h1>
+
+              <p>
+                <strong>
+                  Appointment No:
+                </strong>
+
                 ${generatedAppointmentNumber}
-              </td>
+              </p>
 
-            </tr>
+              <p>
+                <strong>
+                  Appointment Date:
+                </strong>
 
-            <tr>
-
-              <th>
-                Appointment Date
-              </th>
-
-              <td>
                 ${generatedAppointmentDate}
-              </td>
+              </p>
 
-            </tr>
+            </div>
 
-            <tr>
+          </div>
 
-              <th>
-                Total Amount
-              </th>
 
-              <td>
+          <div class="invoice-divider"></div>
 
-                <strong class="billing-total">
+
+          <!-- GENERAL DETAILS -->
+          <div class="invoice-details-grid">
+
+            <div class="invoice-detail-box">
+
+                            <span class="invoice-label">
+                                Bill Type
+                            </span>
+
+              <strong>
+                Dental Treatment Invoice
+              </strong>
+
+            </div>
+
+
+            <div class="invoice-detail-box">
+
+                            <span class="invoice-label">
+                                Status
+                            </span>
+
+              <strong>
+                Generated
+              </strong>
+
+            </div>
+
+
+            <div class="invoice-detail-box">
+
+                            <span class="invoice-label">
+                                Clinic
+                            </span>
+
+              <strong>
+                Sunrise Dental Clinic
+              </strong>
+
+            </div>
+
+
+            <div class="invoice-detail-box">
+
+                            <span class="invoice-label">
+                                Billing Source
+                            </span>
+
+              <strong>
+                Appointment Treatments
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <!-- BILL CHARGE TABLE -->
+          <div class="table-wrapper invoice-table-wrapper">
+
+            <table class="invoice-table">
+
+              <thead>
+
+              <tr>
+
+                <th>
+                  Description
+                </th>
+
+                <th>
+                  Appointment
+                </th>
+
+                <th>
+                  Date
+                </th>
+
+                <th>
+                  Amount
+                </th>
+
+              </tr>
+
+              </thead>
+
+
+              <tbody>
+
+              <tr>
+
+                <td>
+                  Dental treatment charges
+                </td>
+
+                <td>
+                  ${generatedAppointmentNumber}
+                </td>
+
+                <td>
+                  ${generatedAppointmentDate}
+                </td>
+
+                <td>
+
+                  <strong>
+                    Rs. ${calculatedTotal}
+                  </strong>
+
+                </td>
+
+              </tr>
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+
+          <!-- TOTAL -->
+          <div class="invoice-summary">
+
+            <div class="invoice-summary-box">
+
+              <div class="summary-row">
+
+                                <span>
+                                    Subtotal
+                                </span>
+
+                <strong>
                   Rs. ${calculatedTotal}
                 </strong>
 
-              </td>
+              </div>
 
-            </tr>
 
-          </table>
+              <div class="summary-row">
+
+                                <span>
+                                    Tax
+                                </span>
+
+                <strong>
+                  Rs. 0.00
+                </strong>
+
+              </div>
+
+
+              <div class="summary-row total-row">
+
+                                <span>
+                                    Total Amount
+                                </span>
+
+                <strong>
+                  Rs. ${calculatedTotal}
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- FOOTER -->
+          <div class="invoice-footer-section">
+
+            <div>
+
+              <strong>
+                Payment Information
+              </strong>
+
+              <p>
+                Please settle the payment at the clinic counter.
+              </p>
+
+            </div>
+
+            <div>
+
+              <strong>
+                Thank You
+              </strong>
+
+              <p>
+                Thank you for choosing Sunrise Dental Clinic.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="invoice-footer-note">
+
+            This invoice was generated automatically from
+            the treatment types attached to the appointment.
+
+          </div>
 
         </div>
 
@@ -384,13 +568,16 @@
 
 
       <!-- SEARCH EXISTING BILL -->
-      <div class="card">
+      <div class="card no-print">
 
-        <h2>Search Existing Bill</h2>
+        <h2>
+          Search Existing Bill
+        </h2>
 
         <p class="form-help-text">
           Search an already generated bill using its bill ID.
         </p>
+
 
         <form method="get"
               action="${pageContext.request.contextPath}/bills">
@@ -411,6 +598,7 @@
 
           </div>
 
+
           <button class="btn btn-secondary"
                   type="submit">
 
@@ -425,16 +613,39 @@
       </div>
 
 
-      <!-- BILL SEARCH RESULT -->
+      <!-- SEARCHED BILL -->
       <% if (request.getAttribute("bill") != null) { %>
 
       <div class="card">
 
-        <h2>Bill Details</h2>
+        <div class="appointment-form-header">
+
+          <div>
+
+            <h2>
+              Bill Details
+            </h2>
+
+            <p>
+              Stored billing record from the system.
+            </p>
+
+          </div>
+
+          <div class="appointment-form-icon">
+
+            <i class="bi bi-receipt"></i>
+
+          </div>
+
+        </div>
+
 
         <div class="table-wrapper">
 
-          <table>
+          <table class="invoice-table">
+
+            <thead>
 
             <tr>
 
@@ -442,29 +653,30 @@
                 Bill ID
               </th>
 
-              <td>
-                ${bill.billId}
-              </td>
-
-            </tr>
-
-            <tr>
-
               <th>
                 Appointment ID
               </th>
 
-              <td>
-                ${bill.appointmentId}
-              </td>
-
-            </tr>
-
-            <tr>
-
               <th>
                 Total Amount
               </th>
+
+            </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            <tr>
+
+              <td>
+                ${bill.billId}
+              </td>
+
+              <td>
+                ${bill.appointmentId}
+              </td>
 
               <td>
 
@@ -475,6 +687,8 @@
               </td>
 
             </tr>
+
+            </tbody>
 
           </table>
 
@@ -487,7 +701,7 @@
     </div>
 
 
-    <div class="footer">
+    <div class="footer no-print">
       Sunrise Dental Clinic Management System
     </div>
 
@@ -522,25 +736,12 @@
                             "appointmentId"
                     );
 
-            const summaryNumber =
-                    document.getElementById(
-                            "summaryAppointmentNumber"
-                    );
-
-            const summaryDate =
-                    document.getElementById(
-                            "summaryAppointmentDate"
-                    );
-
             const form =
                     document.getElementById(
                             "billGenerationForm"
                     );
 
 
-            /*
-             * Filter dropdown according to selected date.
-             */
             function filterAppointmentsByDate() {
 
               const selectedDate =
@@ -556,7 +757,8 @@
                       function (option) {
 
                         if (!selectedDate
-                                || option.dataset.date === selectedDate) {
+                                || option.dataset.date
+                                === selectedDate) {
 
                           option.hidden =
                                   false;
@@ -577,9 +779,6 @@
             }
 
 
-            /*
-             * When dropdown changes, copy its number and ID.
-             */
             function updateFromDropdown() {
 
               const option =
@@ -590,6 +789,9 @@
 
               if (!option
                       || !option.dataset.number) {
+
+                appointmentIdInput.value =
+                        "";
 
                 return;
               }
@@ -602,18 +804,9 @@
 
               dateInput.value =
                       option.dataset.date;
-
-              summaryNumber.textContent =
-                      option.dataset.number;
-
-              summaryDate.textContent =
-                      option.dataset.date;
             }
 
 
-            /*
-             * Match manually typed number with dropdown data.
-             */
             function resolveTypedAppointment() {
 
               const number =
@@ -657,22 +850,10 @@
                 appointmentIdInput.value =
                         match.value;
 
-                summaryNumber.textContent =
-                        match.dataset.number;
-
-                summaryDate.textContent =
-                        match.dataset.date;
-
               } else {
 
                 appointmentIdInput.value =
                         "";
-
-                summaryNumber.textContent =
-                        number || "-";
-
-                summaryDate.textContent =
-                        date || "-";
               }
             }
 
@@ -688,9 +869,6 @@
 
                       appointmentIdInput.value =
                               "";
-
-                      summaryDate.textContent =
-                              dateInput.value || "-";
 
                       resolveTypedAppointment();
                     }
@@ -719,6 +897,7 @@
 
 
             filterAppointmentsByDate();
+
 
             if (appointmentSelect.value) {
 
