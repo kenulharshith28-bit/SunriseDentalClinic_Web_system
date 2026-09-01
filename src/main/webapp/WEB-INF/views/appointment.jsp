@@ -2,7 +2,7 @@
 
 <html>
 <head>
-    <title>Appointment Management</title>
+    <title>Create Appointment</title>
 
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -27,59 +27,17 @@
 
         <div class="page-container main-content">
 
+
+            <!-- PAGE HEADER -->
             <div class="page-title">
 
-                <h1>Appointment Management</h1>
+                <h1>Create Appointment</h1>
 
                 <p>
-                    Search existing appointments or create a new booking.
+                    Create a new booking and select the required treatments.
                 </p>
 
-                <a class="btn btn-secondary"
-                   href="${pageContext.request.contextPath}/appointments/all">
-
-                    <i class="bi bi-list-ul"></i>
-                    View All Appointments
-
-                </a>
-
             </div>
-
-
-            <!-- SUCCESS MESSAGE -->
-            <% if (request.getAttribute("successMessage") != null) { %>
-
-            <div class="alert alert-success">
-                ${successMessage}
-            </div>
-
-            <% } %>
-
-
-            <!-- NEXT STEP -->
-            <% if (request.getAttribute("createdAppointment") != null) { %>
-
-            <div class="card">
-
-                <h2>Appointment Created</h2>
-
-                <p>
-                    The appointment has been created successfully.
-                    You can continue to treatment management if another
-                    treatment needs to be added later.
-                </p>
-
-                <a class="btn btn-primary"
-                   href="${pageContext.request.contextPath}/treatments?appointmentId=${createdAppointment.appointmentId}">
-
-                    <i class="bi bi-clipboard2-pulse"></i>
-                    Manage Treatments
-
-                </a>
-
-            </div>
-
-            <% } %>
 
 
             <!-- ERROR MESSAGE -->
@@ -87,117 +45,6 @@
 
             <div class="alert alert-error">
                 ${errorMessage}
-            </div>
-
-            <% } %>
-
-
-            <!-- SEARCH APPOINTMENT -->
-            <div class="card">
-
-                <h2>Search Appointment</h2>
-
-                <form method="get"
-                      action="${pageContext.request.contextPath}/appointments">
-
-                    <div class="grid grid-2">
-
-                        <div class="form-group">
-
-                            <label for="searchAppointmentDate">
-                                Appointment Date
-                            </label>
-
-                            <input class="form-control"
-                                   type="date"
-                                   id="searchAppointmentDate"
-                                   name="appointmentDate"
-                                   required>
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label for="searchAppointmentNumber">
-                                Appointment Number
-                            </label>
-
-                            <input class="form-control"
-                                   type="text"
-                                   id="searchAppointmentNumber"
-                                   name="appointmentNumber"
-                                   placeholder="Example: A-001"
-                                   required>
-
-                        </div>
-
-                    </div>
-
-
-                    <button class="btn btn-primary"
-                            type="submit">
-
-                        <i class="bi bi-search"></i>
-                        Search Appointment
-
-                    </button>
-
-                </form>
-
-            </div>
-
-
-            <!-- SEARCH RESULT -->
-            <% if (request.getAttribute("appointment") != null) { %>
-
-            <div class="card">
-
-                <h2>Appointment Details</h2>
-
-                <div class="table-wrapper">
-
-                    <table>
-
-                        <tr>
-                            <th>Appointment Number</th>
-                            <td>${appointment.appointmentNumber}</td>
-                        </tr>
-
-                        <tr>
-                            <th>Patient ID</th>
-                            <td>${appointment.patientId}</td>
-                        </tr>
-
-                        <tr>
-                            <th>Dentist ID</th>
-                            <td>${appointment.dentistId}</td>
-                        </tr>
-
-                        <tr>
-                            <th>Date</th>
-                            <td>${appointment.appointmentDate}</td>
-                        </tr>
-
-                        <tr>
-                            <th>Time</th>
-                            <td>${appointment.appointmentTime}</td>
-                        </tr>
-
-                        <tr>
-                            <th>Status</th>
-                            <td>${appointment.status}</td>
-                        </tr>
-
-                        <tr>
-                            <th>Notes</th>
-                            <td>${appointment.notes}</td>
-                        </tr>
-
-                    </table>
-
-                </div>
-
             </div>
 
             <% } %>
@@ -213,7 +60,7 @@
                         <h2>Create Appointment</h2>
 
                         <p>
-                            Enter appointment details and optionally
+                            Enter the appointment details and optionally
                             select one or more treatments.
                         </p>
 
@@ -221,7 +68,8 @@
 
                     <div class="appointment-form-icon">
 
-                        <i class="bi bi-calendar2-plus"></i>
+                        <i class="bi bi-calendar2-plus"
+                           aria-hidden="true"></i>
 
                     </div>
 
@@ -235,6 +83,7 @@
                     <!-- PATIENT + DENTIST -->
                     <div class="grid grid-2">
 
+                        <!-- PATIENT -->
                         <div class="form-group">
 
                             <label for="patientId">
@@ -251,7 +100,8 @@
                                 </option>
 
                                 <%
-                                    java.util.List<com.sunrisedental.model.Patient> patients =
+                                    java.util.List<com.sunrisedental.model.Patient>
+                                            patients =
                                             (java.util.List<com.sunrisedental.model.Patient>)
                                                     request.getAttribute("patients");
 
@@ -265,7 +115,17 @@
 
                                     <%= patient.getFullName() %>
                                     - ID: <%= patient.getPatientId() %>
+
+                                    <%
+                                        if (patient.getPhone() != null
+                                                && !patient.getPhone().isBlank()) {
+                                    %>
+
                                     - <%= patient.getPhone() %>
+
+                                    <%
+                                        }
+                                    %>
 
                                 </option>
 
@@ -282,7 +142,9 @@
                                 <a class="btn-link"
                                    href="${pageContext.request.contextPath}/patients/new">
 
-                                    <i class="bi bi-person-plus"></i>
+                                    <i class="bi bi-person-plus"
+                                       aria-hidden="true"></i>
+
                                     Add New Patient
 
                                 </a>
@@ -292,6 +154,7 @@
                         </div>
 
 
+                        <!-- DENTIST -->
                         <div class="form-group">
 
                             <label for="dentistId">
@@ -308,7 +171,8 @@
                                 </option>
 
                                 <%
-                                    java.util.List<com.sunrisedental.model.Dentist> dentists =
+                                    java.util.List<com.sunrisedental.model.Dentist>
+                                            dentists =
                                             (java.util.List<com.sunrisedental.model.Dentist>)
                                                     request.getAttribute("dentists");
 
@@ -321,6 +185,17 @@
                                 <option value="<%= dentist.getDentistId() %>">
 
                                     Dr. <%= dentist.getFullName() %>
+
+                                    <%
+                                        if (dentist.getSpecialization() != null
+                                                && !dentist.getSpecialization().isBlank()) {
+                                    %>
+
+                                    - <%= dentist.getSpecialization() %>
+
+                                    <%
+                                        }
+                                    %>
 
                                 </option>
 
@@ -383,7 +258,8 @@
                                 name="status"
                                 required>
 
-                            <option value="SCHEDULED">
+                            <option value="SCHEDULED"
+                                    selected>
                                 Scheduled
                             </option>
 
@@ -400,7 +276,7 @@
                     </div>
 
 
-                    <!-- MULTIPLE TREATMENTS -->
+                    <!-- TREATMENTS -->
                     <div class="form-group treatment-selection-section">
 
                         <div class="treatment-selection-heading">
@@ -412,8 +288,8 @@
                                 </label>
 
                                 <p class="form-help-text">
-                                    Select one or more treatments if they are already known.
-                                    You can also add treatments later.
+                                    Select one or more treatments if they are
+                                    already known.
                                 </p>
 
                             </div>
@@ -465,9 +341,9 @@
                             </label>
 
                             <%
-                                    }
+                                }
 
-                                } else {
+                            } else {
                             %>
 
                             <div class="treatment-empty-message">
@@ -486,15 +362,18 @@
                         </div>
 
 
+                        <!-- ESTIMATED TOTAL -->
                         <div class="treatment-total-bar">
 
                             <span class="treatment-total-label">
-                                Estimated Treatment Total:
+                                Estimated Treatment Total
                             </span>
 
                             <span class="treatment-total-value"
                                   id="estimatedTreatmentTotal">
+
                                 Rs. 0.00
+
                             </span>
 
                         </div>
@@ -524,19 +403,12 @@
                         <button class="btn btn-primary"
                                 type="submit">
 
-                            <i class="bi bi-calendar2-check"></i>
+                            <i class="bi bi-calendar2-check"
+                               aria-hidden="true"></i>
+
                             Save Appointment
 
                         </button>
-
-
-                        <a class="btn btn-secondary"
-                           href="${pageContext.request.contextPath}/appointments/all">
-
-                            <i class="bi bi-list-ul"></i>
-                            All Appointments
-
-                        </a>
 
                     </div>
 
@@ -555,7 +427,9 @@
 
 </div>
 
+
 <script>
+
     document.addEventListener(
         "DOMContentLoaded",
         function () {
@@ -569,6 +443,7 @@
                 document.getElementById(
                     "estimatedTreatmentTotal"
                 );
+
 
             function updateTreatmentTotal() {
 
@@ -585,11 +460,13 @@
                                 );
 
                             if (!Number.isNaN(fee)) {
+
                                 total += fee;
                             }
                         }
                     }
                 );
+
 
                 totalElement.textContent =
                     "Rs. "
@@ -602,6 +479,7 @@
                     );
             }
 
+
             checkboxes.forEach(
                 function (checkbox) {
 
@@ -612,9 +490,11 @@
                 }
             );
 
+
             updateTreatmentTotal();
         }
     );
+
 </script>
 
 </body>

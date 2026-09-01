@@ -27,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
@@ -84,9 +86,6 @@ public class AppointmentController extends HttpServlet {
         }
     }
 
-    /*
-     * Kept for older controller unit tests.
-     */
     public AppointmentController(
             final AppointmentService appointmentService) {
 
@@ -100,10 +99,6 @@ public class AppointmentController extends HttpServlet {
         this.treatmentTypeDAO = null;
     }
 
-    /*
-     * Kept for existing tests/code that use the old
-     * four-argument constructor.
-     */
     public AppointmentController(
             final AppointmentService appointmentService,
             final AppointmentDAO appointmentDAO,
@@ -126,9 +121,6 @@ public class AppointmentController extends HttpServlet {
         this.treatmentTypeDAO = null;
     }
 
-    /*
-     * Full constructor for testing the new treatment workflow.
-     */
     public AppointmentController(
             final AppointmentService appointmentService,
             final AppointmentDAO appointmentDAO,
@@ -269,17 +261,12 @@ public class AppointmentController extends HttpServlet {
                     request.getParameter(
                             "notes");
 
-            /*
-             * Multiple treatment checkboxes will use
-             * name="treatmentTypeIds".
-             */
             final String[] selectedTreatmentTypeIds =
                     request.getParameterValues(
                             "treatmentTypeIds");
 
             /*
-             * Appointment number is generated automatically
-             * for the selected appointment date.
+             * Generate the daily appointment number.
              */
             final String appointmentNumber =
                     appointmentService
@@ -299,8 +286,8 @@ public class AppointmentController extends HttpServlet {
                     );
 
             /*
-             * Save appointment and receive the generated
-             * database appointment_id.
+             * Save the appointment and obtain the
+             * generated database appointment ID.
              */
             final int appointmentId =
                     appointmentService
@@ -308,11 +295,7 @@ public class AppointmentController extends HttpServlet {
                                     appointment);
 
             /*
-             * Treatments are optional.
-             *
-             * If the receptionist selected multiple treatments,
-             * each one is saved against the newly created
-             * appointment.
+             * Save all selected treatments.
              */
             if (selectedTreatmentTypeIds != null
                     && treatmentDAO != null) {
@@ -338,46 +321,28 @@ public class AppointmentController extends HttpServlet {
             }
 
             /*
-             * Create another Appointment object containing
-             * the real generated database ID so the JSP can
-             * continue the workflow correctly.
+             * After the appointment and treatments
+             * are saved, immediately move to Billing.
              */
-            final Appointment createdAppointment =
-                    new Appointment(
-                            appointmentId,
+
+            final String encodedAppointmentNumber =
+                    URLEncoder.encode(
                             appointmentNumber,
-                            patientId,
-                            dentistId,
-                            appointmentDate,
-                            appointmentTime,
-                            status,
-                            notes
-                    );
+                            StandardCharsets.UTF_8);
 
-            request.setAttribute(
-                    "successMessage",
-                    "Appointment created successfully. "
-                            + "Appointment Number: "
-                            + appointmentNumber);
+            final String redirectUrl =
+                    request.getContextPath()
+                            + "/bills"
+                            + "?appointmentId="
+                            + appointmentId
+                            + "&appointmentDate="
+                            + appointmentDate
+                            + "&appointmentNumber="
+                            + encodedAppointmentNumber
+                            + "&created=true";
 
-            request.setAttribute(
-                    "createdAppointment",
-                    createdAppointment);
-
-            /*
-             * Useful if the receptionist wants to continue
-             * straight to billing.
-             */
-            request.setAttribute(
-                    "createdAppointmentId",
-                    appointmentId);
-
-            loadDropdownData(
-                    request);
-
-            forwardToAppointmentPage(
-                    request,
-                    response);
+            response.sendRedirect(
+                    redirectUrl);
 
         } catch (NumberFormatException exception) {
 
@@ -396,7 +361,9 @@ public class AppointmentController extends HttpServlet {
 
             request.setAttribute(
                     "errorMessage",
-                    "Unable to create appointment because the appointment number already exists for this date");
+                    "Unable to create appointment because "
+                            + "the appointment number already exists "
+                            + "for this date");
 
             loadDropdownDataSafely(
                     request);
@@ -450,10 +417,6 @@ public class AppointmentController extends HttpServlet {
                     dentists);
         }
 
-        /*
-         * Treatment types are now also loaded
-         * onto the appointment page.
-         */
         if (treatmentTypeDAO != null) {
 
             final List<TreatmentType> treatmentTypes =
