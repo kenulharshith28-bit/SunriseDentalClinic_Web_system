@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,6 +34,7 @@ class AppointmentControllerTest {
     private DentistDAO dentistDAO;
     private HttpServletRequest request;
     private HttpServletResponse response;
+    private HttpSession session;
     private RequestDispatcher dispatcher;
     private AppointmentController controller;
 
@@ -56,6 +59,9 @@ class AppointmentControllerTest {
         response =
                 mock(HttpServletResponse.class);
 
+        session =
+                mock(HttpSession.class);
+
         dispatcher =
                 mock(RequestDispatcher.class);
 
@@ -66,6 +72,9 @@ class AppointmentControllerTest {
         when(request.getRequestDispatcher(
                 "/WEB-INF/views/appointment.jsp"))
                 .thenReturn(dispatcher);
+
+        when(request.getSession())
+                .thenReturn(session);
     }
 
     @Test
@@ -260,7 +269,7 @@ class AppointmentControllerTest {
 
         verify(request)
                 .setAttribute(
-                        "appointments",
+                        eq("appointments"),
                         argThat(value -> {
                             if (!(value instanceof List<?> appointments)) {
                                 return false;
@@ -325,16 +334,48 @@ class AppointmentControllerTest {
     }
 
     @Test
-    void shouldShowSuccessMessageWhenAppointmentIsSaved()
+    void shouldRedirectToBillingWhenAppointmentIsSaved()
             throws Exception {
 
-        mockAppointmentFormParameters();
+        when(request.getServletPath())
+                .thenReturn("/appointments");
+
+        when(request.getParameter(
+                "patientId"))
+                .thenReturn("1");
+
+        when(request.getParameter(
+                "dentistId"))
+                .thenReturn("1");
+
+        when(request.getParameter(
+                "appointmentDate"))
+                .thenReturn("2026-09-01");
+
+        when(request.getParameter(
+                "appointmentTime"))
+                .thenReturn("10:00");
+
+        when(request.getParameter(
+                "status"))
+                .thenReturn("SCHEDULED");
+
+        when(request.getParameter(
+                "notes"))
+                .thenReturn("Regular checkup");
+
+        when(request.getParameterValues(
+                "treatmentTypeIds"))
+                .thenReturn(null);
+
+        when(request.getContextPath())
+                .thenReturn("/SunriseDentalClinic");
 
         when(appointmentService.generateNextAppointmentNumber(
                 LocalDate.of(
                         2026,
-                        8,
-                        28)))
+                        9,
+                        1)))
                 .thenReturn("A-001");
 
         when(appointmentService
@@ -346,15 +387,13 @@ class AppointmentControllerTest {
                 request,
                 response);
 
-        verify(request)
-                .setAttribute(
-                        "successMessage",
-                        "Appointment created successfully. Appointment Number: A-001");
-
-        verify(dispatcher)
-                .forward(
-                        request,
-                        response);
+        verify(response)
+                .sendRedirect(
+                        "/SunriseDentalClinic/bills"
+                                + "?appointmentId=25"
+                                + "&appointmentDate=2026-09-01"
+                                + "&appointmentNumber=A-001"
+                                + "&created=true");
     }
 
     private void mockAppointmentFormParameters() {
@@ -382,5 +421,9 @@ class AppointmentControllerTest {
         when(request.getParameter(
                 "notes"))
                 .thenReturn("Regular checkup");
+
+        when(request.getParameterValues(
+                "treatmentTypeIds"))
+                .thenReturn(null);
     }
 }
