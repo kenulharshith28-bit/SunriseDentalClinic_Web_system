@@ -1,11 +1,13 @@
 package com.sunrisedental.controller;
 
-import com.sunrisedental.dao.AppointmentDAO;
-import com.sunrisedental.dao.DentistDAO;
-import com.sunrisedental.dao.PatientDAO;
+import com.sunrisedental.dao.*;
 import com.sunrisedental.model.Appointment;
+import com.sunrisedental.model.Dentist;
+import com.sunrisedental.model.Patient;
+import com.sunrisedental.model.TreatmentType;
 import com.sunrisedental.service.AppointmentService;
 
+import com.sunrisedental.service.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,14 +16,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -425,5 +426,153 @@ class AppointmentControllerTest {
         when(request.getParameterValues(
                 "treatmentTypeIds"))
                 .thenReturn(null);
+    }
+
+    @Test
+    void shouldSendConfirmationEmailAfterAppointmentCreation()
+            throws Exception {
+
+        final AppointmentService appointmentService =
+                mock(AppointmentService.class);
+
+        final AppointmentDAO appointmentDAO =
+                mock(AppointmentDAO.class);
+
+        final PatientDAO patientDAO =
+                mock(PatientDAO.class);
+
+        final DentistDAO dentistDAO =
+                mock(DentistDAO.class);
+
+        final TreatmentDAO treatmentDAO =
+                mock(TreatmentDAO.class);
+
+        final TreatmentTypeDAO treatmentTypeDAO =
+                mock(TreatmentTypeDAO.class);
+
+        final EmailService emailService =
+                mock(EmailService.class);
+
+        final HttpServletRequest request =
+                mock(HttpServletRequest.class);
+
+        final HttpServletResponse response =
+                mock(HttpServletResponse.class);
+
+
+        final Patient patient =
+                new Patient(
+                        1,
+                        "John",
+                        "Silva",
+                        "0771234567",
+                        "john@example.com",
+                        null,
+                        "12 Main Street, Colombo"
+                );
+
+        final Dentist dentist =
+                new Dentist(
+                        1,
+                        "Nimal",
+                        "Perera",
+                        "General Dentistry",
+                        "0711234567",
+                        "dentist@example.com"
+                );
+
+        final TreatmentType cleaning =
+                new TreatmentType(
+                        1,
+                        "Dental Cleaning",
+                        new BigDecimal("5000.00")
+                );
+
+
+        when(request.getServletPath())
+                .thenReturn("/appointments");
+
+        when(request.getParameter("patientId"))
+                .thenReturn("1");
+
+        when(request.getParameter("dentistId"))
+                .thenReturn("1");
+
+        when(request.getParameter("appointmentDate"))
+                .thenReturn("2026-09-10");
+
+        when(request.getParameter("appointmentTime"))
+                .thenReturn("10:30");
+
+        when(request.getParameter("status"))
+                .thenReturn("SCHEDULED");
+
+        when(request.getParameter("notes"))
+                .thenReturn("Routine check-up");
+
+        when(request.getParameterValues("treatmentTypeIds"))
+                .thenReturn(
+                        new String[]{"1"});
+
+        when(request.getContextPath())
+                .thenReturn("/SunriseDentalClinic");
+
+
+        when(appointmentService
+                .generateNextAppointmentNumber(
+                        LocalDate.of(
+                                2026,
+                                9,
+                                10)))
+                .thenReturn("A-001");
+
+        when(appointmentService
+                .saveAppointment(
+                        any(Appointment.class)))
+                .thenReturn(10);
+
+        when(patientDAO.findAllPatients())
+                .thenReturn(
+                        List.of(patient));
+
+        when(dentistDAO.findAllDentists())
+                .thenReturn(
+                        List.of(dentist));
+
+        when(treatmentTypeDAO
+                .findAllTreatmentTypes())
+                .thenReturn(
+                        List.of(cleaning));
+
+
+        final AppointmentController controller =
+                new AppointmentController(
+                        appointmentService,
+                        appointmentDAO,
+                        patientDAO,
+                        dentistDAO,
+                        treatmentDAO,
+                        treatmentTypeDAO,
+                        emailService
+                );
+
+
+        controller.doPost(
+                request,
+                response);
+
+
+        verify(emailService)
+                .sendEmail(
+                        eq("john@example.com"),
+                        eq(
+                                "Sunrise Dental Clinic - Appointment Confirmation"),
+                        contains(
+                                "Appointment Number: A-001")
+                );
+
+        verify(response)
+                .sendRedirect(
+                        contains("/bills"));
     }
 }

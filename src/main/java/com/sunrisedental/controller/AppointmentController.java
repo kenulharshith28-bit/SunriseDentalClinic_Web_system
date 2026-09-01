@@ -18,6 +18,8 @@ import com.sunrisedental.model.Treatment;
 import com.sunrisedental.model.TreatmentType;
 
 import com.sunrisedental.service.AppointmentService;
+import com.sunrisedental.service.EmailService;
+import com.sunrisedental.service.SmtpEmailService;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -51,6 +53,7 @@ public class AppointmentController extends HttpServlet {
     private final DentistDAO dentistDAO;
     private final TreatmentDAO treatmentDAO;
     private final TreatmentTypeDAO treatmentTypeDAO;
+    private final EmailService emailService;
 
     public AppointmentController() {
 
@@ -78,6 +81,9 @@ public class AppointmentController extends HttpServlet {
             this.treatmentTypeDAO =
                     new TreatmentTypeDAOImpl();
 
+            this.emailService =
+                    new SmtpEmailService();
+
         } catch (SQLException exception) {
 
             throw new IllegalStateException(
@@ -86,6 +92,9 @@ public class AppointmentController extends HttpServlet {
         }
     }
 
+    /*
+     * Compatibility constructor for older tests.
+     */
     public AppointmentController(
             final AppointmentService appointmentService) {
 
@@ -97,8 +106,12 @@ public class AppointmentController extends HttpServlet {
         this.dentistDAO = null;
         this.treatmentDAO = null;
         this.treatmentTypeDAO = null;
+        this.emailService = null;
     }
 
+    /*
+     * Compatibility constructor for older controller tests.
+     */
     public AppointmentController(
             final AppointmentService appointmentService,
             final AppointmentDAO appointmentDAO,
@@ -119,8 +132,12 @@ public class AppointmentController extends HttpServlet {
 
         this.treatmentDAO = null;
         this.treatmentTypeDAO = null;
+        this.emailService = null;
     }
 
+    /*
+     * Compatibility constructor for appointment/treatment tests.
+     */
     public AppointmentController(
             final AppointmentService appointmentService,
             final AppointmentDAO appointmentDAO,
@@ -146,6 +163,43 @@ public class AppointmentController extends HttpServlet {
 
         this.treatmentTypeDAO =
                 treatmentTypeDAO;
+
+        this.emailService =
+                null;
+    }
+
+    /*
+     * Full constructor for tests involving email notification.
+     */
+    public AppointmentController(
+            final AppointmentService appointmentService,
+            final AppointmentDAO appointmentDAO,
+            final PatientDAO patientDAO,
+            final DentistDAO dentistDAO,
+            final TreatmentDAO treatmentDAO,
+            final TreatmentTypeDAO treatmentTypeDAO,
+            final EmailService emailService) {
+
+        this.appointmentService =
+                appointmentService;
+
+        this.appointmentDAO =
+                appointmentDAO;
+
+        this.patientDAO =
+                patientDAO;
+
+        this.dentistDAO =
+                dentistDAO;
+
+        this.treatmentDAO =
+                treatmentDAO;
+
+        this.treatmentTypeDAO =
+                treatmentTypeDAO;
+
+        this.emailService =
+                emailService;
     }
 
     @Override
@@ -232,7 +286,7 @@ public class AppointmentController extends HttpServlet {
             throws ServletException, IOException {
 
         /*
-         * POST on /appointments/all means
+         * POST /appointments/all =
          * manual appointment cancellation.
          */
         if ("/appointments/all".equals(
@@ -245,10 +299,6 @@ public class AppointmentController extends HttpServlet {
             return;
         }
 
-        /*
-         * Otherwise this is a normal
-         * Create Appointment request.
-         */
         try {
 
             final int patientId =
@@ -284,8 +334,7 @@ public class AppointmentController extends HttpServlet {
                             "treatmentTypeIds");
 
             /*
-             * Generate the next number for
-             * the selected appointment date.
+             * Generate daily appointment number.
              */
             final String appointmentNumber =
                     appointmentService
@@ -305,8 +354,7 @@ public class AppointmentController extends HttpServlet {
                     );
 
             /*
-             * Save appointment and receive
-             * the generated database ID.
+             * Save appointment and obtain generated ID.
              */
             final int appointmentId =
                     appointmentService
@@ -314,8 +362,7 @@ public class AppointmentController extends HttpServlet {
                                     appointment);
 
             /*
-             * Save every selected treatment
-             * against the new appointment.
+             * Save selected treatment records.
              */
             if (selectedTreatmentTypeIds != null
                     && treatmentDAO != null) {
@@ -342,8 +389,34 @@ public class AppointmentController extends HttpServlet {
             }
 
             /*
-             * Appointment and treatments are done.
-             * Move directly to Billing.
+             * Send appointment confirmation email.
+             *
+             * Email problems must not prevent the
+             * appointment itself from being created.
+             */
+            try {
+
+                sendAppointmentConfirmationEmail(
+                        patientId,
+                        dentistId,
+                        appointmentNumber,
+                        appointmentDate,
+                        appointmentTime,
+                        selectedTreatmentTypeIds);
+
+            } catch (RuntimeException emailException) {
+
+                /*
+                 * Appointment creation continues even
+                 * if SMTP/email sending fails.
+                 */
+                System.err.println(
+                        "Appointment created, but confirmation email failed: "
+                                + emailException.getMessage());
+            }
+
+            /*
+             * Redirect directly to Billing.
              */
             final String encodedAppointmentNumber =
                     URLEncoder.encode(
@@ -411,6 +484,217 @@ public class AppointmentController extends HttpServlet {
                     "Unable to save appointment or treatments",
                     exception);
         }
+    }
+
+    /*
+     * Sends a confirmation email after an appointment
+     * and its treatment records have been saved.
+     */
+    private void sendAppointmentConfirmationEmail(
+            final int patientId,
+            final int dentistId,
+            final String appointmentNumber,
+            final LocalDate appointmentDate,
+            final LocalTime appointmentTime,
+            final String[] selectedTreatmentTypeIds) {
+
+        if (emailService == null
+                || patientDAO == null
+                || dentistDAO == null) {
+
+            return;
+        }
+
+        try {
+
+            final Patient patient =
+                    findPatientById(
+                            patientId);
+
+            /*
+             * A patient without an email address can still
+             * have appointments. Simply skip notification.
+             */
+            if (patient == null
+                    || patient.getEmail() == null
+                    || patient.getEmail().isBlank()) {
+
+                return;
+            }
+
+            final Dentist dentist =
+                    findDentistById(
+                            dentistId);
+
+            final String treatmentNames =
+                    buildTreatmentNames(
+                            selectedTreatmentTypeIds);
+
+            final String subject =
+                    "Sunrise Dental Clinic - Appointment Confirmation";
+
+            final String body =
+                    buildAppointmentEmailBody(
+                            patient,
+                            dentist,
+                            appointmentNumber,
+                            appointmentDate,
+                            appointmentTime,
+                            treatmentNames);
+
+            emailService.sendEmail(
+                    patient.getEmail(),
+                    subject,
+                    body);
+
+        } catch (SQLException exception) {
+
+            throw new IllegalStateException(
+                    "Unable to load appointment email information",
+                    exception);
+        }
+    }
+
+    private Patient findPatientById(
+            final int patientId)
+            throws SQLException {
+
+        final List<Patient> patients =
+                patientDAO
+                        .findAllPatients();
+
+        for (Patient patient : patients) {
+
+            if (patient.getPatientId()
+                    == patientId) {
+
+                return patient;
+            }
+        }
+
+        return null;
+    }
+
+    private Dentist findDentistById(
+            final int dentistId)
+            throws SQLException {
+
+        final List<Dentist> dentists =
+                dentistDAO
+                        .findAllDentists();
+
+        for (Dentist dentist : dentists) {
+
+            if (dentist.getDentistId()
+                    == dentistId) {
+
+                return dentist;
+            }
+        }
+
+        return null;
+    }
+
+    private String buildTreatmentNames(
+            final String[] selectedTreatmentTypeIds)
+            throws SQLException {
+
+        if (selectedTreatmentTypeIds == null
+                || selectedTreatmentTypeIds.length == 0
+                || treatmentTypeDAO == null) {
+
+            return "No treatment selected";
+        }
+
+        final List<TreatmentType> treatmentTypes =
+                treatmentTypeDAO
+                        .findAllTreatmentTypes();
+
+        final List<String> selectedNames =
+                new ArrayList<>();
+
+        for (String treatmentTypeIdValue
+                : selectedTreatmentTypeIds) {
+
+            final int treatmentTypeId =
+                    Integer.parseInt(
+                            treatmentTypeIdValue);
+
+            for (TreatmentType treatmentType
+                    : treatmentTypes) {
+
+                if (treatmentType
+                        .getTreatmentTypeId()
+                        == treatmentTypeId) {
+
+                    selectedNames.add(
+                            treatmentType
+                                    .getTreatmentName());
+
+                    break;
+                }
+            }
+        }
+
+        if (selectedNames.isEmpty()) {
+
+            return "No treatment selected";
+        }
+
+        return String.join(
+                ", ",
+                selectedNames);
+    }
+
+    private String buildAppointmentEmailBody(
+            final Patient patient,
+            final Dentist dentist,
+            final String appointmentNumber,
+            final LocalDate appointmentDate,
+            final LocalTime appointmentTime,
+            final String treatmentNames) {
+
+        final String dentistName;
+
+        if (dentist != null) {
+
+            dentistName =
+                    "Dr. "
+                            + dentist.getFullName();
+
+        } else {
+
+            dentistName =
+                    "To be confirmed";
+        }
+
+        return "Sunrise Dental Clinic\n"
+                + "----------------------------------------\n\n"
+                + "Appointment Confirmation\n\n"
+                + "Dear "
+                + patient.getFullName()
+                + ",\n\n"
+                + "Your dental appointment has been successfully scheduled.\n\n"
+                + "Appointment Number: "
+                + appointmentNumber
+                + "\n"
+                + "Patient: "
+                + patient.getFullName()
+                + "\n"
+                + "Dentist: "
+                + dentistName
+                + "\n"
+                + "Date: "
+                + appointmentDate
+                + "\n"
+                + "Time: "
+                + appointmentTime
+                + "\n"
+                + "Treatment(s): "
+                + treatmentNames
+                + "\n\n"
+                + "Please arrive a few minutes before your scheduled time.\n\n"
+                + "Thank you for choosing Sunrise Dental Clinic.\n";
     }
 
     private void cancelAppointment(
@@ -575,16 +859,12 @@ public class AppointmentController extends HttpServlet {
             }
 
             /*
-             * Automatically cancel any scheduled
-             * appointment whose date/time has passed.
+             * Automatically cancel past scheduled
+             * appointments.
              */
             appointmentDAO
                     .cancelExpiredAppointments();
 
-            /*
-             * Show success message after
-             * manual cancellation redirect.
-             */
             final Object successMessage =
                     request.getSession()
                             .getAttribute(
@@ -601,10 +881,6 @@ public class AppointmentController extends HttpServlet {
                                 "appointmentMessage");
             }
 
-            /*
-             * Show error message after
-             * manual cancellation redirect.
-             */
             final Object errorMessage =
                     request.getSession()
                             .getAttribute(
@@ -635,7 +911,7 @@ public class AppointmentController extends HttpServlet {
                                     .findAllAppointments());
 
             /*
-             * Filter by date.
+             * Filter by appointment date.
              */
             if (appointmentDateValue != null
                     && !appointmentDateValue.isBlank()) {
@@ -688,13 +964,21 @@ public class AppointmentController extends HttpServlet {
                     "appointments",
                     appointments);
 
-            request.setAttribute(
-                    "patients",
-                    patientDAO.findAllPatients());
+            if (patientDAO != null) {
 
-            request.setAttribute(
-                    "dentists",
-                    dentistDAO.findAllDentists());
+                request.setAttribute(
+                        "patients",
+                        patientDAO
+                                .findAllPatients());
+            }
+
+            if (dentistDAO != null) {
+
+                request.setAttribute(
+                        "dentists",
+                        dentistDAO
+                                .findAllDentists());
+            }
 
             request.getRequestDispatcher(
                             "/WEB-INF/views/appointments-all.jsp")

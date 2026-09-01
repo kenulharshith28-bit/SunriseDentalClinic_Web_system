@@ -129,6 +129,20 @@
         </div>
 
 
+        <!-- MANAGE PATIENTS -->
+        <a class="sidebar-link <%= "manage-patients".equals(activePage) ? "active" : "" %>"
+           href="${pageContext.request.contextPath}/patients/manage">
+
+            <span>
+                <i class="bi bi-person-vcard"
+                   aria-hidden="true"></i>
+            </span>
+
+            Manage Patients
+
+        </a>
+
+
         <!-- MANAGE DENTISTS -->
         <a class="sidebar-link <%= "dentists".equals(activePage) ? "active" : "" %>"
            href="${pageContext.request.contextPath}/dentists">
