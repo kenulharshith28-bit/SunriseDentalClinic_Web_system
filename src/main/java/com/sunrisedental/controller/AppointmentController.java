@@ -390,9 +390,6 @@ public class AppointmentController extends HttpServlet {
 
             /*
              * Send appointment confirmation email.
-             *
-             * Email problems must not prevent the
-             * appointment itself from being created.
              */
             try {
 
@@ -406,10 +403,6 @@ public class AppointmentController extends HttpServlet {
 
             } catch (RuntimeException emailException) {
 
-                /*
-                 * Appointment creation continues even
-                 * if SMTP/email sending fails.
-                 */
                 System.err.println(
                         "Appointment created, but confirmation email failed: "
                                 + emailException.getMessage());
@@ -511,10 +504,6 @@ public class AppointmentController extends HttpServlet {
                     findPatientById(
                             patientId);
 
-            /*
-             * A patient without an email address can still
-             * have appointments. Simply skip notification.
-             */
             if (patient == null
                     || patient.getEmail() == null
                     || patient.getEmail().isBlank()) {
@@ -555,6 +544,97 @@ public class AppointmentController extends HttpServlet {
         }
     }
 
+    /*
+     * Sends a cancellation email after an appointment
+     * has successfully been cancelled.
+     */
+    private void sendAppointmentCancellationEmail(
+            final Appointment appointment) {
+
+        if (appointment == null
+                || emailService == null
+                || patientDAO == null
+                || dentistDAO == null) {
+
+            return;
+        }
+
+        try {
+
+            final Patient patient =
+                    findPatientById(
+                            appointment.getPatientId());
+
+            /*
+             * Patients without an email address can still
+             * have their appointments cancelled.
+             */
+            if (patient == null
+                    || patient.getEmail() == null
+                    || patient.getEmail().isBlank()) {
+
+                return;
+            }
+
+            final Dentist dentist =
+                    findDentistById(
+                            appointment.getDentistId());
+
+            final String dentistName;
+
+            if (dentist != null) {
+
+                dentistName =
+                        "Dr. "
+                                + dentist.getFullName();
+
+            } else {
+
+                dentistName =
+                        "Not available";
+            }
+
+            final String subject =
+                    "Sunrise Dental Clinic - Appointment Cancelled";
+
+            final String body =
+                    "Sunrise Dental Clinic\n"
+                            + "----------------------------------------\n\n"
+                            + "Appointment Cancellation\n\n"
+                            + "Dear "
+                            + patient.getFullName()
+                            + ",\n\n"
+                            + "Your dental appointment has been cancelled.\n\n"
+                            + "Appointment Number: "
+                            + appointment.getAppointmentNumber()
+                            + "\n"
+                            + "Dentist: "
+                            + dentistName
+                            + "\n"
+                            + "Date: "
+                            + appointment.getAppointmentDate()
+                            + "\n"
+                            + "Time: "
+                            + appointment.getAppointmentTime()
+                            + "\n\n"
+                            + "If you would like to arrange another appointment, "
+                            + "please contact Sunrise Dental Clinic.\n\n"
+                            + "Thank you.\n"
+                            + "Sunrise Dental Clinic\n";
+
+            emailService.sendEmail(
+                    patient.getEmail(),
+                    subject,
+                    body);
+
+        } catch (SQLException exception) {
+
+            throw new IllegalStateException(
+                    "Unable to load cancellation email information",
+                    exception);
+        }
+    }
+
     private Patient findPatientById(
             final int patientId)
             throws SQLException {
@@ -589,6 +669,31 @@ public class AppointmentController extends HttpServlet {
                     == dentistId) {
 
                 return dentist;
+            }
+        }
+
+        return null;
+    }
+
+    /*
+     * Finds an appointment before cancellation so that
+     * its patient, dentist, date and time can be used
+     * in the cancellation email.
+     */
+    private Appointment findAppointmentById(
+            final int appointmentId)
+            throws SQLException {
+
+        final List<Appointment> appointments =
+                appointmentDAO
+                        .findAllAppointments();
+
+        for (Appointment appointment : appointments) {
+
+            if (appointment.getAppointmentId()
+                    == appointmentId) {
+
+                return appointment;
             }
         }
 
@@ -733,12 +838,36 @@ public class AppointmentController extends HttpServlet {
                     Integer.parseInt(
                             appointmentIdValue);
 
+            /*
+             * Load appointment details before updating
+             * its status to CANCELLED.
+             */
+            final Appointment appointment =
+                    findAppointmentById(
+                            appointmentId);
+
             final boolean cancelled =
                     appointmentDAO
                             .cancelAppointment(
                                     appointmentId);
 
             if (cancelled) {
+
+                /*
+                 * Cancellation itself must remain successful
+                 * even if SMTP/email fails.
+                 */
+                try {
+
+                    sendAppointmentCancellationEmail(
+                            appointment);
+
+                } catch (RuntimeException emailException) {
+
+                    System.err.println(
+                            "Appointment cancelled, but cancellation email failed: "
+                                    + emailException.getMessage());
+                }
 
                 request.getSession()
                         .setAttribute(
