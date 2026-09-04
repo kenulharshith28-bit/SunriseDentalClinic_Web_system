@@ -180,12 +180,6 @@ The project was developed incrementally using Git feature branches. Examples inc
 Completed feature branches were tested and merged into the main development branch before the final version was moved to `main`.
 
 
-## Author
-
-**Student Name:** [ADD YOUR NAME]  
-**Student ID:** [ADD YOUR STUDENT ID]  
-**Module:** CIS6003 Advanced Programming
-
 ## Academic Purpose
 
 This project was developed as part of the CIS6003 Advanced Programming assessment for academic purposes.
