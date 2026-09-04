@@ -89,7 +89,7 @@ class LoginControllerTest {
     }
 
     @Test
-    void shouldRedirectToDashboardWhenAuthenticationSucceeds()
+    void shouldShowSuccessMessageBeforeDashboardRedirectWhenAuthenticationSucceeds()
             throws Exception {
 
         final User user =
@@ -134,9 +134,20 @@ class LoginControllerTest {
                         "role",
                         "ADMIN");
 
-        verify(response)
-                .sendRedirect(
+        verify(request)
+                .setAttribute(
+                        "successMessage",
+                        "Login Successful! Welcome to Sunrise Dental Clinic.");
+
+        verify(request)
+                .setAttribute(
+                        "dashboardPath",
                         "/SunriseDentalClinic/dashboard");
+
+        verify(dispatcher)
+                .forward(
+                        request,
+                        response);
     }
 
     @Test
@@ -165,7 +176,7 @@ class LoginControllerTest {
         verify(request)
                 .setAttribute(
                         "errorMessage",
-                        "Invalid username or password");
+                        "Invalid username or password. Please try again.");
 
         verify(dispatcher)
                 .forward(

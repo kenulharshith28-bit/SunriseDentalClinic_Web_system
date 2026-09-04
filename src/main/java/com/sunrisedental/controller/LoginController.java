@@ -107,16 +107,28 @@ public class LoginController extends HttpServlet {
                         "role",
                         user.getRole());
 
-                response.sendRedirect(
+                final String dashboardPath =
                         request.getContextPath()
-                                + "/dashboard");
+                                + "/dashboard";
+
+                request.setAttribute(
+                        "successMessage",
+                        "Login Successful! Welcome to Sunrise Dental Clinic.");
+
+                request.setAttribute(
+                        "dashboardPath",
+                        dashboardPath);
+
+                forwardToLogin(
+                        request,
+                        response);
 
                 return;
             }
 
             request.setAttribute(
                     "errorMessage",
-                    "Invalid username or password");
+                    "Invalid username or password. Please try again.");
 
             forwardToLogin(
                     request,
